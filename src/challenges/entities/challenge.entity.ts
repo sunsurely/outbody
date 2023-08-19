@@ -4,7 +4,9 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  OneToOne,
 } from 'typeorm';
+import { Goal } from './goal.entity';
 
 @Entity()
 @Check(`"userNumberLimit" >= 2 AND "userNumberLimit" <= 10`)
@@ -71,4 +73,8 @@ export class Challenge {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // Challenges - Goals 1:1
+  @OneToOne(() => Goal, (goal) => goal.challenge)
+  goal: Goal;
 }
