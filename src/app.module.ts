@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmConfigService } from './config/typeorm.config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmConfigService } from './config/typeorm.config.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './users/user.module';
 import { UserModule } from './users/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
-import { ChallengesModule } from './challenges/challenges.module';
-import { RecordsModule } from './records/records.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ChallengeModule } from './challenges/challenges.module';
+import { PostModule } from './posts/posts.module';
+import { RecordModule } from './records/records.module';
 
 @Module({
   imports: [
@@ -26,8 +28,9 @@ import { RecordsModule } from './records/records.module';
     }),
     AuthModule,
     UserModule,
-    ChallengesModule,
-    RecordsModule,
+    ChallengeModule,
+    PostModule,
+    RecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
