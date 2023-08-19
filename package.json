@@ -27,6 +27,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^3.0.2",
     "@nestjs/typeorm": "^10.0.0",
     "bcrypt": "^5.1.1",
     "class": "^0.1.4",
