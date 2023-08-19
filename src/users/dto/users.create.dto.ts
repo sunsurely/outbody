@@ -9,7 +9,7 @@ import {
   IsNumber,
 } from 'class-validator';
 
-export class UserDto {
+export class UserCreateDto {
   @Transform(({ value, obj }) => {
     if (obj.password.includes(obj.name.trim())) {
       throw new BadRequestException(

@@ -15,26 +15,26 @@ import { FollowEntity } from './follow.entity';
 import { ReportEntity } from './report.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'userId' })
   id: number;
 
   @Column('varchar', { length: 30 })
   name: string;
 
-  @Column('int', { nullable: true })
+  @Column('int')
   age: number;
 
-  @Column('int', { nullable: true })
+  @Column('int')
   height: number;
 
-  @Column('varchar', { length: 60 })
+  @Column('varchar')
   email: string;
 
-  @Column('varchar', { length: 100, nullable: true })
+  @Column('varchar', { length: 100 })
   password: string;
 
-  @Column({ type: 'enum', enum: Gender, nullable: true })
+  @Column({ type: 'enum', enum: Gender })
   gender: Gender;
 
   @Column({ type: 'enum', enum: Provider, default: Provider.LOCAL })
