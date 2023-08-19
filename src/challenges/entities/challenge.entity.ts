@@ -74,7 +74,7 @@ export class Challenge {
   @CreateDateColumn()
   createdAt: Date;
 
-  // Challenges - Goals 1:1
+  // Challenge => Goal 1:1
   @OneToOne(() => Goal, (goal) => goal.challenge)
   goal: Goal;
 }
