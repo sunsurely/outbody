@@ -7,7 +7,6 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Goal } from './goal.entity';
-} from 'typeorm';
 
 @Entity()
 @Check(`"userNumberLimit" >= 2 AND "userNumberLimit" <= 10`)
@@ -37,7 +36,7 @@ export class Challenge {
     type: 'int',
     nullable: false,
   })
-  challengWeek: number;
+  challengeWeek: number;
 
   @Column({
     type: 'date',
