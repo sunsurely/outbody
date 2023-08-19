@@ -39,6 +39,9 @@ export class UserEntity {
   @Column('varchar', { nullable: true })
   imgUrl: string;
 
+  @Column('int', { nullable: true })
+  point: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
