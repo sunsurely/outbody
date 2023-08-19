@@ -8,7 +8,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateChallengeDto {
+export class CreateChallengeRequestDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
@@ -26,10 +26,6 @@ export class CreateChallengeDto {
   @IsNumber()
   @Min(0)
   challengeWeek: number;
-
-  @IsNotEmpty()
-  @IsString()
-  endDate: string;
 
   @IsNotEmpty()
   @IsNumber()
