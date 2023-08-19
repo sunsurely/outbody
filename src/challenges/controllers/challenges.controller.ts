@@ -9,37 +9,31 @@ import {
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { UpdateChallengeDto } from '../dto/update-challenge.dto';
 
 @Controller('challenges')
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
-  @Post()
-  create(@Body() createChallengeDto: CreateChallengeDto) {
-    return this.challengesService.create(createChallengeDto);
-  }
-
+  // 도전그룹 조회
   @Get()
-  findAll() {
-    return this.challengesService.findAll();
+  async getChallenges() {
+    const challenges = await this.challengesService.getChallenges();
+    return challenges;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.challengesService.findOne(+id);
+  // 도전그룹 상세조회
+  @Get('/:challengeId')
+  async getChallenge(@Param('challengeId') challengeId: number) {
+    const challenge = await this.challengesService.getChallenge(challengeId);
+    return challenge;
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateChallengeDto: UpdateChallengeDto,
-  ) {
-    return this.challengesService.update(+id, updateChallengeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.challengesService.remove(+id);
+  // 도전 삭제
+  @Delete('/:challengeId')
+  async deleteChallenge(@Param('challengeId') challengeId: number) {
+    const remove = await this.challengesService.deleteChallenge(challengeId);
+    if (remove) {
+      return { message: '회원님의 도전이 성공적으로 삭제되었습니다' };
+    }
   }
 }
