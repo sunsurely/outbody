@@ -29,7 +29,7 @@ export class AuthService {
   async kakaoLogin(user) {
     const existUser = await this.userService.getUserInfo(user.email);
     if (!existUser) {
-      await this.userService.createUser();
+      // await this.userService.createUser();
     }
 
     return {

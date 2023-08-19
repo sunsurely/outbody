@@ -36,7 +36,7 @@ export class Challenge {
     type: 'int',
     nullable: false,
   })
-  challengWeek: number;
+  challengeWeek: number;
 
   @Column({
     type: 'date',
@@ -74,7 +74,7 @@ export class Challenge {
   @CreateDateColumn()
   createdAt: Date;
 
-  // Challenges - Goals 1:1
+  // Challenge => Goal 1:1
   @OneToOne(() => Goal, (goal) => goal.challenge)
   goal: Goal;
 }

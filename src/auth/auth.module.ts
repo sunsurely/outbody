@@ -4,10 +4,10 @@ import { LocalStrategy } from './local.strategy';
 import { KakaoStrategy } from './kakao.strategy';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/users/user.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/userEntity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 

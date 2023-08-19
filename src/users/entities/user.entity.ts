@@ -7,13 +7,17 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
-import { Gender, Provider } from './userInfo';
+import { Gender, Provider } from '../userInfo';
+import { RecordEntity } from 'src/recodes/recodes.entity';
+import { FollowEntity } from './follow.entity';
+import { ReportEntity } from './report.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'userId' })
-  userId: number;
+  id: number;
 
   @Column('varchar', { length: 30 })
   name: string;
@@ -39,6 +43,9 @@ export class UserEntity {
   @Column('varchar', { nullable: true })
   imgUrl: string;
 
+  @Column('int', { nullable: true })
+  point: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -48,11 +55,22 @@ export class UserEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'followedId' })
-  followedUser: UserEntity;
+  @OneToMany(() => RecordEntity, (record) => record.user)
+  records: RecordEntity[];
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'followingId' })
-  followingUser: UserEntity;
+  @OneToMany(() => FollowEntity, (following) => following.follower)
+  @JoinColumn({ name: 'followingUserId' })
+  followings: FollowEntity[];
+
+  @OneToMany(() => FollowEntity, (followed) => followed.followedUser)
+  @JoinColumn({ name: 'followedUserId' })
+  followeds: FollowEntity[];
+
+  @OneToMany(() => ReportEntity, (reporting) => reporting.reporter)
+  @JoinColumn({ name: 'reporterId' })
+  reportings: ReportEntity[];
+
+  @OneToMany(() => ReportEntity, (reported) => reported.reportedUser)
+  @JoinColumn({ name: 'reportedUserId' })
+  reporteds: ReportEntity[];
 }
