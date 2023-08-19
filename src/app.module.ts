@@ -5,13 +5,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
-import { UserModule } from './users/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChallengeModule } from './challenges/challenges.module';
 import { PostModule } from './posts/posts.module';
-import { RecordModule } from './records/records.module';
+import { RecodesModule } from './recodes/recodes.module';
 
 @Module({
   imports: [
@@ -30,7 +29,7 @@ import { RecordModule } from './records/records.module';
     UserModule,
     ChallengeModule,
     PostModule,
-    RecordModule,
+    RecodesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
