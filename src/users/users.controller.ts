@@ -5,12 +5,14 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { UserCreateDto } from './dto/users.create.dto';
 import { UserService } from './users.service';
 import { User } from './entities/user.entity';
 import { CurrentUser } from 'src/common/user.decorators';
+import { UserUpdateDto } from './dto/users.update.dto';
 
 @Controller('users')
 export class UserController {
@@ -38,4 +40,7 @@ export class UserController {
     const getUserInfoResult = await this.userService.getUserById(userId);
     return getUserInfoResult;
   }
+
+  @Patch('/:userId')
+  async udateUser(@Body() userDto: UserUpdateDto) {}
 }

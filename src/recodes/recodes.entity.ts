@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity({ schema: 'outbody', name: 'records' })
-export class RecordEntity {
+export class Record {
   @PrimaryGeneratedColumn({ type: 'int', name: 'recordId' })
   id: number;
 
@@ -39,7 +39,7 @@ export class RecordEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => UserEntity, (user) => user.records)
+  @ManyToOne(() => User, (user) => user.records)
   @JoinColumn({ name: 'userId' })
-  user: UserEntity;
+  user: User;
 }
