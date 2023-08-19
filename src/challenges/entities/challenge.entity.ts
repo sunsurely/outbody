@@ -21,12 +21,6 @@ export class Challenge {
   title: string;
 
   @Column({
-    type: 'varchar',
-    nullable: false,
-  })
-  goal: string;
-
-  @Column({
     type: 'text',
     nullable: false,
   })
