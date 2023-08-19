@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -30,11 +30,11 @@ export class FollowEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => UserEntity, (follower) => follower.followings)
+  @ManyToOne(() => User, (follower) => follower.followings)
   @JoinColumn({ name: 'followingUserId' })
-  follower: UserEntity;
+  follower: User;
 
-  @ManyToOne(() => UserEntity, (followedUser) => followedUser.followeds)
+  @ManyToOne(() => User, (followedUser) => followedUser.followeds)
   @JoinColumn({ name: 'followedUserId' })
-  followedUser: UserEntity;
+  followedUser: User;
 }

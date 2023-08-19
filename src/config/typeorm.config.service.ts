@@ -3,7 +3,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { Goal } from 'src/challenges/entities/goal.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { FollowEntity } from 'src/users/entities/follow.entity';
 import { RecordEntity } from 'src/recodes/recodes.entity';
 import { ReportEntity } from 'src/users/entities/report.entity';
@@ -21,7 +21,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE_NAME'),
       entities: [
-        UserEntity,
+        User,
         Challenge,
         Goal,
         FollowEntity,

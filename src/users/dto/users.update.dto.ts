@@ -1,11 +1,3 @@
-{
-   “gender”:”여” ,
-    ”age”:29,
-   “height”:190cm,
-   “password”: “k1234”,
-   ”newPassword”:”k12345”,
-}
-
 import { BadRequestException } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import {
@@ -17,9 +9,7 @@ import {
   IsNumber,
 } from 'class-validator';
 
-export class UserCreateDto {
-  
-  
+export class UserUpdateDto {
   @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}/)
   readonly password: string;

@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -33,11 +33,11 @@ export class ReportEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => UserEntity, (reporter) => reporter.reportings)
+  @ManyToOne(() => User, (reporter) => reporter.reportings)
   @JoinColumn({ name: 'reporterId' })
-  reporter: UserEntity;
+  reporter: User;
 
-  @ManyToOne(() => UserEntity, (reportedUser) => reportedUser.reporteds)
+  @ManyToOne(() => User, (reportedUser) => reportedUser.reporteds)
   @JoinColumn({ name: 'reportedUserId' })
-  reportedUser: UserEntity;
+  reportedUser: User;
 }
