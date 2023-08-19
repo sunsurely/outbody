@@ -8,6 +8,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
+import { ChallentesModule } from './challentes/challentes.module';
+import { ChallengesModule } from './challenges/challenges.module';
+import { RecordsModule } from './records/records.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -24,6 +28,10 @@ import { JwtConfigService } from './config/jwt.config.service';
     }),
     AuthModule,
     UserModule,
+    ChallentesModule,
+    ChallengesModule,
+    RecordsModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

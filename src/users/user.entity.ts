@@ -8,7 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Gender, Provider } from './usersInfo';
+import { Gender, Provider } from './userInfo';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class UserEntity {
@@ -18,19 +18,19 @@ export class UserEntity {
   @Column('varchar', { length: 30 })
   name: string;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   age: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   height: number;
 
   @Column('varchar', { length: 60 })
   email: string;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 100, nullable: true })
   password: string;
 
-  @Column({ type: 'enum', enum: Gender })
+  @Column({ type: 'enum', enum: Gender, nullable: true })
   gender: Gender;
 
   @Column({ type: 'enum', enum: Provider, default: Provider.LOCAL })

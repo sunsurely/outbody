@@ -20,8 +20,8 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Body() loginDto: UserLoginDto) {
-    return this.authService.login(loginDto.email);
+  async login(@Req() user) {
+    return this.authService.login(user.email);
   }
 
   @Get('kakao')

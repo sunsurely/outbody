@@ -4,10 +4,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './userEntity';
+import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Gender } from './usersInfo';
+import { Gender } from './userInfo';
 
 @Injectable()
 export class UserService {
