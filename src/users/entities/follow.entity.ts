@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity({ schema: 'outbody', name: 'follows' })
-export class FollowEntity {
+export class Follow {
   @PrimaryGeneratedColumn({ type: 'int', name: 'followId' })
   id: number;
 

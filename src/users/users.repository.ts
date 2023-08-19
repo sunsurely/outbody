@@ -43,10 +43,10 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async updateUser(user: User, data: Partial<UserUpdateDto>): Promise<object> {
-    const result = await this.update({ id: user.id }, data);
-    return result;
-  }
+  // async updateUser(user: User, data: Partial<UserUpdateDto>): Promise<object> {
+  //   const result = await this.update({ id: user.id }, data);
+  //   return result;
+  // }
 
   async findByIdAndUpdateImage(id: number, key: string): Promise<string> {
     const user = await this.findOne({ where: { id } });

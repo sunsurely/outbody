@@ -4,9 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { Goal } from 'src/challenges/entities/goal.entity';
 import { User } from 'src/users/entities/user.entity';
-import { FollowEntity } from 'src/users/entities/follow.entity';
-import { RecordEntity } from 'src/recodes/recodes.entity';
-import { ReportEntity } from 'src/users/entities/report.entity';
+import { Follow } from 'src/users/entities/follow.entity';
+import { Record } from 'src/recodes/recodes.entity';
+import { Report } from 'src/users/entities/report.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -20,14 +20,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>('DATABASE_USERNAME'),
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE_NAME'),
-      entities: [
-        User,
-        Challenge,
-        Goal,
-        FollowEntity,
-        RecordEntity,
-        ReportEntity,
-      ],
+      entities: [User, Challenge, Goal, Follow, Record, Report],
       synchronize: true,
     };
   }

@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity({ schema: 'outbody', name: 'records' })
-export class RecordEntity {
+export class Record {
   @PrimaryGeneratedColumn({ type: 'int', name: 'recordId' })
   id: number;
 
