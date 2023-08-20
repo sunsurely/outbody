@@ -9,9 +9,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Gender, Provider } from '../userInfo';
-import { Record } from 'src/recordes/recordes.entity';
+import { Record } from 'src/recordes/entities/recordes.entity';
 import { Follow } from '../../follows/entities/follow.entity';
-import { Report } from './report.entity';
+import { Report } from '../../reports/entities/report.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {

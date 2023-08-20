@@ -18,6 +18,7 @@ import { PostModule } from './posts/posts.module';
 import { RecodesModule } from './recordes/recordes.module';
 import { AuthMiddleware } from './common/middlewares/auth.middleware';
 import { FollowsModule } from './follows/follows.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { FollowsModule } from './follows/follows.module';
     PostModule,
     RecodesModule,
     FollowsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -46,7 +48,10 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude({ path: 'auth/login', method: RequestMethod.POST })
+      .exclude(
+        { path: 'auth/login', method: RequestMethod.POST },
+        { path: 'users/signup', method: RequestMethod.POST },
+      )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
