@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { TransformInterceptor } from './interceptors/responseData';
+import { TransformInterceptor } from './common/interceptors/responseData';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {

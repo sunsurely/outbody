@@ -30,11 +30,11 @@ export class Follow {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (follower) => follower.followings)
+  @ManyToOne(() => User, (user) => user.followers)
   @JoinColumn({ name: 'followingUserId' })
   follower: User;
 
-  @ManyToOne(() => User, (followedUser) => followedUser.followeds)
+  @ManyToOne(() => User, (user) => user.followeds)
   @JoinColumn({ name: 'followedUserId' })
-  followedUser: User;
+  followed: User;
 }

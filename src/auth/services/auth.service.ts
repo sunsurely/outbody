@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/users/users.service';
 import { compare } from 'bcrypt';
+import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.userService.getUserInfo(email);
+    const user = await this.userRepository.getUserByEmail(email);
     const comparedPassword = compare(password, user.password);
+
     if (user && comparedPassword) {
       return user;
     }
@@ -20,20 +21,17 @@ export class AuthService {
   }
 
   async login(user) {
-    const payload = { user };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const payload = { user: user.user };
+    const access_token = this.jwtService.sign(payload);
+    return access_token;
   }
 
   async kakaoLogin(user) {
-    const existUser = await this.userService.getUserInfo(user.email);
+    const existUser = await this.userRepository.getUserByEmail(user.email);
     if (!existUser) {
       // await this.userService.createUser();
     }
-
-    return {
-      access_token: this.jwtService.sign(user),
-    };
+    const access_token = this.jwtService.sign(user);
+    return access_token;
   }
 }
