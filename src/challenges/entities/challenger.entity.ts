@@ -27,7 +27,7 @@ export class Challenger {
   userId: number;
 
   @Column({
-    type: 'string',
+    type: 'varchar',
     nullable: false,
   })
   authorization: string;

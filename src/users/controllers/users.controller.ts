@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Req,
@@ -34,7 +36,13 @@ export class UserController {
 
   //사용자 정보 조회 localhost:3000/users/userId
   @Get('/:userId')
-  async getUserById(@Param('userId') userId: number) {
+  async getUserById(
+    @Param(
+      'userId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    userId: number,
+  ) {
     const getUserInfoResult = await this.userService.getUserById(userId);
     return getUserInfoResult;
   }

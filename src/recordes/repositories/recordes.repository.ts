@@ -24,19 +24,25 @@ export class RecordsRepository extends Repository<Record> {
     return await this.save(newUser);
   }
 
-  //모든 기록 불러오기
-  async getAllRecords(): Promise<Record[]> {
-    return this.find();
+  //현 유저의 모든 기록 불러오기
+  async getUsersRecords(id: number): Promise<Record[]> {
+    return this.find({ where: { userId: id } });
+  }
+
+  //현 유저의 상세 기록 불러오기
+  async getRecordDeTail(id: number): Promise<Record> {
+    return await this.findOne({ where: { id } });
   }
 
   //기간별 기록들 불러오기
   async getRecordsByDateRange(
     startDate: Date,
     endDate: Date,
+    id: number,
   ): Promise<Record[]> {
     startDate.setDate(startDate.getDate() - 1);
     const records = await this.find({
-      where: { date: Between(startDate, endDate) },
+      where: { date: Between(startDate, endDate), id },
     });
     return records;
   }

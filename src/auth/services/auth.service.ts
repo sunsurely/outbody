@@ -12,7 +12,8 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userRepository.getUserByEmail(email);
-    const comparedPassword = compare(password, user.password);
+
+    const comparedPassword = await compare(password, user.password);
 
     if (user && comparedPassword) {
       return user;
