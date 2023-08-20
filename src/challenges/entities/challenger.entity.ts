@@ -27,7 +27,7 @@ export class Challenger {
   userId: number;
 
   @Column({
-    type: 'enum',
+    type: 'string',
     nullable: false,
   })
   authorization: string;

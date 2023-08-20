@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Challenge } from './entities/challenge.entity';
 import { ChallengesRepository } from './repositories/challenges.repository';
 import { ChallengeScheduler } from './services/challenges.scheduler';
+import { UserRepository } from 'src/users/repositories/users.repository';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -17,6 +18,7 @@ import { User } from 'src/users/entities/user.entity';
     ChallengesRepository,
     Logger,
     ChallengeScheduler,
+    UserRepository,
   ], //ChallengeScheduler
   exports: [ChallengesService, ChallengesRepository, ChallengeScheduler], //ChallengeScheduler
 })

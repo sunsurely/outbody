@@ -77,9 +77,11 @@ export class ChallengesRepository extends Repository<Challenge> {
     const follwedUsers = await this.userRepository.getCurrentUserById(
       invitedUser.id,
     );
+    const followers = follwedUsers.followers.id;
+
     // 초대된 사용자가 내 친구인지 확인
-    const isFollowing = follwedUsers.some((user) => user.id === invitedUser.id);
-    if (!isFollowing) {
+    // const isFollowing = followers.some((user) => user.id === invitedUser.id);
+    if (followers !== invitedUser.id) {
       throw new UnauthorizedException('초대할 수 있는 친구가 아닙니다.');
     }
     // 초대된 참가자가 이미 참가한 도전자인지 확인

@@ -52,8 +52,5 @@ export class ChallengesController {
     @Body() body: InviteChallengeDto,
   ) {
     return await this.challengesService.inviteChallenge(challengeId, body);
-    // if(invite){
-    //   return { message: '친구초대가 정상적으로 완료되었습니다.' }
-    // }
   }
 }

@@ -12,6 +12,7 @@ import { Gender, Provider } from '../userInfo';
 import { Record } from 'src/recordes/entities/recordes.entity';
 import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from '../../reports/entities/report.entity';
+import { Challenger } from 'src/challenges/entities/challenger.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
