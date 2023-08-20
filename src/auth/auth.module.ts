@@ -7,13 +7,13 @@ import { AuthService } from './auth.service';
 import { UserService } from 'src/users/users.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
