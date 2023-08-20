@@ -9,7 +9,6 @@ import { ChallengeScheduler } from './services/challenges.scheduler';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
-import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Challenge, Challenger, Follow, User])],
