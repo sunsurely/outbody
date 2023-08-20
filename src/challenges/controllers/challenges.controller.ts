@@ -9,13 +9,14 @@ import {
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
+import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 
 @Controller('challenge')
 @UseInterceptors(Response)
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
-  // POST. http://localhost:3000/challenge
+  // 도전 생성 POST. http://localhost:3000/challenge
   @Post()
   async createChallenge(@Body() body: CreateChallengeRequestDto) {
     return await this.challengesService.createChallenge(body);
@@ -42,5 +43,17 @@ export class ChallengesController {
     if (remove) {
       return { message: '회원님의 도전이 성공적으로 삭제되었습니다' };
     }
+  }
+
+  // 도전 친구초대 POST http://localhost:3000/challenge/:id/invite
+  @Post('/:challengeId/invite')
+  async inviteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Body() body: InviteChallengeDto,
+  ) {
+    return await this.challengesService.inviteChallenge(challengeId, body);
+    // if(invite){
+    //   return { message: '친구초대가 정상적으로 완료되었습니다.' }
+    // }
   }
 }

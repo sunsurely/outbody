@@ -12,6 +12,7 @@ import { Gender, Provider } from '../userInfo';
 import { Record } from 'src/recordes/recordes.entity';
 import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from './report.entity';
+import { Challenger } from 'src/challenges/entities/challenger.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -73,4 +74,8 @@ export class User {
   @OneToMany(() => Report, (reported) => reported.reportedUser)
   @JoinColumn({ name: 'reportedUserId' })
   reporteds: Report[];
+
+  @OneToMany(() => Challenger, (challenger) => challenger.user)
+  @JoinColumn({ name: 'userId' })
+  challenger: Challenger[];
 }

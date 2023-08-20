@@ -5,8 +5,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { Goal } from './goal.entity';
+import { Challenger } from './challenger.entity';
 
 @Entity()
 @Check(`"userNumberLimit" >= 2 AND "userNumberLimit" <= 10`)
@@ -77,4 +79,8 @@ export class Challenge {
   // Challenge => Goal 1:1
   @OneToOne(() => Goal, (goal) => goal.challenge)
   goal: Goal;
+
+  // Challenge => Challenger 1:N
+  @OneToMany(() => Challenger, (challenger) => challenger.challenge)
+  challenger: Challenger[];
 }
