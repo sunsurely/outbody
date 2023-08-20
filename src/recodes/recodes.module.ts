@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RecordEntity } from './recodes.entity';
+import { Record } from './recodes.entity';
 
-@Module({ imports: [TypeOrmModule.forFeature([RecordEntity])] })
+@Module({ imports: [TypeOrmModule.forFeature([Record])] })
 export class RecodesModule {}

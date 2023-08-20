@@ -10,9 +10,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Gender, Provider } from '../userInfo';
-import { RecordEntity } from 'src/recodes/recodes.entity';
-import { FollowEntity } from './follow.entity';
-import { ReportEntity } from './report.entity';
+import { Record } from 'src/recodes/recodes.entity';
+import { Follow } from './follow.entity';
+import { Report } from './report.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -55,22 +55,22 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @OneToMany(() => RecordEntity, (record) => record.user)
-  records: RecordEntity[];
+  @OneToMany(() => Record, (record) => record.user)
+  records: Record[];
 
-  @OneToMany(() => FollowEntity, (following) => following.follower)
+  @OneToMany(() => Follow, (following) => following.follower)
   @JoinColumn({ name: 'followingUserId' })
-  followings: FollowEntity[];
+  followings: Follow[];
 
-  @OneToMany(() => FollowEntity, (followed) => followed.followedUser)
+  @OneToMany(() => Follow, (followed) => followed.followedUser)
   @JoinColumn({ name: 'followedUserId' })
-  followeds: FollowEntity[];
+  followeds: Follow[];
 
-  @OneToMany(() => ReportEntity, (reporting) => reporting.reporter)
+  @OneToMany(() => Report, (reporting) => reporting.reporter)
   @JoinColumn({ name: 'reporterId' })
-  reportings: ReportEntity[];
+  reportings: Report[];
 
-  @OneToMany(() => ReportEntity, (reported) => reported.reportedUser)
+  @OneToMany(() => Report, (reported) => reported.reportedUser)
   @JoinColumn({ name: 'reportedUserId' })
-  reporteds: ReportEntity[];
+  reporteds: Report[];
 }
