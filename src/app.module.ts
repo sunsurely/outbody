@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.config.service';
 import { AppController } from './app.controller';
@@ -10,7 +15,9 @@ import { JwtConfigService } from './config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChallengeModule } from './challenges/challenges.module';
 import { PostModule } from './posts/posts.module';
-import { RecodesModule } from './recodes/recodes.module';
+import { RecodesModule } from './recordes/recordes.module';
+import { AuthMiddleware } from './common/middlewares/auth.middleware';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -30,8 +37,16 @@ import { RecodesModule } from './recodes/recodes.module';
     ChallengeModule,
     PostModule,
     RecodesModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: 'auth/login', method: RequestMethod.POST })
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

@@ -5,13 +5,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
 import { Gender, Provider } from '../userInfo';
-import { Record } from 'src/recodes/recodes.entity';
-import { Follow } from './follow.entity';
+import { Record } from 'src/recordes/recordes.entity';
+import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from './report.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
@@ -43,7 +42,10 @@ export class User {
   @Column('varchar', { nullable: true })
   imgUrl: string;
 
-  @Column('int', { nullable: true })
+  @Column('varchar', { nullable: true })
+  comment: string;
+
+  @Column({ type: 'int', default: 0 })
   point: number;
 
   @CreateDateColumn()
@@ -58,12 +60,10 @@ export class User {
   @OneToMany(() => Record, (record) => record.user)
   records: Record[];
 
-  @OneToMany(() => Follow, (following) => following.follower)
-  @JoinColumn({ name: 'followingUserId' })
-  followings: Follow[];
+  @OneToMany(() => Follow, (follow) => follow.follower)
+  followers: Follow[];
 
-  @OneToMany(() => Follow, (followed) => followed.followedUser)
-  @JoinColumn({ name: 'followedUserId' })
+  @OneToMany(() => Follow, (follow) => follow.followed)
   followeds: Follow[];
 
   @OneToMany(() => Report, (reporting) => reporting.reporter)

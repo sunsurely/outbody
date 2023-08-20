@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
-import { KakaoStrategy } from './kakao.strategy';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UserService } from 'src/users/users.service';
+import { LocalStrategy } from './strategies/local.strategy';
+import { KakaoStrategy } from './strategies/kakao.strategy';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './services/auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Module({
   imports: [
@@ -22,6 +22,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, KakaoStrategy, UserService],
+  providers: [AuthService, LocalStrategy, KakaoStrategy, UserRepository],
 })
 export class AuthModule {}
