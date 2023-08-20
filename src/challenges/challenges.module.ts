@@ -20,6 +20,11 @@ import { User } from 'src/users/entities/user.entity';
     ChallengeScheduler,
     UserRepository,
   ], //ChallengeScheduler
-  exports: [ChallengesService, ChallengesRepository, ChallengeScheduler], //ChallengeScheduler
+  exports: [
+    ChallengesService,
+    ChallengesRepository,
+    ChallengeScheduler,
+    UserRepository,
+  ],
 })
 export class ChallengeModule {}

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Challenge } from './challenge.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Position } from '../challengerInfo';
 
 @Entity()
 export class Challenger {
@@ -30,7 +31,7 @@ export class Challenger {
     type: 'varchar',
     nullable: false,
   })
-  authorization: string;
+  authorization: Position;
 
   @Column({
     type: 'boolean',
