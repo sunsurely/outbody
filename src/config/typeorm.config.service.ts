@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { Record } from 'src/recordes/entities/recordes.entity';
 import { Report } from 'src/reports/entities/report.entity';
+import { Challenger } from 'src/challenges/entities/challenger.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -20,7 +21,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>('DATABASE_USERNAME'),
       password: this.configService.get<string>('DATABASE_PASSWORD'),
       database: this.configService.get<string>('DATABASE_NAME'),
-      entities: [User, Challenge, Goal, Follow, Record, Report],
+      entities: [User, Challenge, Goal, Follow, Record, Report, Challenger],
       synchronize: true,
     };
   }
