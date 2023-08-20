@@ -30,6 +30,9 @@ export class Record {
   @Column('int')
   fat: number;
 
+  @Column('date')
+  date: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
