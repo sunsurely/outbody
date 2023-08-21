@@ -15,6 +15,14 @@ export class ChallengersRepository extends Repository<Challenger> {
     return this.save(newChallenger);
   }
 
+  // 도전자 조회
+  async getChallengers(challengeId: number): Promise<Challenger[]> {
+    const challengers = await this.find({
+      where: { challengeId },
+    });
+    return challengers;
+  }
+
   // 도전자 삭제
   async deleteChallenger(criteria: Partial<Challenger>): Promise<void> {
     await this.delete(criteria);
