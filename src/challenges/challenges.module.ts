@@ -19,7 +19,8 @@ import { User } from 'src/users/entities/user.entity';
     Logger,
     ChallengeScheduler,
     UserRepository,
-  ], //ChallengeScheduler
+    ChallengeScheduler,
+  ],
   exports: [
     ChallengesService,
     ChallengesRepository,

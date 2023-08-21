@@ -65,19 +65,19 @@ export class RecordsService {
   }
 
   //기간별 기록정보 불러오기
-  async getRecordsByDateRange(start: string, end: string, id: number) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+  // async getRecordsByDateRange(start: string, end: string, id: number) {
+  //   const startDate = new Date(start);
+  //   const endDate = new Date(end);
 
-    const getRecords = await this.recordsRepository.getRecordsByDateRange(
-      startDate,
-      endDate,
-      id,
-    );
-    if (!getRecords || getRecords.length <= 0) {
-      throw new NotFoundException('데이터 조회에 실패했습니다.');
-    }
+  //   const getRecords = await this.recordsRepository.getRecordsByDateRange(
+  //     startDate,
+  //     endDate,
+  //     id,
+  //   );
+  //   if (!getRecords || getRecords.length <= 0) {
+  //     throw new NotFoundException('데이터 조회에 실패했습니다.');
+  //   }
 
-    return getRecords;
-  }
+  //   return getRecords;
+  // }
 }
