@@ -11,9 +11,8 @@ import { Challenge } from '../entities/challenge.entity';
 import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { LessThan, LessThanOrEqual } from 'typeorm';
-import { InviteChallengeDto } from '../dto/invite-challenge.dto';
-import { Position, CurrentUser } from '../challengerInfo';
+import { LessThan } from 'typeorm';
+import { Position } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {

@@ -74,8 +74,6 @@ export class ChallengesService {
         endDate: challenge.endDate,
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
-        hostPoint: challenge.hostPoint,
-        entryPoint: challenge.entryPoint,
       };
     });
   }
