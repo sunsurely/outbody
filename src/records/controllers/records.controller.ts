@@ -9,12 +9,12 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { RecordesService } from '../services/recordes.service';
+import { RecordsService } from '../services/records.service';
 import { CreateRecordDto } from '../dto/create.records.dto';
 
 @Controller('record')
-export class RecordesController {
-  constructor(private readonly recordesService: RecordesService) {}
+export class RecordsController {
+  constructor(private readonly recordesService: RecordsService) {}
 
   // 측정표 기록 생성 localhost:3000/record
   @Post('/')

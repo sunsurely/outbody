@@ -3,13 +3,12 @@ import {
   NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
-import { RecordsRepository } from '../repositories/recordes.repository';
+import { RecordsRepository } from '../repositories/records.repository';
 import { recordCache } from '../cache/initRecord.cache';
-import { Record } from '../entities/recordes.entity';
-import { Not } from 'typeorm';
+import { Record } from '../entities/records.entity';
 
 @Injectable()
-export class RecordesService {
+export class RecordsService {
   constructor(private readonly recordsRepository: RecordsRepository) {}
 
   //측정기록 생성 그리고 캐싱등록

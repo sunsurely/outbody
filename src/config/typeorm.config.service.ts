@@ -5,7 +5,7 @@ import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { Goal } from 'src/challenges/entities/goal.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Follow } from 'src/follows/entities/follow.entity';
-import { Record } from 'src/recordes/entities/recordes.entity';
+import { Record } from 'src/records/entities/records.entity';
 import { Report } from 'src/reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
 

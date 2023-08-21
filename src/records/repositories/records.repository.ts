@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Record } from '../entities/recordes.entity';
+import { Record } from '../entities/records.entity';
 import { DataSource, Repository, Between } from 'typeorm';
 import { CreateRecordDto } from '../dto/create.records.dto';
 
