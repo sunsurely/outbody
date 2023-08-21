@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -7,8 +8,16 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { Position } from '../challengerInfo';
 
 export class CreateChallengeDto {
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+
+  @IsIn([Position.HOST, Position.GUEST])
+  authorization: Position;
+
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
@@ -44,14 +53,4 @@ export class CreateChallengeDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  hostPoint: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  entryPoint: number;
 }

@@ -25,6 +25,14 @@ export class ChallengesRepository extends Repository<Challenge> {
     super(Challenge, dataSource.createEntityManager());
   }
 
+  async getChallengers(challengeId: number): Promise<any> {
+    const challengers = await this.find({
+      where: { id: challengeId },
+    });
+    console.log(typeof challengers);
+    return challengers;
+  }
+
   // 도전 생성
   async createChallenge(Challenge: CreateChallengeDto): Promise<Challenge> {
     const newChallenge = await this.create(Challenge);
@@ -65,7 +73,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     if (challengesToDelete.length > 0 && challengerCount <= 1) {
       await this.remove(challengesToDelete);
       this.logger.debug(
-        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete}도전이 자동 삭제되었습니다.`,
+        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 자동 삭제되었습니다.`,
       );
     }
   }

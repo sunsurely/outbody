@@ -6,6 +6,7 @@ import {
   Get,
   Delete,
   Param,
+  Req,
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -16,10 +17,22 @@ import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
+  // GET http://localhost:3000/challenge/:id/challengers
+  @Get('/:challengeId/challengers')
+  async getChallengers(@Param('challengeId') challengeId: number) {
+    const challengers = await this.challengesService.getChallengers(
+      challengeId,
+    );
+    return challengers;
+  }
+
   // 도전 생성 POST. http://localhost:3000/challenge
   @Post()
-  async createChallenge(@Body() body: CreateChallengeRequestDto) {
-    return await this.challengesService.createChallenge(body);
+  async createChallenge(
+    @Body() body: CreateChallengeRequestDto,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.createChallenge(body, req.user.id);
   }
 
   // 도전그룹 목록조회 GET http://localhost:3000/challenge

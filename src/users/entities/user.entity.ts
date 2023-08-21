@@ -13,6 +13,7 @@ import { Record } from 'src/records/entities/records.entity';
 import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from '../../reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
+import { Challenge } from 'src/challenges/entities/challenge.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -74,6 +75,10 @@ export class User {
   @OneToMany(() => Report, (reported) => reported.reportedUser)
   @JoinColumn({ name: 'reportedUserId' })
   reporteds: Report[];
+
+  @OneToMany(() => Challenge, (challenge) => challenge.user)
+  @JoinColumn({ name: 'userId' })
+  challenge: Challenge[];
 
   @OneToMany(() => Challenger, (challenger) => challenger.user)
   @JoinColumn({ name: 'userId' })
