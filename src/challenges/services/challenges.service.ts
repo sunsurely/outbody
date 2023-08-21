@@ -56,20 +56,21 @@ export class ChallengesService {
     });
   }
 
+  // 도전자 조회
   async getChallengers(challengeId) {
-    const challengers = await this.challengesRepository.getChallengers(
+    const challengers = await this.challengersRepository.getChallengers(
       challengeId,
     );
     return challengers;
   }
 
-  // 도전그룹 목록조회
+  // 도전 목록조회
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges;
   }
 
-  // 도전그룹 상세조회
+  // 도전 상세조회
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
