@@ -9,7 +9,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Gender, Provider } from '../userInfo';
-import { Record } from 'src/recordes/entities/records.entity';
+import { Record } from 'src/records/entities/records.entity';
 import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from '../../reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';

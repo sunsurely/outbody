@@ -21,12 +21,14 @@ export class RecordsController {
   async createRecord(@Body() body: CreateRecordDto, @Req() req: any) {
     return await this.recordesService.createRecord(body, req.user.id);
   }
+
   //현 유저의 모든 기록 불러오기 localhost:3000/record
   @Get('/')
   async getUsersRecords(@Req() req: any) {
     return await this.recordesService.getUsersRecords(req.user.id);
   }
 
+  //현 유저의 상세 기록 불러오기 localhost:3000/record/:recordId
   @Get('/:recordId')
   async getRecordDtail(
     @Param(
