@@ -14,4 +14,12 @@ export class ChallengersRepository extends Repository<Challenger> {
     const newChallenger = this.create(challenger);
     return this.save(newChallenger);
   }
+
+  // 도전자 조회
+  async getChallengers(challengeId: number): Promise<Challenger[]> {
+    const challengers = await this.find({
+      where: { challengeId },
+    });
+    return challengers;
+  }
 }
