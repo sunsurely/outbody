@@ -28,8 +28,8 @@ export class Challenger {
   userId: number;
 
   @Column({
-    type: 'varchar',
-    nullable: false,
+    type: 'enum',
+    enum: Position,
   })
   authorization: Position;
 
