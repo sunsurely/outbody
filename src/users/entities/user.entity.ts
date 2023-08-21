@@ -68,13 +68,9 @@ export class User {
   @OneToMany(() => Follow, (follow) => follow.followed, { cascade: true })
   followeds: Follow[];
 
-  @OneToMany(() => Report, (reporting) => reporting.reporter)
-  @JoinColumn({ name: 'reporterId' })
-  reportings: Report[];
-
-  @OneToMany(() => Report, (reported) => reported.reportedUser)
-  @JoinColumn({ name: 'reportedUserId' })
-  reporteds: Report[];
+  @OneToMany(() => Report, (report) => report.user)
+  @JoinColumn({ name: 'userId' })
+  reports: Report[];
 
   @OneToMany(() => Challenger, (challenger) => challenger.user, {
     cascade: true,

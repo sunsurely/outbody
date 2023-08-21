@@ -13,14 +13,14 @@ import {
 
 @Entity({ schema: 'outbody', name: 'follows' })
 export class Follow extends BaseEntity {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'followId' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'follow' })
   id: number;
 
   @Column('int')
-  followingUserId: number;
+  userId: number;
 
   @Column('int')
-  followedUserId: number;
+  followId: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -32,10 +32,10 @@ export class Follow extends BaseEntity {
   deletedAt: Date | null;
 
   @ManyToOne(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'followingUserId' })
+  @JoinColumn({ name: 'userId' })
   follower: User;
 
   @ManyToOne(() => User, (user) => user.followeds, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'followedUserId' })
+  @JoinColumn({ name: 'follow' })
   followed: User;
 }

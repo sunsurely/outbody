@@ -6,16 +6,13 @@ export class FollowsService {
   constructor(private readonly followRepository: FollowsRepository) {}
 
   //팔로우 기능
-  async updateFollow(followedUserId: number, followingUserId: number) {
-    const follow = await this.followRepository.getFollowById(
-      followedUserId,
-      followingUserId,
-    );
+  async updateFollow(followId: number, userId: number) {
+    const follow = await this.followRepository.getFollowById(followId, userId);
 
     if (follow) {
       const result = await this.followRepository.deleteFollower(
-        followedUserId,
-        followingUserId,
+        followId,
+        userId,
       );
       if (!result) {
         throw new NotImplementedException('요청 작업에 실패했습니다.');
@@ -24,8 +21,8 @@ export class FollowsService {
     }
 
     const createFollow = await this.followRepository.createFollower(
-      followedUserId,
-      followingUserId,
+      followId,
+      userId,
     );
 
     if (!createFollow) {
