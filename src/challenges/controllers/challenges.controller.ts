@@ -89,14 +89,14 @@ export class ChallengesController {
   }
 
   // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
-  @Delete('/:challengeId/leave')
-  async leaveChallenge(
-    @Param('challengeId') challengeId: number,
-    @Req() req: any,
-  ) {
-    return await this.challengesService.leaveChallenge(
-      challengeId,
-      req.user.id,
-    );
-  }
+  // @Delete('/:challengeId/leave')
+  // async leaveChallenge(
+  //   @Param('challengeId') challengeId: number,
+  //   @Req() req: any,
+  // ) {
+  //   return await this.challengesService.leaveChallenge(
+  //     challengeId,
+  //     req.user.id,
+  //   );
+  // }
 }

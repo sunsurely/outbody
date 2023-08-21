@@ -152,14 +152,14 @@ export class ChallengesService {
   }
 
   // 도전 방 퇴장
-  async leaveChallenge(challengeId: number, userId: number) {
-    const challenge = await this.challengesRepository.getChallenge(challengeId);
-    if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
-    }
-    await this.challengersRepository.deleteChallenger({
-      userId,
-      challengeId: challenge.id,
-    });
-  }
+  // async leaveChallenge(challengeId: number, userId: number) {
+  //   const challenge = await this.challengesRepository.getChallenge(challengeId);
+  //   if (!challenge) {
+  //     throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+  //   }
+  //   await this.challengersRepository.deleteChallenger({
+  //     userId,
+  //     challengeId: challenge.id,
+  //   });
+  // }
 }
