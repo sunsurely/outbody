@@ -23,12 +23,10 @@ export class UserService {
       throw new ConflictException('이미 존재하는 유저입니다.');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 15);
-
     const createUserResult = await this.usersRepository.createUser(
       name,
       email,
-      hashedPassword,
+      password,
       age,
       height,
       gender,
