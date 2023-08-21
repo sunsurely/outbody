@@ -9,6 +9,7 @@ import {
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
+import { Challenger } from '../entities/challenger.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -56,7 +57,17 @@ export class ChallengesService {
   // 도전그룹 목록조회
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
-    return challenges;
+    return challenges.map((challenge) => {
+      return {
+        title: challenge.title,
+        imgUrl: challenge.imgUrl,
+        endDate: challenge.endDate,
+        userNumberLimit: challenge.userNumberLimit,
+        publicView: challenge.publicView,
+        hostPoint: challenge.hostPoint,
+        entryPoint: challenge.entryPoint,
+      };
+    });
   }
 
   // 도전그룹 상세조회
@@ -81,9 +92,12 @@ export class ChallengesService {
     const endDate = new Date(myChallenge.endDate);
     const today = new Date();
 
-    if (myChallenge.userNumberLimit >= 2) {
+    const challengerCount = await this.challengesRepository.getChallengeCount();
+    console.log('challengerCount', challengerCount);
+
+    if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');
-    } else if (startDate <= today && myChallenge.userNumberLimit >= 2) {
+    } else if (startDate <= today && challengerCount >= 2) {
       throw new BadRequestException(
         '도전에 참여한 회원이 이미 존재하며, 도전 시작일이 경과되었습니다.',
       );
