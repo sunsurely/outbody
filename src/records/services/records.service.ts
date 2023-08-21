@@ -64,8 +64,8 @@ export class RecordsService {
     return record;
   }
 
-  // 기간별 기록정보 불러오기
-  async getRecordsByDateRange(start: string, end: string, id: number) {
+  //기간별 기록정보 불러오기
+  async getRecordsByDateRange(start: Date, end: Date, id: number) {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
