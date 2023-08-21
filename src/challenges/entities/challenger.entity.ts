@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  OneToOne,
   JoinColumn,
 } from 'typeorm';
 import { Challenge } from './challenge.entity';
