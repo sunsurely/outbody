@@ -6,15 +6,24 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 @Check(`"userNumberLimit" >= 2 AND "userNumberLimit" <= 10`)
 export class Challenge {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  userId: number;
 
   @Column({
     type: 'varchar',
@@ -61,18 +70,6 @@ export class Challenge {
   })
   description: string;
 
-  @Column({
-    type: 'int',
-    nullable: false,
-  })
-  hostPoint: number;
-
-  @Column({
-    type: 'int',
-    nullable: false,
-  })
-  entryPoint: number;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -83,4 +80,9 @@ export class Challenge {
   // Challenge => Challenger 1:N
   @OneToMany(() => Challenger, (challenger) => challenger.challenge)
   challenger: Challenger[];
+
+  // User => Challenge N:1
+  @ManyToOne(() => User, (user) => user.challenge)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }

@@ -9,6 +9,7 @@ import { ChallengeScheduler } from './services/challenges.scheduler';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
+import { ChallengersRepository } from './repositories/challengers.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Challenge, Challenger, Follow, User])],
@@ -16,6 +17,7 @@ import { User } from 'src/users/entities/user.entity';
   providers: [
     ChallengesService,
     ChallengesRepository,
+    ChallengersRepository,
     Logger,
     ChallengeScheduler,
     UserRepository,
@@ -23,6 +25,7 @@ import { User } from 'src/users/entities/user.entity';
   exports: [
     ChallengesService,
     ChallengesRepository,
+    ChallengersRepository,
     ChallengeScheduler,
     UserRepository,
   ],

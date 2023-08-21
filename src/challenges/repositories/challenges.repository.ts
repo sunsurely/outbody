@@ -12,7 +12,6 @@ import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
 import { LessThan, LessThanOrEqual } from 'typeorm';
-import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { Position } from '../challengerInfo';
 
 @Injectable()
@@ -23,6 +22,14 @@ export class ChallengesRepository extends Repository<Challenge> {
     private readonly userRepository: UserRepository,
   ) {
     super(Challenge, dataSource.createEntityManager());
+  }
+
+  async getChallengers(challengeId: number): Promise<any> {
+    const challengers = await this.find({
+      where: { id: challengeId },
+    });
+    console.log(typeof challengers);
+    return challengers;
   }
 
   // 도전 생성
@@ -63,7 +70,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     if (challengesToDelete.length > 0) {
       await this.remove(challengesToDelete);
       this.logger.debug(
-        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete}도전이 자동 삭제되었습니다.`,
+        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 자동 삭제되었습니다.`,
       );
     }
   }
