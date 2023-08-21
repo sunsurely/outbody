@@ -21,7 +21,8 @@ import { ChallengersRepository } from './repositories/challengers.repository';
     Logger,
     ChallengeScheduler,
     UserRepository,
-  ], //ChallengeScheduler
+    ChallengeScheduler,
+  ],
   exports: [
     ChallengesService,
     ChallengesRepository,

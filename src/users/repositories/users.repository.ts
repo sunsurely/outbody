@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Gender } from '../userInfo';
+import { Gender, CurrentUser } from '../userInfo';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -38,7 +38,7 @@ export class UserRepository extends Repository<User> {
   }
 
   //로그인한 회원 정보조회 ,
-  async getCurrentUserById(userId: number): Promise<any> {
+  async getCurrentUserById(userId: number): Promise<CurrentUser> {
     const queryBuilder = await this.createQueryBuilder('user')
       .select([
         'user.id',
@@ -49,6 +49,7 @@ export class UserRepository extends Repository<User> {
         'user.height',
         'user.comment',
         'user.point',
+        'user.password',
       ])
       .where('user.id = :userId', { userId })
       .leftJoinAndSelect('user.followers', 'follower')
@@ -66,10 +67,12 @@ export class UserRepository extends Repository<User> {
     });
 
     return {
+      id: user.id,
       name: user.name,
       age: user.age,
       height: user.height,
       email: user.email,
+      password: user.password,
       gender: user.gender,
       comment: user.comment,
       point: user.point,
@@ -78,7 +81,7 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 정보조회
-  async getUserById(userId: number): Promise<any> {
+  async getUserById(userId: number): Promise<User> {
     const user = await this.findOne({ where: { id: userId } });
 
     return user;

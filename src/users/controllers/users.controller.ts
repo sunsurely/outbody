@@ -50,12 +50,12 @@ export class UserController {
   //내 정보 수정 localhost:3000/users/me
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
-    return await this.userService.updateUser(req.user.userId, userDto);
+    return await this.userService.updateUser(req.user.id, userDto);
   }
 
   //회원 탈퇴 localhost:3000/users/me
   @Delete('/me')
   async deleteUser(@Req() req: any) {
-    return await this.userService.deletUser(req.user.userId);
+    return await this.userService.deletUser(req.user.id);
   }
 }

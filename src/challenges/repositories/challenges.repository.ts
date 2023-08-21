@@ -12,7 +12,8 @@ import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
 import { LessThan, LessThanOrEqual } from 'typeorm';
-import { Position } from '../challengerInfo';
+import { InviteChallengeDto } from '../dto/invite-challenge.dto';
+import { Position, CurrentUser } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -54,20 +55,22 @@ export class ChallengesRepository extends Repository<Challenge> {
 
   // 도전 삭제
   async deleteChallenge(challengeId): Promise<any> {
-    await this.delete(challengeId);
+    const result = await this.delete(challengeId);
+    console.log(typeof result);
+    return result;
   }
 
-  // 자동삭제 (도전 시작일이 지나고 사용자가 본인밖에 없을 경우)
+  // 자동삭제 (도전 시작일이 지나고 사용자가 1명(본인)밖에 없을 경우)
   async automaticDelete(): Promise<void> {
     const today = new Date().toISOString();
+    const challengerCount = await this.getChallengeCount();
     const challengesToDelete = await this.find({
       where: {
         startDate: LessThan(today),
-        userNumberLimit: LessThanOrEqual(1),
       },
     });
 
-    if (challengesToDelete.length > 0) {
+    if (challengesToDelete.length > 0 && challengerCount <= 1) {
       await this.remove(challengesToDelete);
       this.logger.debug(
         `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 자동 삭제되었습니다.`,
@@ -115,7 +118,7 @@ export class ChallengesRepository extends Repository<Challenge> {
       .execute();
   }
 
-  // 회원 정보조회
+  // 회원 정보조회 // CurrentUser
   async getCurrentUserById(userId: number): Promise<any> {
     const queryBuilder = await this.userRepository
       .createQueryBuilder('user')
@@ -146,6 +149,7 @@ export class ChallengesRepository extends Repository<Challenge> {
       });
 
       return {
+        id: user.id,
         name: user.name,
         age: user.age,
         height: user.height,
@@ -157,5 +161,13 @@ export class ChallengesRepository extends Repository<Challenge> {
       };
     });
     return transformedUsers;
+  }
+
+  // 도전자 참가자 수 조회
+  async getChallengeCount(): Promise<number> {
+    return await this.createQueryBuilder('challenger')
+      .select('COUNT(challenger.id)', 'count')
+      .getRawOne()
+      .then((result) => result.count);
   }
 }
