@@ -11,9 +11,8 @@ import { Challenge } from '../entities/challenge.entity';
 import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { LessThan, LessThanOrEqual } from 'typeorm';
-import { InviteChallengeDto } from '../dto/invite-challenge.dto';
-import { Position, CurrentUser } from '../challengerInfo';
+import { LessThan } from 'typeorm';
+import { Position } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -31,18 +30,18 @@ export class ChallengesRepository extends Repository<Challenge> {
     return await this.save(newChallenge);
   }
 
-  // 도전그룹 상세조회
+  // 도전 목록조회
+  async getChallenges(): Promise<Challenge[]> {
+    const challenges = await this.find();
+    return challenges;
+  }
+
+  // 도전 상세조회
   async getChallenge(challengeId: number): Promise<Challenge> {
     const challenge = await this.findOne({
       where: { id: challengeId },
     });
     return challenge;
-  }
-
-  // 도전그룹 목록조회
-  async getChallenges(): Promise<Challenge[]> {
-    const challenges = await this.find();
-    return challenges;
   }
 
   // 도전 삭제
@@ -65,7 +64,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     if (challengesToDelete.length > 0 && challengerCount <= 1) {
       await this.remove(challengesToDelete);
       this.logger.debug(
-        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete}도전이 자동 삭제되었습니다.`,
+        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 삭제되었습니다.`,
       );
     }
   }
@@ -85,7 +84,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     );
     if (!isFollowing || isFollowing == undefined) {
       throw new UnauthorizedException(
-        '해당 유저와 친구가 아니므로 초대할 수 없습니다.',
+        '해당 회원과 친구가 아니므로 초대할 수 없습니다.',
       );
     }
     // 초대된 참가자가 이미 참가한 도전자인지 확인
@@ -94,7 +93,7 @@ export class ChallengesRepository extends Repository<Challenge> {
       .andWhere('challenger.userId = :userId', { userId: invitedUser.id })
       .getOne();
     if (existingChallenger) {
-      throw new BadRequestException('이미 도전에 참가한 유저입니다.');
+      throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
 
     const newChallenger: Partial<Challenger> = {

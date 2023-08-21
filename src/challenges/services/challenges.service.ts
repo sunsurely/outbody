@@ -2,25 +2,26 @@ import { UserRepository } from 'src/users/repositories/users.repository';
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException,
   BadRequestException,
-  NotImplementedException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
-import { Challenger } from '../entities/challenger.entity';
+import { ChallengersRepository } from '../repositories/challengers.repository';
+import { Position } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesService {
   constructor(
     private readonly challengesRepository: ChallengesRepository,
-    private readonly UserRepository: UserRepository,
+    private readonly challengersRepository: ChallengersRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   // 도전 생성
-  async createChallenge(body: CreateChallengeRequestDto) {
+  async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
+      authorization,
       title,
       imgUrl,
       startDate,
@@ -28,19 +29,16 @@ export class ChallengesService {
       userNumberLimit,
       publicView,
       description,
-      hostPoint,
-      entryPoint,
     } = body;
 
     const startDateObject = new Date(startDate);
-
     const endDateObject = new Date(startDateObject);
     endDateObject.setDate(startDateObject.getDate() + challengeWeek * 7);
-
     const endDate = endDateObject.toISOString();
-    console.log(endDate);
 
-    await this.challengesRepository.createChallenge({
+    const challenge = await this.challengesRepository.createChallenge({
+      userId,
+      authorization,
       title,
       imgUrl,
       startDate,
@@ -49,12 +47,25 @@ export class ChallengesService {
       userNumberLimit,
       publicView,
       description,
-      hostPoint,
-      entryPoint,
+    });
+
+    await this.challengersRepository.createChallenger({
+      userId,
+      challengeId: challenge.id,
+      authorization,
+      done: false,
     });
   }
 
-  // 도전그룹 목록조회
+  // 도전자 조회
+  async getChallengers(challengeId) {
+    const challengers = await this.challengersRepository.getChallengers(
+      challengeId,
+    );
+    return challengers;
+  }
+
+  // 도전 목록조회
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges.map((challenge) => {
@@ -64,13 +75,11 @@ export class ChallengesService {
         endDate: challenge.endDate,
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
-        hostPoint: challenge.hostPoint,
-        entryPoint: challenge.entryPoint,
       };
     });
   }
 
-  // 도전그룹 상세조회
+  // 도전 상세조회
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -116,11 +125,41 @@ export class ChallengesService {
       );
     }
 
-    const invitedUser = await this.UserRepository.getUserByEmail(email);
+    const invitedUser = await this.userRepository.getUserByEmail(email);
     if (!invitedUser || invitedUser == undefined) {
       throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
     }
 
     await this.challengesRepository.inviteChallenge(challengeId, invitedUser);
+  }
+
+  // 도전 방 입장
+  async joinChallenge(
+    challengeId: number,
+    authorization: Position,
+    userId: number,
+  ) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    }
+    await this.challengersRepository.createChallenger({
+      userId,
+      challengeId: challenge.id,
+      authorization,
+      done: false,
+    });
+  }
+
+  // 도전 방 퇴장
+  async leaveChallenge(challengeId: number, userId: number) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    }
+    await this.challengersRepository.deleteChallenger({
+      userId,
+      challengeId: challenge.id,
+    });
   }
 }
