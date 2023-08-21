@@ -14,4 +14,9 @@ export class ChallengersRepository extends Repository<Challenger> {
     const newChallenger = this.create(challenger);
     return this.save(newChallenger);
   }
+
+  // 도전자 삭제
+  async deleteChallenger(criteria: Partial<Challenger>): Promise<void> {
+    await this.delete(criteria);
+  }
 }
