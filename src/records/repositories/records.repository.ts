@@ -12,13 +12,13 @@ export class RecordsRepository extends Repository<Record> {
   //측정기록 생성
   async createRecord(body: CreateRecordDto, id: number): Promise<Record> {
     const { bmr, weight, muscle, fat, date } = body;
-    const recordDate = new Date(date);
+
     const newUser = this.create({
       bmr,
       weight,
       muscle,
       fat,
-      date: recordDate,
+      date,
       userId: id,
     });
     return await this.save(newUser);
