@@ -1,4 +1,5 @@
-import { IsString, Matches, IsNumber } from 'class-validator';
+import { IsString, Matches, IsNumber, IsIn } from 'class-validator';
+import { Gender } from '../userInfo';
 
 export class UserUpdateDto {
   @IsString()
@@ -15,6 +16,6 @@ export class UserUpdateDto {
   @IsNumber()
   readonly height: number;
 
-  @IsString()
-  readonly gender: string;
+  @IsIn([Gender.MALE, Gender.FEMALE])
+  readonly gender: Gender;
 }
