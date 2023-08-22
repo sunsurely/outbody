@@ -9,7 +9,7 @@ import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
-import { Point } from '../challengerInfo';
+import { Point, Position } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesService {
@@ -154,11 +154,7 @@ export class ChallengesService {
   }
 
   // 도전 방 입장
-  async joinChallenge(
-    challengeId: number,
-    authorization: Position,
-    userId: number,
-  ) {
+  async joinChallenge(challengeId: number, type: Position, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
@@ -166,7 +162,7 @@ export class ChallengesService {
     await this.challengersRepository.createChallenger({
       userId,
       challengeId: challenge.id,
-      authorization,
+      type,
       done: false,
     });
   }
