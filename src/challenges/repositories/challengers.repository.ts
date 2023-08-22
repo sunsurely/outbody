@@ -25,7 +25,7 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  // 도전자 1명조회
+  // 도전자 1명조회 (상우)
   async getChallenger(challengeId: number): Promise<Challenger> {
     const challengers = await this.findOne({
       where: { challengeId },
@@ -33,12 +33,22 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  //도전자 퇴장
+  //도전자 퇴장 (상우)
   async deleteChallenger(challengeId: number, userId: number): Promise<void> {
     const challenger = await this.findOne({
       where: { challengeId, userId },
     });
     await this.remove(challenger);
+  }
+
+  // 도전자 수 조회 (재용)
+  async getChallengerCount(challengeId: number): Promise<number> {
+    const challengersCount = await this.count({
+      where: {
+        challengeId,
+      },
+    });
+    return challengersCount;
   }
 
   // // 도전자 초대수락 후 생성
