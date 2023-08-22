@@ -193,14 +193,12 @@ export class ChallengesService {
     if (!challenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
     }
-    const date = challenge.startDate;
-    const startdate = new Date(date);
+    const startdate = new Date(challenge.startDate);
     const today = new Date();
     const user = await this.userRepository.getUserById(userId);
 
-    //
     if (startdate <= today) {
-      user.point - challenge.totalPoint;
+      user.point = user.point - challenge.totalPoint;
       return {
         message: '도전 시작일 전 퇴장을 하셨으므로, total포인트가 차감됩니다.',
       };
