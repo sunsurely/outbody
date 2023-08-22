@@ -4,5 +4,5 @@ export class InviteChallengeDto {
   @IsNotEmpty()
   @IsEmail()
   @IsString()
-  email: string;
+  readonly email: string;
 }
