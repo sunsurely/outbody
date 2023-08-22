@@ -6,20 +6,20 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
-@Entity({ schema: 'outbody', name: 'reports' })
-export class Report {
+@Entity({ schema: 'outbody', name: 'blacklists' })
+export class BlackList {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('int')
   userId: number;
 
-  @Column('int')
-  commentId: number;
+  @Column('varchar')
+  email: string;
 
   @Column('varchar')
   description: string;
@@ -33,7 +33,7 @@ export class Report {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (user) => user.reports)
+  @ManyToOne(() => User, (user) => user.blacklists)
   @JoinColumn({ name: 'userId' })
   user: User;
 }

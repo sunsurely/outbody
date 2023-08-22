@@ -9,6 +9,7 @@ import { UserRepository } from '../repositories/users.repository';
 import { UserCreateDto } from '../dto/users.create.dto';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from '../dto/users.update.dto';
+import { UserPasswordDto } from '../dto/password.update.dto';
 
 @Injectable()
 export class UserService {
@@ -75,6 +76,24 @@ export class UserService {
     }
 
     return updateUser;
+  }
+
+  //유저 password수정
+  async updatePassword(id: number, passwordDto: UserPasswordDto) {
+    const { password, newPassword } = passwordDto;
+    const user = await this.getCurrentUserById(id);
+
+    const ComparedPassword = await bcrypt.compare(password, user.password);
+
+    if (!ComparedPassword) {
+      throw new UnauthorizedException('password가 일치하지 않습니다');
+    }
+
+    const update = await this.usersRepository.updatePassword(id, newPassword);
+
+    if (!update) {
+      throw new NotImplementedException('해당 작업을 수행하지 못했습니다.');
+    }
   }
 
   //회원탈퇴
