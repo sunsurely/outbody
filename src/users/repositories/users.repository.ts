@@ -32,16 +32,7 @@ export class UserRepository extends Repository<User> {
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.name',
-        'user.age',
-        'user.gender',
-        'user.height',
-        'user.imgUrl',
-        'user.comment',
-        'user.password',
-      ])
+      .select(['user.id', 'user.password'])
       .where('user.email = :email', { email })
       .getOne();
 
@@ -62,7 +53,7 @@ export class UserRepository extends Repository<User> {
         'user.point',
         'user.password',
       ])
-      .where('user.id = :userId', { userId })
+      .where('user.id = :userId', { id: userId })
       .leftJoinAndSelect('user.followers', 'follower')
       .leftJoinAndSelect('follower.followed', 'followed')
       .addSelect(['followed.id', 'followed.name', 'followed.imgUrl']);
@@ -113,6 +104,12 @@ export class UserRepository extends Repository<User> {
   //유저 정보 수정
   async updateUser(userId, age, height, gender) {
     const result = await this.update({ id: userId }, { age, height, gender });
+    return result;
+  }
+
+  //비밀번호 수정
+  async updatePassword(id, newPassword) {
+    const result = await this.update({ id }, { password: newPassword });
     return result;
   }
 

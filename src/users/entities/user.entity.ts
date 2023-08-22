@@ -8,12 +8,13 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { Gender, Provider } from '../userInfo';
+import { Gender, Provider, Status } from '../userInfo';
 import { Record } from 'src/records/entities/records.entity';
 import { Follow } from '../../follows/entities/follow.entity';
 import { Report } from '../../reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
 import { Challenge } from 'src/challenges/entities/challenge.entity';
+import { BlackList } from 'src/reports/entities/blacklist.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -50,13 +51,16 @@ export class User {
   @Column({ type: 'int', default: 0 })
   point: number;
 
+  @Column({ type: 'enum', enum: Status, default: Status.NORMAL })
+  status: Status;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date | null;
 
   @OneToMany(() => Record, (record) => record.user, { cascade: true })
@@ -79,4 +83,7 @@ export class User {
 
   @OneToMany(() => Challenge, (challenge) => challenge.user)
   challenges: Challenge[];
+
+  @OneToMany(() => BlackList, (blacklist) => blacklist.user)
+  blacklists: BlackList[];
 }
