@@ -11,6 +11,7 @@ import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
 import { GoalsRepository } from './repositories/goals.repository';
 import { ChallengersRepository } from './repositories/challengers.repository';
+import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -28,6 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ChallengeScheduler,
     UserRepository,
     ChallengeScheduler,
+    FollowsRepository,
   ],
   exports: [
     ChallengesService,
@@ -36,6 +38,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ChallengersRepository,
     ChallengeScheduler,
     UserRepository,
+    FollowsRepository,
   ],
 })
 export class ChallengeModule {}

@@ -57,15 +57,10 @@ export class UserService {
 
   //유저 정보 수정
   async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { age, height, gender, password, newPassword } = userDto;
+    const { age, height, gender } = userDto;
     const user = await this.getCurrentUserById(userId);
     if (!user) {
       throw new NotFoundException('해당 유저가 존재하지 않습니다.');
-    }
-
-    const comparedHash = await bcrypt.compare(password, user.password);
-    if (!comparedHash) {
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
     const updateUser = await this.usersRepository.updateUser(
@@ -73,7 +68,6 @@ export class UserService {
       age,
       height,
       gender,
-      newPassword,
     );
 
     if (!updateUser) {

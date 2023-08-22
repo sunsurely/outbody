@@ -17,7 +17,7 @@ import { Challenge } from 'src/challenges/entities/challenge.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'userId' })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('varchar', { length: 30 })
@@ -75,10 +75,8 @@ export class User {
   @OneToMany(() => Challenger, (challenger) => challenger.user, {
     cascade: true,
   })
-  @JoinColumn({ name: 'userId' })
   challenger: Challenger[];
 
   @OneToMany(() => Challenge, (challenge) => challenge.user)
-  @JoinColumn({ name: 'userId' })
   challenges: Challenge[];
 }

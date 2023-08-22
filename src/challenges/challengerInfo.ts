@@ -27,3 +27,8 @@ export interface CurrentUser {
     imgUrl: string;
   }[];
 }
+
+export enum Answer {
+  YES = 'yes',
+  NO = 'no',
+}

@@ -1,17 +1,11 @@
 import { UserRepository } from 'src/users/repositories/users.repository';
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
 import { Challenger } from '../entities/challenger.entity';
-import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
 import { Position } from '../challengerInfo';
+import { Follow } from 'src/follows/entities/follow.entity';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -75,36 +69,11 @@ export class ChallengesRepository extends Repository<Challenge> {
     }
   }
 
-  // 도전 친구초대
-  async inviteChallenge(challengeId: number, invitedUser: User): Promise<void> {
-    const challenge = await this.getChallenge(challengeId);
-    if (!challenge) {
-      throw new NotFoundException('도전 게시글을 찾을 수 없습니다.');
-    }
-
-    // 내가 팔로우하는 유저목록
-    const followedUsers = await this.getCurrentUserById(invitedUser.id);
-    // 초대된 사용자가 내 친구인지 확인
-    const isFollowing = followedUsers.some(
-      (user: { id: number }) => user.id === invitedUser.id,
-    );
-    if (!isFollowing || isFollowing == undefined) {
-      throw new UnauthorizedException(
-        '해당 회원과 친구가 아니므로 초대할 수 없습니다.',
-      );
-    }
-    // 초대된 참가자가 이미 참가한 도전자인지 확인
-    const existingChallenger = await this.createQueryBuilder('challenger')
-      .where('challenger.challengeId = :challengeId', { challengeId })
-      .andWhere('challenger.userId = :userId', { userId: invitedUser.id })
-      .getOne();
-    if (existingChallenger) {
-      throw new BadRequestException('이미 도전에 참가한 회원입니다.');
-    }
-
+  // 도전 친구 초대 (상우)
+  async inviteChallenge(challengeId: number, friend: Follow): Promise<void> {
     const newChallenger: Partial<Challenger> = {
       challengeId,
-      userId: invitedUser.id,
+      userId: friend.id,
       type: Position.GUEST,
       done: false,
     };
@@ -115,7 +84,7 @@ export class ChallengesRepository extends Repository<Challenge> {
       .execute();
   }
 
-  // 회원 정보조회 // CurrentUser
+  // 회원 정보 조회 (상우)
   async getCurrentUserById(userId: number): Promise<any> {
     const queryBuilder = await this.userRepository
       .createQueryBuilder('user')

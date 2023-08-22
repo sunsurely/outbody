@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
@@ -13,7 +17,9 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userRepository.getUserByEmail(email);
-
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다');
+    }
     const comparedPassword = await compare(password, user.password);
 
     if (user && comparedPassword) {

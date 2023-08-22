@@ -31,9 +31,19 @@ export class UserRepository extends Repository<User> {
 
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
-    const user = await this.findOne({
-      where: { email },
-    });
+    const user = await this.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.name',
+        'user.age',
+        'user.gender',
+        'user.height',
+        'user.imgUrl',
+        'user.comment',
+      ])
+      .where('user.email = :email', { email })
+      .getOne();
+
     return user;
   }
 
@@ -82,46 +92,30 @@ export class UserRepository extends Repository<User> {
 
   //유저 정보조회
   async getUserById(userId: number): Promise<User> {
-    const user = await this.findOne({ where: { id: userId } });
+    const user = await this.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.name',
+        'user.age',
+        'user.gender',
+        'user.height',
+        'user.imgUrl',
+        'user.comment',
+      ])
+      .where('user.id = :id', { userId })
+      .getOne();
 
     return user;
   }
 
   //유저 정보 수정
-  async updateUser(userId, age, height, gender, newPassword) {
-    const result = await this.update(
-      { id: userId },
-      { age, height, gender, password: newPassword },
-    );
+  async updateUser(userId, age, height, gender) {
+    const result = await this.update({ id: userId }, { age, height, gender });
     return result;
   }
 
   //회원 탈퇴와 동시에 팔로우 , 팔로잉, 나의 도전 목록들 삭제
   async deleteUser(userId: number): Promise<any> {
-    // const queryRunner = this.dataSource.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
-
-    // await queryRunner.manager.delete(Follow, {
-    //   followingUserId: userId,
-    // });
-    // await queryRunner.manager.delete(Follow, {
-    //   followedUserId: userId,
-    // });
-    // await queryRunner.manager.delete(Challenger, { userId });
-    // await queryRunner.manager.delete(User, { id: userId });
-    // await queryRunner.manager.delete(Comment, { id: userId });
-
-    // await queryRunner
-    //   .commitTransaction()
-    //   .catch(async (error) => {
-    //     await queryRunner.rollbackTransaction();
-    //     throw error;
-    //   })
-    //   .finally(async () => {
-    //     await queryRunner.release();
-    //   });
-
     const deleteUserResult = await this.delete({ id: userId });
 
     return deleteUserResult;

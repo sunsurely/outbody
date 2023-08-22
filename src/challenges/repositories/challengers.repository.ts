@@ -32,4 +32,12 @@ export class ChallengersRepository extends Repository<Challenger> {
     });
     return challengersCount;
   }
+
+  // 도전자 퇴장 (상우)
+  async deleteChallenger(challengeId: number, userId: number): Promise<void> {
+    const challenger = await this.findOne({
+      where: { challengeId, userId },
+    });
+    await this.remove(challenger);
+  }
 }
