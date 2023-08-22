@@ -83,49 +83,4 @@ export class ChallengesRepository extends Repository<Challenge> {
       .values(newChallenger)
       .execute();
   }
-
-  // 회원 정보 조회 (상우)
-  async getCurrentUserById(userId: number): Promise<any> {
-    const queryBuilder = await this.userRepository
-      .createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.name',
-        'user.email',
-        'user.gender',
-        'user.age',
-        'user.height',
-        'user.comment',
-        'user.point',
-      ])
-      .where('user.id = :userId', { userId })
-      .leftJoinAndSelect('user.followers', 'follower')
-      .leftJoinAndSelect('follower.followed', 'followed')
-      .addSelect(['followed.id', 'followed.name', 'followed.imgUrl']);
-
-    const users = await queryBuilder.getMany();
-
-    const transformedUsers = users.map((user) => {
-      const transformedFollowers = user.followers.map((follower) => {
-        return {
-          id: follower.followed.id,
-          name: follower.followed.name,
-          imgUrl: follower.followed.imgUrl,
-        };
-      });
-
-      return {
-        id: user.id,
-        name: user.name,
-        age: user.age,
-        height: user.height,
-        email: user.email,
-        gender: user.gender,
-        comment: user.comment,
-        point: user.point,
-        followers: transformedFollowers,
-      };
-    });
-    return transformedUsers;
-  }
 }
