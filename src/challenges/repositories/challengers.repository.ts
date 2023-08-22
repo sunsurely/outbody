@@ -23,8 +23,11 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  //도전자 삭제
-  // async deleteChallenger(criteria: Partial<Challenger>): Promise<void> {
-  //   await this.delete(criteria);
-  // }
+  //도전자 퇴장
+  async deleteChallenger(challengeId: number, userId: number): Promise<void> {
+    const challenger = await this.findOne({
+      where: { challengeId, userId },
+    });
+    await this.remove(challenger);
+  }
 }

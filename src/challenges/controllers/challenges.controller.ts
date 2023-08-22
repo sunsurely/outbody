@@ -70,33 +70,38 @@ export class ChallengesController {
   async inviteChallenge(
     @Param('challengeId') challengeId: number,
     @Body() body: InviteChallengeDto,
+    @Req() req: any,
   ) {
-    return await this.challengesService.inviteChallenge(challengeId, body);
+    return await this.challengesService.inviteChallenge(
+      challengeId,
+      body,
+      req.user.id,
+    );
   }
 
   // 도전 방 입장 POST http://localhost:3000/challenge/:id/enter
   @Post('/:challengeId/enter')
   async joinChallenge(
     @Param('challengeId') challengeId: number,
-    @Body('authorization') authorization: Position,
+    @Body('type') type: Position,
     @Req() req: any,
   ) {
     return await this.challengesService.joinChallenge(
       challengeId,
-      authorization,
+      type,
       req.user.id,
     );
   }
 
   // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
-  // @Delete('/:challengeId/leave')
-  // async leaveChallenge(
-  //   @Param('challengeId') challengeId: number,
-  //   @Req() req: any,
-  // ) {
-  //   return await this.challengesService.leaveChallenge(
-  //     challengeId,
-  //     req.user.id,
-  //   );
-  // }
+  @Delete('/:challengeId/leave')
+  async leaveChallenge(
+    @Param('challengeId') challengeId: number,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.leaveChallenge(
+      challengeId,
+      req.user.id,
+    );
+  }
 }
