@@ -29,16 +29,6 @@ export class ChallengesController {
     return await this.challengesService.createChallenge(body, req.user.id);
   }
 
-  // 도전자 목록조회 (완성)
-  // GET http://localhost:3000/challenge/:id/challenger
-  @Get('/:challengeId/challenger')
-  async getChallengers(@Param('challengeId') challengeId: number) {
-    const challengers = await this.challengesService.getChallengers(
-      challengeId,
-    );
-    return challengers;
-  }
-
   // 도전 목록조회 (완성)
   // GET http://localhost:3000/challenge
   @Get()
@@ -63,6 +53,16 @@ export class ChallengesController {
     if (remove) {
       return { message: '도전이 성공적으로 삭제되었습니다.' };
     }
+  }
+
+  // 도전자 목록조회 (완성)
+  // GET http://localhost:3000/challenge/:id/challenger
+  @Get('/:challengeId/challenger')
+  async getChallengers(@Param('challengeId') challengeId: number) {
+    const challengers = await this.challengesService.getChallengers(
+      challengeId,
+    );
+    return challengers;
   }
 
   // 도전 방 입장

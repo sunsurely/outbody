@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Challenger } from '../entities/challenger.entity';
 import { CreateChallengerDto } from '../dto/create-challengers.dto';
-import { Answer } from '../challengerInfo';
-import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 
 @Injectable()
 export class ChallengersRepository extends Repository<Challenger> {
@@ -25,12 +23,20 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  // 도전자 1명조회 (상우)
+  // 도전자 조회 (상우)
   async getChallenger(challengeId: number): Promise<Challenger> {
-    const challengers = await this.findOne({
+    const challenger = await this.findOne({
       where: { challengeId },
     });
-    return challengers;
+    return challenger;
+  }
+
+  // 도전자 조회 (재용) => By. userId
+  async getChallengerByUserId(userId: number): Promise<Challenger> {
+    const challenger = await this.findOne({
+      where: { userId, done: false },
+    });
+    return challenger;
   }
 
   //도전자 퇴장 (상우)
@@ -50,13 +56,4 @@ export class ChallengersRepository extends Repository<Challenger> {
     });
     return challengersCount;
   }
-
-  // // 도전자 초대수락 후 생성
-  // async acceptChallenge(
-  //   challengeId: number,
-  //   userId: number,
-  // ): Promise<Challenger> {
-  //   const newChallenger = this.create({ challengeId, userId });
-  //   return this.save(newChallenger);
-  // }
 }

@@ -145,6 +145,56 @@ export class ChallengesService {
     return await this.challengesRepository.deleteChallenge(challengeId);
   }
 
+  // 도전 방 입장 (재용)
+  async joinChallenge(challengeId: number, type: Position, userId: number) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    }
+
+    const isExistingChallenger =
+      await this.challengersRepository.getChallengerByUserId(userId);
+
+    if (isExistingChallenger) {
+      throw new BadRequestException(
+        '동시에 2개 이상의 도전을 진행할 수 없습니다.',
+      );
+    }
+
+    const user = await this.userRepository.getUserById(userId);
+    if (user.point < challenge.totalPoint) {
+      throw new BadRequestException(
+        '현재 가지고 있는 점수가 입장 점수보다 낮아서, 도전에 참가할 수 없습니다.',
+      );
+    }
+
+    const startDate = new Date(challenge.startDate);
+    const today = new Date();
+    console.log(startDate);
+    console.log(today);
+
+    if (today > startDate) {
+      throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
+    }
+
+    await this.challengersRepository.createChallenger({
+      userId,
+      challengeId: challenge.id,
+      type,
+      done: false,
+    });
+  }
+
+  // 도전 방 퇴장 (상우)
+  async leaveChallenge(challengeId: number, userId: number) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    }
+    await this.challengersRepository.deleteChallenger(challenge.id, userId);
+  }
+
   // 도전 친구초대 (상우)
   async inviteChallenge(
     challengeId: number,
@@ -186,29 +236,6 @@ export class ChallengesService {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
     await this.challengesRepository.inviteChallenge(challengeId, friend);
-  }
-
-  // 도전 방 입장 (상우)
-  async joinChallenge(challengeId: number, type: Position, userId: number) {
-    const challenge = await this.challengesRepository.getChallenge(challengeId);
-    if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
-    }
-    await this.challengersRepository.createChallenger({
-      userId,
-      challengeId: challenge.id,
-      type: Position.GUEST,
-      done: false,
-    });
-  }
-
-  // 도전 방 퇴장 (상우)
-  async leaveChallenge(challengeId: number, userId: number) {
-    const challenge = await this.challengesRepository.getChallenge(challengeId);
-    if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
-    }
-    await this.challengersRepository.deleteChallenger(challenge.id, userId);
   }
 
   // 도전 초대수락
