@@ -81,8 +81,8 @@ export class Challenge {
   @OneToMany(() => Challenger, (challenger) => challenger.challenge)
   challenger: Challenger[];
 
-  // User => Challenge 1:N
+  // User => Challenge N:1
   @ManyToOne(() => User, (user) => user.challenges)
-  @JoinColumn({ name: 'userId' })
+  // @JoinColumn({ name: 'userId' })
   user: User;
 }

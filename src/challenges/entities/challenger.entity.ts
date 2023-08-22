@@ -45,6 +45,6 @@ export class Challenger {
 
   // Challenger => User N:1
   @ManyToOne(() => User, (user) => user.challenger)
-  @JoinColumn({ name: 'userId' })
+  // @JoinColumn({ name: 'userId' })
   user: User;
 }

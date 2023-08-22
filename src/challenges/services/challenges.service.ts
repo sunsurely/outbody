@@ -1,3 +1,4 @@
+import { FollowsRepository } from './../../follows/repositories/follows.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import {
   Injectable,
@@ -16,6 +17,7 @@ export class ChallengesService {
     private readonly challengesRepository: ChallengesRepository,
     private readonly challengersRepository: ChallengersRepository,
     private readonly userRepository: UserRepository,
+    private readonly followsRepository: FollowsRepository,
   ) {}
 
   // 도전 생성
