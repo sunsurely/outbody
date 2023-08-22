@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ReportsService } from '../services/reports.service';
 import { CreateReportDto } from '../dto/create-report.dto';
-import { BlacklistDto } from '../dto/create-blacklist.dto';
+import { BlacklistDto } from '../../blacklists/dto/create-blacklist.dto';
 
 @Controller('reports')
 export class ReportsController {
@@ -56,19 +56,6 @@ export class ReportsController {
     return await this.reportsService.getReportsByCommentId(
       commentId,
       req.user.status,
-    );
-  }
-
-  @Post('/blacklist')
-  async createBlacklist(@Body() blacklist: BlacklistDto, @Req() req: any) {
-    const { email, description } = blacklist;
-    const { id, status } = req.user;
-
-    return await this.reportsService.createBlacklist(
-      email,
-      description,
-      id,
-      status,
     );
   }
 }

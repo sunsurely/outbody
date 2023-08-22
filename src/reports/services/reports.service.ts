@@ -4,7 +4,7 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { ReportsRepository } from '../repositories/reports.repository';
-import { BlackListRepository } from '../repositories/blacklist.repository';
+import { BlackListRepository } from '../../blacklists/repository/blacklist.repository';
 import { Status } from 'src/users/userInfo';
 
 @Injectable()
@@ -45,22 +45,5 @@ export class ReportsService {
     }
 
     return await this.reportsRepository.getReportsByCommentId(commentId);
-  }
-
-  async createBlacklist(
-    email: string,
-    description: string,
-    id: number,
-    status: string,
-  ) {
-    if (status !== 'admin') {
-      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
-    }
-
-    return await this.blacklistRepository.createBlacklist(
-      email,
-      description,
-      id,
-    );
   }
 }

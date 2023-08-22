@@ -4,24 +4,39 @@ import {
   ConflictException,
   NotImplementedException,
   UnauthorizedException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { UserRepository } from '../repositories/users.repository';
 import { UserCreateDto } from '../dto/users.create.dto';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
+import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly usersRepository: UserRepository) {}
+  constructor(
+    private readonly usersRepository: UserRepository,
+    private readonly blacklistRepository: BlackListRepository,
+  ) {}
 
-  //회원가입
+  //회원가입  , 블랙리스트에 있을 시 가입불가
   async createUser(user: UserCreateDto) {
     const { name, email, password, age, height, gender } = user;
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
       throw new ConflictException('이미 존재하는 유저입니다.');
+    }
+
+    const existBlackList = await this.blacklistRepository.getBlacklistByEmail(
+      email,
+    );
+
+    if (existBlackList) {
+      throw new NotAcceptableException(
+        '영구삭제된 계정입니다. 해당 이메일은 아이디로 사용할 수 없습니다.',
+      );
     }
 
     const createUserResult = await this.usersRepository.createUser(

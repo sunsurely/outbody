@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity';
 import { ReportsRepository } from './repositories/reports.repository';
 import { BlackList } from './entities/blacklist.entity';
-import { BlackListRepository } from './repositories/blacklist.repository';
+import { BlackListRepository } from '../blacklists/repository/blacklist.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Report, BlackList])],
