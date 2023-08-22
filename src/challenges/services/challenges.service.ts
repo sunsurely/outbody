@@ -246,8 +246,11 @@ export class ChallengesService {
     const message =
       '도전에 참가하시겠습니까? (yes/no) (해당 초대메시지는 24시간 동안 유효합니다.)';
 
-    cache.set(`invitation_${challengeId}_${invitedUser.id}`, message);
-
+    const invitation = cache.set(
+      `invitation_${challengeId}_${invitedUser.id}`,
+      message,
+    );
+    console.log('invitation', invitation);
     // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
@@ -261,6 +264,7 @@ export class ChallengesService {
     if (!invitation) {
       throw new NotFoundException('새로운 초대메시지가 없습니다.');
     }
+    console.log('invitation', invitation);
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
