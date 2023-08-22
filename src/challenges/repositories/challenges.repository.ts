@@ -23,13 +23,13 @@ export class ChallengesRepository extends Repository<Challenge> {
     return await this.save(newChallenge);
   }
 
-  // 도전 목록조회
+  // 도전 목록조회 (상우)
   async getChallenges(): Promise<Challenge[]> {
     const challenges = await this.find();
     return challenges;
   }
 
-  // 도전 상세조회
+  // 도전 상세조회 (상우)
   async getChallenge(challengeId: number): Promise<Challenge> {
     const challenge = await this.findOne({
       where: { id: challengeId },
