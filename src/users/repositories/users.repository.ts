@@ -40,6 +40,7 @@ export class UserRepository extends Repository<User> {
         'user.height',
         'user.imgUrl',
         'user.comment',
+        'user.password',
       ])
       .where('user.email = :email', { email })
       .getOne();
