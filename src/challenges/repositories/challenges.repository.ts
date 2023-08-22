@@ -51,24 +51,6 @@ export class ChallengesRepository extends Repository<Challenge> {
     return result;
   }
 
-  // // 자동삭제 (도전 시작일이 지나고 사용자가 1명(본인)밖에 없을 경우)
-  // async automaticDelete(): Promise<void> {
-  //   const today = new Date().toISOString();
-  //   const challengerCount = await this.getChallengerCount(challengeId);
-  //   const challengesToDelete = await this.find({
-  //     where: {
-  //       startDate: LessThan(today),
-  //     },
-  //   });
-
-  //   if (challengesToDelete.length > 0 && challengerCount <= 1) {
-  //     await this.remove(challengesToDelete);
-  //     this.logger.debug(
-  //       `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 삭제되었습니다.`,
-  //     );
-  //   }
-  // }
-
   // 도전 친구초대
   async inviteChallenge(challengeId: number, friend: Follow): Promise<void> {
     const newChallenger: Partial<Challenger> = {

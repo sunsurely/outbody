@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -11,6 +12,7 @@ import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { Point, Position } from '../challengerInfo';
+import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -162,24 +164,24 @@ export class ChallengesService {
     if (!invitedUser || invitedUser == undefined) {
       throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
     }
+
     const friend = await this.followsRepository.getFollowById(
       invitedUser.id,
       userId,
     );
+    console.log('userId', userId);
+    console.log('invitedUser.id', invitedUser.id);
     if (!friend || friend == undefined) {
       throw new NotFoundException('친구가 조회되지 않습니다.');
     }
 
     // 초대된 참가자가 이미 참가한 도전자인지 확인
-    const existingChallenger = await this.challengesRepository
-      .createQueryBuilder('challenger')
-      .where('challenger.challengeId = :challengeId', { challengeId })
-      .andWhere('challenger.userId = :userId', { userId: friend.id })
-      .getOne();
-    if (existingChallenger) {
+    const existingChallenger = await this.challengersRepository.getChallenger(
+      challengeId,
+    );
+    if (existingChallenger.userId == invitedUser.id) {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
-
     await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
@@ -192,7 +194,7 @@ export class ChallengesService {
     await this.challengersRepository.createChallenger({
       userId,
       challengeId: challenge.id,
-      type,
+      type: Position.GUEST,
       done: false,
     });
   }
@@ -204,5 +206,32 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
     }
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
+  }
+
+  // 도전 초대수락
+  async acceptChallenge(
+    challengeId: number,
+    body: ResponseChallengeDto,
+    userId: number,
+  ) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    } else if (!body) {
+      throw new BadRequestException(
+        '도전방 초대 수락 여부를 `yes`또는 `no`로 작성해주세요.',
+      );
+    }
+
+    if (body.response !== 'yes') {
+      throw new UnauthorizedException('초대 수락을 거절했습니다.');
+    }
+
+    await this.challengersRepository.createChallenger({
+      userId,
+      challengeId: challenge.id,
+      type: Position.INVITED,
+      done: false,
+    });
   }
 }

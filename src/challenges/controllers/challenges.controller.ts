@@ -12,6 +12,7 @@ import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { Position } from '../challengerInfo';
+import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 
 @Controller('challenge')
 @UseInterceptors(Response)
@@ -69,7 +70,7 @@ export class ChallengesController {
   @Post('/:challengeId/invite')
   async inviteChallenge(
     @Param('challengeId') challengeId: number,
-    @Body() body: InviteChallengeDto,
+    @Body('body') body: InviteChallengeDto,
     @Req() req: any,
   ) {
     return await this.challengesService.inviteChallenge(
@@ -102,6 +103,20 @@ export class ChallengesController {
   ) {
     return await this.challengesService.leaveChallenge(
       challengeId,
+      req.user.id,
+    );
+  }
+
+  // 도전 초대수락 POST http://localhost:3000/challenge/:id/accept
+  @Post('/:challengeId/accept')
+  async acceptChallenge(
+    @Param('challengeId') challengeId: number,
+    @Body('body') body: ResponseChallengeDto,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.acceptChallenge(
+      challengeId,
+      body,
       req.user.id,
     );
   }
