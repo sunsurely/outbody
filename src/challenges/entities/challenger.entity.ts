@@ -35,6 +35,7 @@ export class Challenger {
   @Column({
     type: 'boolean',
     nullable: false,
+    default: false,
   })
   done: boolean;
 

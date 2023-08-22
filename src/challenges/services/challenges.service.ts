@@ -7,12 +7,15 @@ import {
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
+import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
+import { Point } from '../challengerInfo';
 
 @Injectable()
 export class ChallengesService {
   constructor(
     private readonly challengesRepository: ChallengesRepository,
+    private readonly goalsRepository: GoalsRepository,
     private readonly challengersRepository: ChallengersRepository,
     private readonly userRepository: UserRepository,
   ) {}
@@ -20,7 +23,7 @@ export class ChallengesService {
   // 도전 생성
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
-      authorization,
+      type,
       title,
       imgUrl,
       startDate,
@@ -28,7 +31,17 @@ export class ChallengesService {
       userNumberLimit,
       publicView,
       description,
+      attend,
+      weight,
+      muscle,
+      fat,
     } = body;
+
+    const totalPoint =
+      attend * Point.ATTEND +
+      weight * Point.WEIGHT +
+      muscle * Point.MUSCLE +
+      fat * Point.FAT;
 
     const startDateObject = new Date(startDate);
     const endDateObject = new Date(startDateObject);
@@ -37,7 +50,6 @@ export class ChallengesService {
 
     const challenge = await this.challengesRepository.createChallenge({
       userId,
-      authorization,
       title,
       imgUrl,
       startDate,
@@ -46,12 +58,21 @@ export class ChallengesService {
       userNumberLimit,
       publicView,
       description,
+      totalPoint,
+    });
+
+    await this.goalsRepository.createGoal({
+      challengeId: challenge.id,
+      attend,
+      weight,
+      muscle,
+      fat,
     });
 
     await this.challengersRepository.createChallenger({
       userId,
       challengeId: challenge.id,
-      authorization,
+      type,
       done: false,
     });
   }
