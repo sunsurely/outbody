@@ -8,20 +8,20 @@ export class FollowsRepository extends Repository<Follow> {
     super(Follow, dataSource.createEntityManager());
   }
 
-  //친구 추가  followedUserId:  팔로우를 당하는 유저 ,    followingUserId: 팔로우를 거는 유저
-  async createFollower(followedUserId: number, followingUserId: number) {
-    const follow = await this.create({ followedUserId, followingUserId });
+  //친구추가
+  async createFollower(followId: number, userId: number) {
+    const follow = await this.create({ followId, userId });
     return await this.save(follow);
   }
-
-  async getFollowById(followedUserId: number, followingUserId: number) {
+  //추가한 친구조회
+  async getFollowById(followId: number, userId: number) {
     return await this.findOne({
-      where: { followedUserId, followingUserId },
+      where: { followId, userId },
     });
   }
 
-  //언팔로우
-  async deleteFollower(followedUserId: number, followingUserId: number) {
-    return await this.delete({ followedUserId, followingUserId });
+  //친구삭제
+  async deleteFollower(followId: number, userId: number) {
+    return await this.delete({ followId, userId });
   }
 }

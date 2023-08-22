@@ -1,5 +1,4 @@
 import {
-  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -14,7 +13,6 @@ import { Challenger } from './challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @Entity()
-@Check(`"userNumberLimit" >= 2 AND "userNumberLimit" <= 10`)
 export class Challenge {
   @PrimaryGeneratedColumn()
   id: number;
@@ -69,6 +67,12 @@ export class Challenge {
     nullable: false,
   })
   description: string;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  totalPoint: number;
 
   @CreateDateColumn()
   createdAt: Date;

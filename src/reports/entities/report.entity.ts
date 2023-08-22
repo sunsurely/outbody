@@ -16,10 +16,10 @@ export class Report {
   id: number;
 
   @Column('int')
-  reporterId: number;
+  userId: number;
 
   @Column('int')
-  reportedUserId: number;
+  commentId: number;
 
   @Column('varchar')
   description: string;
@@ -33,11 +33,7 @@ export class Report {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (reporter) => reporter.reportings)
-  @JoinColumn({ name: 'reporterId' })
-  reporter: User;
-
-  @ManyToOne(() => User, (reportedUser) => reportedUser.reporteds)
-  @JoinColumn({ name: 'reportedUserId' })
-  reportedUser: User;
+  @ManyToOne(() => User, (user) => user.reports)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }

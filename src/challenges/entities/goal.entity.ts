@@ -22,7 +22,7 @@ export class Goal {
     type: 'int',
     nullable: false,
   })
-  fat: number;
+  weight: number;
 
   @Column({
     type: 'int',
@@ -34,9 +34,9 @@ export class Goal {
     type: 'int',
     nullable: false,
   })
-  weight: number;
+  fat: number;
 
-  // Challenge => Goal 1:1
+  // Goal => Challenge 1:1
   @OneToOne(() => Challenge, (challenge) => challenge.goal)
   challenge: Challenge;
 }

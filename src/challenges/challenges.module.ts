@@ -9,6 +9,7 @@ import { ChallengeScheduler } from './services/challenges.scheduler';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
+import { GoalsRepository } from './repositories/goals.repository';
 import { ChallengersRepository } from './repositories/challengers.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 
@@ -18,6 +19,7 @@ import { FollowsRepository } from 'src/follows/repositories/follows.repository';
   providers: [
     ChallengesService,
     ChallengesRepository,
+    GoalsRepository,
     ChallengersRepository,
     Logger,
     ChallengeScheduler,
@@ -28,6 +30,7 @@ import { FollowsRepository } from 'src/follows/repositories/follows.repository';
   exports: [
     ChallengesService,
     ChallengesRepository,
+    GoalsRepository,
     ChallengersRepository,
     ChallengeScheduler,
     UserRepository,
