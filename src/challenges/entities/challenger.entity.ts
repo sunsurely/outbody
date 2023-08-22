@@ -40,12 +40,16 @@ export class Challenger {
   done: boolean;
 
   // Challenger => Challenge N:1
-  @ManyToOne(() => Challenge, (challenge) => challenge.challenger)
+  @ManyToOne(() => Challenge, (challenge) => challenge.challenger, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'challengeId' })
   challenge: Challenge;
 
   // Challenger => User N:1
-  @ManyToOne(() => User, (user) => user.challenger)
-  // @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.challenger, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'userId' })
   user: User;
 }

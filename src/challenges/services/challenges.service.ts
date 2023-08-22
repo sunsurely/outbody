@@ -22,7 +22,7 @@ export class ChallengesService {
     private readonly followsRepository: FollowsRepository,
   ) {}
 
-  // 도전 생성
+  // 도전 생성 (재용)
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
       type,
@@ -79,7 +79,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전자 조회
+  // 도전자 목록조회 (재용)
   async getChallengers(challengeId) {
     const challengers = await this.challengersRepository.getChallengers(
       challengeId,
@@ -87,7 +87,7 @@ export class ChallengesService {
     return challengers;
   }
 
-  // 도전 목록조회
+  // 도전 목록조회 (상우)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges.map((challenge) => {
@@ -101,7 +101,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전 상세조회
+  // 도전 상세조회 (상우)
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -110,11 +110,12 @@ export class ChallengesService {
     return challenge;
   }
 
-  // 도전 삭제
+  // 도전 삭제 (상우, 재용)
   async deleteChallenge(challengeId: number) {
     const myChallenge = await this.challengesRepository.getChallenge(
       challengeId,
     );
+
     if (!myChallenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
     }
@@ -123,8 +124,9 @@ export class ChallengesService {
     const endDate = new Date(myChallenge.endDate);
     const today = new Date();
 
-    const challengerCount = await this.challengesRepository.getChallengeCount();
-    console.log('challengerCount', challengerCount);
+    const challengerCount = await this.challengesRepository.getChallengerCount(
+      challengeId,
+    );
 
     if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');

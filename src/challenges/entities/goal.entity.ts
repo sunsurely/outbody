@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Challenge } from './challenge.entity';
 
 @Entity()
@@ -37,6 +43,9 @@ export class Goal {
   fat: number;
 
   // Goal => Challenge 1:1
-  @OneToOne(() => Challenge, (challenge) => challenge.goal)
+  @OneToOne(() => Challenge, (challenge) => challenge.goal, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'challengeId' })
   challenge: Challenge;
 }
