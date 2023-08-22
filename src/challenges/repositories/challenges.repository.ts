@@ -24,7 +24,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     super(Challenge, dataSource.createEntityManager());
   }
 
-  // 도전 생성
+  // 도전 생성 (재용)
   async createChallenge(Challenge: CreateChallengeDto): Promise<Challenge> {
     const newChallenge = await this.create(Challenge);
     return await this.save(newChallenge);
@@ -44,30 +44,29 @@ export class ChallengesRepository extends Repository<Challenge> {
     return challenge;
   }
 
-  // 도전 삭제
+  // 도전 삭제 (상우, 재용)
   async deleteChallenge(challengeId): Promise<any> {
     const result = await this.delete(challengeId);
-    console.log(typeof result);
     return result;
   }
 
-  // 자동삭제 (도전 시작일이 지나고 사용자가 1명(본인)밖에 없을 경우)
-  async automaticDelete(): Promise<void> {
-    const today = new Date().toISOString();
-    const challengerCount = await this.getChallengeCount();
-    const challengesToDelete = await this.find({
-      where: {
-        startDate: LessThan(today),
-      },
-    });
+  // // 자동삭제 (도전 시작일이 지나고 사용자가 1명(본인)밖에 없을 경우)
+  // async automaticDelete(): Promise<void> {
+  //   const today = new Date().toISOString();
+  //   const challengerCount = await this.getChallengerCount(challengeId);
+  //   const challengesToDelete = await this.find({
+  //     where: {
+  //       startDate: LessThan(today),
+  //     },
+  //   });
 
-    if (challengesToDelete.length > 0 && challengerCount <= 1) {
-      await this.remove(challengesToDelete);
-      this.logger.debug(
-        `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 삭제되었습니다.`,
-      );
-    }
-  }
+  //   if (challengesToDelete.length > 0 && challengerCount <= 1) {
+  //     await this.remove(challengesToDelete);
+  //     this.logger.debug(
+  //       `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 삭제되었습니다.`,
+  //     );
+  //   }
+  // }
 
   // 도전 친구초대
   async inviteChallenge(challengeId: number, invitedUser: User): Promise<void> {
@@ -99,7 +98,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     const newChallenger: Partial<Challenger> = {
       challengeId,
       userId: invitedUser.id,
-      authorization: Position.GUEST,
+      type: Position.GUEST,
       done: false,
     };
 
@@ -154,11 +153,13 @@ export class ChallengesRepository extends Repository<Challenge> {
     return transformedUsers;
   }
 
-  // 도전자 참가자 수 조회
-  async getChallengeCount(): Promise<number> {
-    return await this.createQueryBuilder('challenger')
-      .select('COUNT(challenger.id)', 'count')
-      .getRawOne()
-      .then((result) => result.count);
+  // 도전자 수 조회 (상우, 재용)
+  async getChallengerCount(challengeId: number): Promise<number> {
+    const challengersCount = await this.count({
+      where: {
+        id: challengeId,
+      },
+    });
+    return challengersCount;
   }
 }

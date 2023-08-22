@@ -11,6 +11,6 @@ export class ChallengeScheduler {
   @Cron(CronExpression.EVERY_HOUR)
   async handleCron() {
     this.logger.debug('도전 게시글을 삭제 중입니다...');
-    await this.challengesRepository.automaticDelete();
+    // await this.challengesRepository.automaticDelete();
   }
 }
