@@ -109,11 +109,8 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 정보 수정
-  async updateUser(userId, age, height, gender, newPassword) {
-    const result = await this.update(
-      { id: userId },
-      { age, height, gender, password: newPassword },
-    );
+  async updateUser(userId, age, height, gender) {
+    const result = await this.update({ id: userId }, { age, height, gender });
     return result;
   }
 

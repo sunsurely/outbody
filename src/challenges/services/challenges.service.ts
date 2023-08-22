@@ -11,7 +11,6 @@ import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { Point, Position } from '../challengerInfo';
-import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 
 @Injectable()
 export class ChallengesService {
