@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { BlacklistsService } from '../services/blacklists.service';
-import { BlacklistDto } from '../dto/create-blacklist.dto';
+import { CreateBlacklistDto } from '../dto/create-blacklist.dto';
+import { GetBlacklistDto } from '../dto/get.blacklist.dto';
 
 @Controller('blacklists')
 export class BlacklistsController {
@@ -9,11 +10,14 @@ export class BlacklistsController {
 
   //관리자 권한 블랙리스트 작성
   @Post('/')
-  async createBlacklist(@Body() blacklist: BlacklistDto, @Req() req: any) {
+  async createBlacklist(
+    @Body() blacklist: CreateBlacklistDto,
+    @Req() req: any,
+  ) {
     const { email, description } = blacklist;
     const { id, status } = req.user;
 
-    return await this.reportsService.createBlacklist(
+    return await this.blacklistService.createBlacklist(
       email,
       description,
       id,
@@ -24,12 +28,15 @@ export class BlacklistsController {
   //관리자 권한 모든 블랙리스트 조회
   @Get('/')
   async getAllBlacklist(@Req() req: any) {
-    return await this.reportsService.getAllBlacklist(req.user.status);
+    return await this.blacklistService.getAllBlacklist(req.user.status);
   }
 
   //관리자 권한 유저 이메일로 블랙리스트 조회
   @Get('/detail')
-  async getBlacklistByEmail(@Req() req: any, @Body() blacklist: BlacklistDto) {
+  async getBlacklistByEmail(
+    @Req() req: any,
+    @Body() blacklist: GetBlacklistDto,
+  ) {
     return await this.blacklistService.getBlacklistByEmail(
       req.user.status,
       blacklist.email,

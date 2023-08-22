@@ -25,7 +25,7 @@ export class BlacklistsService {
   }
 
   //관리자 권한 모든 블랙리스트 조회
-  async getAllBlaxcklist(status: Status) {
+  async getAllBlacklist(status: Status) {
     if (status !== 'admin') {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }

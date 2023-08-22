@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Gender, CurrentUser } from '../userInfo';
+import { Gender, CurrentUser, Status } from '../userInfo';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -17,6 +17,7 @@ export class UserRepository extends Repository<User> {
     age: number,
     height: number,
     gender: string,
+    status: string,
   ): Promise<User> {
     const newUser = this.create({
       name,
@@ -25,6 +26,7 @@ export class UserRepository extends Repository<User> {
       age,
       height,
       gender: gender as Gender,
+      status: status as Status,
     });
     return await this.save(newUser);
   }
@@ -32,7 +34,7 @@ export class UserRepository extends Repository<User> {
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
-      .select(['user.id', 'user.password'])
+      .select(['user.id', 'user.password', 'user.status'])
       .where('user.email = :email', { email })
       .getOne();
 
@@ -53,7 +55,7 @@ export class UserRepository extends Repository<User> {
         'user.point',
         'user.password',
       ])
-      .where('user.id = :userId', { id: userId })
+      .where('user.id = :userId', { userId })
       .leftJoinAndSelect('user.followers', 'follower')
       .leftJoinAndSelect('follower.followed', 'followed')
       .addSelect(['followed.id', 'followed.name', 'followed.imgUrl']);

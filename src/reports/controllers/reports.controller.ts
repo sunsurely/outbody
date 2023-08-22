@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ReportsService } from '../services/reports.service';
 import { CreateReportDto } from '../dto/create-report.dto';
-import { BlacklistDto } from '../../blacklists/dto/create-blacklist.dto';
 
 @Controller('reports')
 export class ReportsController {
