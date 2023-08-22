@@ -64,21 +64,6 @@ export class ChallengesController {
     }
   }
 
-  // 도전 친구초대
-  // POST http://localhost:3000/challenge/:id/invite
-  @Post('/:challengeId/invite')
-  async inviteChallenge(
-    @Param('challengeId') challengeId: number,
-    @Body() body: InviteChallengeDto,
-    @Req() req: any,
-  ) {
-    return await this.challengesService.inviteChallenge(
-      challengeId,
-      body,
-      req.user.id,
-    );
-  }
-
   // 도전 방 입장
   // POST http://localhost:3000/challenge/:id/enter
   @Post('/:challengeId/enter')
@@ -94,7 +79,8 @@ export class ChallengesController {
     );
   }
 
-  // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
+  // 도전 방 퇴장
+  // POST http://localhost:3000/challenge/:id/leave
   @Delete('/:challengeId/leave')
   async leaveChallenge(
     @Param('challengeId') challengeId: number,
@@ -102,6 +88,21 @@ export class ChallengesController {
   ) {
     return await this.challengesService.leaveChallenge(
       challengeId,
+      req.user.id,
+    );
+  }
+
+  // 도전 친구초대
+  // POST http://localhost:3000/challenge/:id/invite
+  @Post('/:challengeId/invite')
+  async inviteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Body() body: InviteChallengeDto,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.inviteChallenge(
+      challengeId,
+      body,
       req.user.id,
     );
   }
