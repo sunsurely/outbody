@@ -12,7 +12,7 @@ import {
 
 @Entity({ schema: 'outbody', name: 'records' })
 export class Record {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'recordId' })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('int')

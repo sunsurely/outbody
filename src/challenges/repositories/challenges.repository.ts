@@ -99,7 +99,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     const newChallenger: Partial<Challenger> = {
       challengeId,
       userId: invitedUser.id,
-      authorization: Position.GUEST,
+      type: Position.GUEST,
       done: false,
     };
 

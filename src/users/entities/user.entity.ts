@@ -17,7 +17,7 @@ import { Challenge } from 'src/challenges/entities/challenge.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'userId' })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('varchar', { length: 30 })

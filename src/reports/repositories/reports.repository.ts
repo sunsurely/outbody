@@ -8,7 +8,7 @@ export class ReportsRepository extends Repository<Report> {
     super(Report, dataSource.createEntityManager());
   }
 
-  //신고기능 - 신고자: reporterId,   피신고자:reportedId
+  //신고기능 - 신고자: userId
   async createReport(
     userId: number,
     commentId: number,
