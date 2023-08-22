@@ -16,6 +16,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저입니다');
     }
+
     const comparedPassword = await compare(password, user.password);
 
     if (user && comparedPassword) {

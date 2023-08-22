@@ -93,6 +93,7 @@ export class UserRepository extends Repository<User> {
         'user.height',
         'user.imgUrl',
         'user.comment',
+        'user.point',
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
