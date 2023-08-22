@@ -89,16 +89,19 @@ export class ChallengesService {
     return challengers;
   }
 
-  // 도전 목록조회 (상우)
+  // 도전 목록조회 (상우, 재용)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges.map((challenge) => {
       return {
+        id: challenge.id,
         title: challenge.title,
         imgUrl: challenge.imgUrl,
+        startDate: challenge.startDate,
         endDate: challenge.endDate,
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
+        totalPoint: challenge.totalPoint,
       };
     });
   }
@@ -126,7 +129,7 @@ export class ChallengesService {
     const endDate = new Date(myChallenge.endDate);
     const today = new Date();
 
-    const challengerCount = await this.challengesRepository.getChallengerCount(
+    const challengerCount = await this.challengersRepository.getChallengerCount(
       challengeId,
     );
 
@@ -142,7 +145,7 @@ export class ChallengesService {
     return await this.challengesRepository.deleteChallenge(challengeId);
   }
 
-  // 도전 친구초대
+  // 도전 친구초대 (상우)
   async inviteChallenge(
     challengeId: number,
     body: InviteChallengeDto,
@@ -185,7 +188,7 @@ export class ChallengesService {
     await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
-  // 도전 방 입장
+  // 도전 방 입장 (상우)
   async joinChallenge(challengeId: number, type: Position, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -199,7 +202,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전 방 퇴장
+  // 도전 방 퇴장 (상우)
   async leaveChallenge(challengeId: number, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {

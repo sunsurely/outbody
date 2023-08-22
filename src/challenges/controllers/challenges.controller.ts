@@ -55,7 +55,7 @@ export class ChallengesController {
     return challenge;
   }
 
-  // 도전 삭제
+  // 도전 삭제 (완성)
   // DELETE http://localhost:3000/challenge/:id
   @Delete('/:challengeId')
   async deleteChallenge(@Param('challengeId') challengeId: number) {
