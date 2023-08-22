@@ -1,3 +1,4 @@
+import { FollowsRepository } from './../../follows/repositories/follows.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import {
   Injectable,
@@ -19,9 +20,10 @@ export class ChallengesService {
     private readonly goalsRepository: GoalsRepository,
     private readonly challengersRepository: ChallengersRepository,
     private readonly userRepository: UserRepository,
+    private readonly followsRepository: FollowsRepository,
   ) {}
 
-  // 도전 생성
+  // 도전 생성 (재용)
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
       type,
@@ -78,7 +80,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전자 조회
+  // 도전자 목록조회 (재용)
   async getChallengers(challengeId) {
     const challengers = await this.challengersRepository.getChallengers(
       challengeId,
@@ -86,7 +88,7 @@ export class ChallengesService {
     return challengers;
   }
 
-  // 도전 목록조회
+  // 도전 목록조회 (상우)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges.map((challenge) => {
@@ -100,7 +102,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전 상세조회
+  // 도전 상세조회 (상우)
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -109,11 +111,12 @@ export class ChallengesService {
     return challenge;
   }
 
-  // 도전 삭제
+  // 도전 삭제 (상우, 재용)
   async deleteChallenge(challengeId: number) {
     const myChallenge = await this.challengesRepository.getChallenge(
       challengeId,
     );
+
     if (!myChallenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
     }
@@ -122,8 +125,9 @@ export class ChallengesService {
     const endDate = new Date(myChallenge.endDate);
     const today = new Date();
 
-    const challengerCount = await this.challengesRepository.getChallengeCount();
-    console.log('challengerCount', challengerCount);
+    const challengerCount = await this.challengesRepository.getChallengerCount(
+      challengeId,
+    );
 
     if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');
@@ -138,7 +142,16 @@ export class ChallengesService {
   }
 
   // 도전 친구초대
-  async inviteChallenge(challengeId: number, body: InviteChallengeDto) {
+  async inviteChallenge(
+    challengeId: number,
+    body: InviteChallengeDto,
+    userId: number,
+  ) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('도전 게시글을 찾을 수 없습니다.');
+    }
+
     const { email } = body;
     if (!email || email == undefined) {
       throw new BadRequestException(
@@ -150,8 +163,25 @@ export class ChallengesService {
     if (!invitedUser || invitedUser == undefined) {
       throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
     }
+    const friend = await this.followsRepository.getFollowById(
+      invitedUser.id,
+      userId,
+    );
+    if (!friend || friend == undefined) {
+      throw new NotFoundException('친구가 조회되지 않습니다.');
+    }
 
-    await this.challengesRepository.inviteChallenge(challengeId, invitedUser);
+    // 초대된 참가자가 이미 참가한 도전자인지 확인
+    const existingChallenger = await this.challengesRepository
+      .createQueryBuilder('challenger')
+      .where('challenger.challengeId = :challengeId', { challengeId })
+      .andWhere('challenger.userId = :userId', { userId: friend.id })
+      .getOne();
+    if (existingChallenger) {
+      throw new BadRequestException('이미 도전에 참가한 회원입니다.');
+    }
+
+    await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
   // 도전 방 입장
@@ -169,14 +199,11 @@ export class ChallengesService {
   }
 
   // 도전 방 퇴장
-  // async leaveChallenge(challengeId: number, userId: number) {
-  //   const challenge = await this.challengesRepository.getChallenge(challengeId);
-  //   if (!challenge) {
-  //     throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
-  //   }
-  //   await this.challengersRepository.deleteChallenger({
-  //     userId,
-  //     challengeId: challenge.id,
-  //   });
-  // }
+  async leaveChallenge(challengeId: number, userId: number) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    if (!challenge) {
+      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+    }
+    await this.challengersRepository.deleteChallenger(challenge.id, userId);
+  }
 }

@@ -9,6 +9,7 @@ export class GoalsRepository extends Repository<Goal> {
     super(Goal, dataSource.createEntityManager());
   }
 
+  // 목표 생성 (재용)
   async createGoal(Goal: CreateGoalDto): Promise<Goal> {
     const newGoal = await this.create(Goal);
     return await this.save(newGoal);
