@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { Column } from 'typeorm';
 import { Answer } from '../challengerInfo';
 

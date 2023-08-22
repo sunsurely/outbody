@@ -29,16 +29,6 @@ export class ChallengesController {
     return await this.challengesService.createChallenge(body, req.user.id);
   }
 
-  // 도전자 목록조회 (완성)
-  // GET http://localhost:3000/challenge/:id/challenger
-  @Get('/:challengeId/challenger')
-  async getChallengers(@Param('challengeId') challengeId: number) {
-    const challengers = await this.challengesService.getChallengers(
-      challengeId,
-    );
-    return challengers;
-  }
-
   // 도전 목록조회 (완성)
   // GET http://localhost:3000/challenge
   @Get()
@@ -65,19 +55,14 @@ export class ChallengesController {
     }
   }
 
-  // 도전 친구초대
-  // POST http://localhost:3000/challenge/:id/invite
-  @Post('/:challengeId/invite')
-  async inviteChallenge(
-    @Param('challengeId') challengeId: number,
-    @Body() body: InviteChallengeDto,
-    @Req() req: any,
-  ) {
-    return await this.challengesService.inviteChallenge(
+  // 도전자 목록조회 (완성)
+  // GET http://localhost:3000/challenge/:id/challenger
+  @Get('/:challengeId/challenger')
+  async getChallengers(@Param('challengeId') challengeId: number) {
+    const challengers = await this.challengesService.getChallengers(
       challengeId,
-      body,
-      req.user.id,
     );
+    return challengers;
   }
 
   // 도전 방 입장
@@ -95,7 +80,8 @@ export class ChallengesController {
     );
   }
 
-  // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
+  // 도전 방 퇴장
+  // POST http://localhost:3000/challenge/:id/leave
   @Delete('/:challengeId/leave')
   async leaveChallenge(
     @Param('challengeId') challengeId: number,
@@ -107,7 +93,23 @@ export class ChallengesController {
     );
   }
 
-  // 도전 초대수락 POST http://localhost:3000/challenge/:id/accept
+  // 도전 친구초대
+  // POST http://localhost:3000/challenge/:id/invite
+  @Post('/:challengeId/invite')
+  async inviteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Body('body') body: InviteChallengeDto,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.inviteChallenge(
+      challengeId,
+      body,
+      req.user.id,
+    );
+  }
+
+  // 도전 초대수락
+  // POST http://localhost:3000/challenge/:id/accept
   @Post('/:challengeId/accept')
   async acceptChallenge(
     @Param('challengeId') challengeId: number,
