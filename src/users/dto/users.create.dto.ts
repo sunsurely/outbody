@@ -8,6 +8,7 @@ import {
   Matches,
   IsNumber,
 } from 'class-validator';
+import * as bcrypt from 'bcrypt';
 
 export class UserCreateDto {
   @Transform(({ value, obj }) => {
@@ -30,6 +31,7 @@ export class UserCreateDto {
 
   @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}/)
+  @Transform(({ value }) => bcrypt.hashSync(value, 10))
   readonly password: string;
 
   @IsNumber()

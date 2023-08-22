@@ -59,28 +59,26 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @OneToMany(() => Record, (record) => record.user)
+  @OneToMany(() => Record, (record) => record.user, { cascade: true })
   records: Record[];
 
-  @OneToMany(() => Follow, (follow) => follow.follower)
+  @OneToMany(() => Follow, (follow) => follow.follower, { cascade: true })
   followers: Follow[];
 
-  @OneToMany(() => Follow, (follow) => follow.followed)
+  @OneToMany(() => Follow, (follow) => follow.followed, { cascade: true })
   followeds: Follow[];
 
-  @OneToMany(() => Report, (reporting) => reporting.reporter)
-  @JoinColumn({ name: 'reporterId' })
-  reportings: Report[];
+  @OneToMany(() => Report, (report) => report.user)
+  @JoinColumn({ name: 'userId' })
+  reports: Report[];
 
-  @OneToMany(() => Report, (reported) => reported.reportedUser)
-  @JoinColumn({ name: 'reportedUserId' })
-  reporteds: Report[];
+  @OneToMany(() => Challenger, (challenger) => challenger.user, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'userId' })
+  challenger: Challenger[];
 
   @OneToMany(() => Challenge, (challenge) => challenge.user)
   @JoinColumn({ name: 'userId' })
-  challenge: Challenge[];
-
-  @OneToMany(() => Challenger, (challenger) => challenger.user)
-  @JoinColumn({ name: 'userId' })
-  challenger: Challenger[];
+  challenges: Challenge[];
 }

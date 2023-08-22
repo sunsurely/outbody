@@ -8,18 +8,19 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  BaseEntity,
 } from 'typeorm';
 
 @Entity({ schema: 'outbody', name: 'follows' })
-export class Follow {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'followId' })
+export class Follow extends BaseEntity {
+  @PrimaryGeneratedColumn({ type: 'int', name: 'follow' })
   id: number;
 
   @Column('int')
-  followingUserId: number;
+  userId: number;
 
   @Column('int')
-  followedUserId: number;
+  followId: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -30,11 +31,11 @@ export class Follow {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (user) => user.followers)
-  @JoinColumn({ name: 'followingUserId' })
+  @ManyToOne(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
   follower: User;
 
-  @ManyToOne(() => User, (user) => user.followeds)
-  @JoinColumn({ name: 'followedUserId' })
+  @ManyToOne(() => User, (user) => user.followeds, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'follow' })
   followed: User;
 }

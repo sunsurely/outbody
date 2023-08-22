@@ -12,16 +12,16 @@ import { FollowsService } from '../services/follows.service';
 export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}
 
-  //팔로우 , 언팔로우 기능 localhost:3000/follows/followedUserId/following
-  @Patch('/:followedUserId/following')
+  //친구추가 , 친구삭제 기능 localhost:3000/follows/followedUserId/following
+  @Patch('/:followId/following')
   async updateFollow(
     @Param(
-      'followedUserId',
+      'followId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
-    followedUserId: number,
+    followId: number,
     @Req() req: any,
   ) {
-    return await this.followsService.updateFollow(followedUserId, req.user.id);
+    return await this.followsService.updateFollow(followId, req.user.id);
   }
 }

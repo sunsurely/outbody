@@ -18,10 +18,10 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   //신고기능 localhost:3000/reports/:reportedUserId
-  @Post('/:reportedUserId')
+  @Post('/:commentId')
   async createReport(
     @Param(
-      'reportedUserId',
+      'commentId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     reportedUserId: number,

@@ -10,13 +10,13 @@ export class ReportsRepository extends Repository<Report> {
 
   //신고기능 - 신고자: reporterId,   피신고자:reportedId
   async createReport(
-    reportedUserId: number,
-    reporterId: number,
+    userId: number,
+    commentId: number,
     description: string,
   ): Promise<Report> {
     const newReport = this.create({
-      reportedUserId,
-      reporterId,
+      userId,
+      commentId,
       description,
     });
     return await this.save(newReport);

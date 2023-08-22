@@ -42,7 +42,7 @@ export class Record {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (user) => user.records)
+  @ManyToOne(() => User, (user) => user.records, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 }

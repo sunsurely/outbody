@@ -22,4 +22,9 @@ export class ChallengersRepository extends Repository<Challenger> {
     });
     return challengers;
   }
+
+  //도전자 삭제
+  // async deleteChallenger(criteria: Partial<Challenger>): Promise<void> {
+  //   await this.delete(criteria);
+  // }
 }

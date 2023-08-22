@@ -96,9 +96,34 @@ export class UserRepository extends Repository<User> {
     return result;
   }
 
-  //회원 탈퇴
+  //회원 탈퇴와 동시에 팔로우 , 팔로잉, 나의 도전 목록들 삭제
   async deleteUser(userId: number): Promise<any> {
-    const result = await this.delete({ id: userId });
-    return result;
+    // const queryRunner = this.dataSource.createQueryRunner();
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
+
+    // await queryRunner.manager.delete(Follow, {
+    //   followingUserId: userId,
+    // });
+    // await queryRunner.manager.delete(Follow, {
+    //   followedUserId: userId,
+    // });
+    // await queryRunner.manager.delete(Challenger, { userId });
+    // await queryRunner.manager.delete(User, { id: userId });
+    // await queryRunner.manager.delete(Comment, { id: userId });
+
+    // await queryRunner
+    //   .commitTransaction()
+    //   .catch(async (error) => {
+    //     await queryRunner.rollbackTransaction();
+    //     throw error;
+    //   })
+    //   .finally(async () => {
+    //     await queryRunner.release();
+    //   });
+
+    const deleteUserResult = await this.delete({ id: userId });
+
+    return deleteUserResult;
   }
 }

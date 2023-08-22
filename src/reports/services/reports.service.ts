@@ -6,14 +6,10 @@ export class ReportsService {
   constructor(private readonly reportsRepository: ReportsRepository) {}
 
   //신고기능 - 신고자: reporterId,   피신고자:reportedId
-  async createReport(
-    reportedUserId: number,
-    reporterId: number,
-    description: string,
-  ) {
+  async createReport(userId: number, commentId: number, description: string) {
     const reportResult = await this.reportsRepository.createReport(
-      reportedUserId,
-      reporterId,
+      userId,
+      commentId,
       description,
     );
 
