@@ -22,4 +22,14 @@ export class ChallengersRepository extends Repository<Challenger> {
     });
     return challengers;
   }
+
+  // 도전자 수 조회 (재용)
+  async getChallengerCount(challengeId: number): Promise<number> {
+    const challengersCount = await this.count({
+      where: {
+        challengeId,
+      },
+    });
+    return challengersCount;
+  }
 }

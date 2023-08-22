@@ -11,7 +11,6 @@ import { Challenge } from '../entities/challenge.entity';
 import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { LessThan } from 'typeorm';
 import { Position } from '../challengerInfo';
 
 @Injectable()
@@ -50,23 +49,31 @@ export class ChallengesRepository extends Repository<Challenge> {
     return result;
   }
 
-  // // 자동삭제 (도전 시작일이 지나고 사용자가 1명(본인)밖에 없을 경우)
-  // async automaticDelete(): Promise<void> {
-  //   const today = new Date().toISOString();
-  //   const challengerCount = await this.getChallengerCount(challengeId);
-  //   const challengesToDelete = await this.find({
-  //     where: {
-  //       startDate: LessThan(today),
-  //     },
-  //   });
+  // 자동 삭제 (상우, 재용)
+  // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우
+  async automaticDelete(): Promise<void> {
+    const today = new Date();
 
-  //   if (challengesToDelete.length > 0 && challengerCount <= 1) {
-  //     await this.remove(challengesToDelete);
-  //     this.logger.debug(
-  //       `도전 시작일이 경과되었으나 도전 참가자가 없어서, 회원님의 ${challengesToDelete} 도전이 삭제되었습니다.`,
-  //     );
-  //   }
-  // }
+    const challengesToDelete = await this.createQueryBuilder('challenge')
+      .leftJoinAndSelect('challenge.challenger', 'challenger')
+      .addSelect((subQuery) => {
+        subQuery
+          .select('COUNT(subChallenger.id)', 'challengerCount')
+          .from('challenger', 'subChallenger')
+          .where('subChallenger.challengeId = challenge.id');
+        return subQuery;
+      }, 'challengerCount')
+      .where('challenge.startDate <= :today', { today: today.toISOString() })
+      .having('challengerCount <= 1')
+      .getMany();
+
+    for (const challenge of challengesToDelete) {
+      await this.remove(challenge);
+      this.logger.debug(
+        `도전 시작일이 경과되었으나 참가자가 없어서, 도전이 삭제되었습니다.`,
+      );
+    }
+  }
 
   // 도전 친구초대
   async inviteChallenge(challengeId: number, invitedUser: User): Promise<void> {
@@ -151,15 +158,5 @@ export class ChallengesRepository extends Repository<Challenge> {
       };
     });
     return transformedUsers;
-  }
-
-  // 도전자 수 조회 (상우, 재용)
-  async getChallengerCount(challengeId: number): Promise<number> {
-    const challengersCount = await this.count({
-      where: {
-        id: challengeId,
-      },
-    });
-    return challengersCount;
   }
 }

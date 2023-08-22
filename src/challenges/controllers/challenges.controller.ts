@@ -54,7 +54,7 @@ export class ChallengesController {
     return challenge;
   }
 
-  // 도전 삭제
+  // 도전 삭제 (완성)
   // DELETE http://localhost:3000/challenge/:id
   @Delete('/:challengeId')
   async deleteChallenge(@Param('challengeId') challengeId: number) {
@@ -88,16 +88,4 @@ export class ChallengesController {
       req.user.id,
     );
   }
-
-  // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
-  // @Delete('/:challengeId/leave')
-  // async leaveChallenge(
-  //   @Param('challengeId') challengeId: number,
-  //   @Req() req: any,
-  // ) {
-  //   return await this.challengesService.leaveChallenge(
-  //     challengeId,
-  //     req.user.id,
-  //   );
-  // }
 }

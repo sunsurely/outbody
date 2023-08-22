@@ -11,9 +11,13 @@ import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
 import { GoalsRepository } from './repositories/goals.repository';
 import { ChallengersRepository } from './repositories/challengers.repository';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Challenge, Challenger, Follow, User])],
+  imports: [
+    TypeOrmModule.forFeature([Challenge, Challenger, Follow, User]),
+    ScheduleModule.forRoot(),
+  ],
   controllers: [ChallengesController],
   providers: [
     ChallengesService,

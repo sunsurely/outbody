@@ -8,9 +8,8 @@ export class ChallengeScheduler {
 
   constructor(private readonly challengesRepository: ChallengesRepository) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    this.logger.debug('도전 게시글을 삭제 중입니다...');
-    // await this.challengesRepository.automaticDelete();
+    await this.challengesRepository.automaticDelete();
   }
 }
