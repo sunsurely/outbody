@@ -11,8 +11,8 @@ import {
 import { Position } from '../challengerInfo';
 
 export class CreateChallengeRequestDto {
-  @IsIn([Position.HOST, Position.GUEST])
-  authorization: Position;
+  @IsIn([Position.HOST, Position.GUEST, Position.INVITED])
+  type: Position;
 
   @IsNotEmpty()
   @IsString()
@@ -45,4 +45,25 @@ export class CreateChallengeRequestDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(3)
+  @Max(7)
+  attend: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  weight: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  muscle: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  fat: number;
 }

@@ -10,8 +10,8 @@ export class CreateChallengerDto {
   @IsNumber()
   challengeId: number;
 
-  @IsIn([Position.HOST, Position.GUEST])
-  authorization: Position;
+  @IsIn([Position.HOST, Position.GUEST, Position.INVITED])
+  type: Position;
 
   @IsNotEmpty()
   @IsBoolean()

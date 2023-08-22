@@ -30,11 +30,12 @@ export class Challenger {
     type: 'enum',
     enum: Position,
   })
-  authorization: Position;
+  type: Position;
 
   @Column({
     type: 'boolean',
     nullable: false,
+    default: false,
   })
   done: boolean;
 
