@@ -33,7 +33,7 @@ export class CreateChallengeDto {
 
   @IsNotEmpty()
   @IsString()
-  endDate: string;
+  endDate: Date;
 
   @IsNotEmpty()
   @IsNumber()

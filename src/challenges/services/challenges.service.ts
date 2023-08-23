@@ -59,7 +59,8 @@ export class ChallengesService {
     const startDateObject = new Date(startDate);
     const endDateObject = new Date(startDateObject);
     endDateObject.setDate(startDateObject.getDate() + challengeWeek * 7);
-    const endDate = endDateObject.toISOString();
+    // const endDate = endDateObject.toISOString();
+    const endDate = new Date(endDateObject);
 
     const challenge = await this.challengesRepository.createChallenge({
       userId,
