@@ -42,15 +42,12 @@ export class RecordsController {
     return await this.recordesService.getRecordDtail(recordId, req.user.id);
   }
 
-  //기간별 기록정보 불러오기  localhost:3000/record/date?start=2023-09-01&end=2023-09-03
-  @Get('/date')
-  async getRecordsByDateRange(
-    @Body() dateDto: RangeRecordDto,
-    @Req() req: any,
-  ) {
+  //기간별 기록정보 불러오기  localhost:3000/record/date
+  @Post('/date')
+  async getRecordsByDateRange(@Body() date: RangeRecordDto, @Req() req: any) {
     return await this.recordesService.getRecordsByDateRange(
-      dateDto.start,
-      dateDto.end,
+      date.start,
+      date.end,
       req.user.id,
     );
   }

@@ -5,30 +5,28 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Record } from '../entities/records.entity';
 import { CreateRecordDto } from '../dto/create.records.dto';
 import { recordCache } from '../cache/initRecord.cache';
+import { RecordsRepository } from '../repositories/records.repository';
 
 @Injectable()
 export class RecordCachingService {
   private readonly logger = new Logger(RecordCachingService.name);
 
-  constructor(
-    @InjectRepository(Record)
-    private readonly recordsRepository: Repository<Record>,
-  ) {}
+  constructor(private readonly recordsRepository: RecordsRepository) {}
 
   async setCacheReports(body: CreateRecordDto, id: number): Promise<Record> {
     const { bmr, weight, muscle, fat, date } = body;
-    const record = await this.recordsRepository.create({
+    const newDate = new Date(date);
+    const record = await this.recordsRepository.createRecord(
       bmr,
       weight,
       muscle,
       fat,
-      userId: id,
-      date,
-    });
+      id,
+      newDate,
+    );
 
     this.recordsRepository.save(record);
     if (!record) {
@@ -40,7 +38,6 @@ export class RecordCachingService {
     });
 
     if (!userRecords || userRecords.length <= 0) {
-      this.logger.error('record 데이터 캐싱 실패');
       throw new NotFoundException('기록을 불러오지 못했습니다.');
     }
 
@@ -101,5 +98,34 @@ export class RecordCachingService {
 
     this.logger.error('record 데이터 GET 실패');
     return recordDtail;
+  }
+
+  async getCacheRecordsByDateRange(start: string, end: string, id: number) {
+    const cachedRecords: Record[] = recordCache.get(`record:${id}`);
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    if (cachedRecords && cachedRecords.length > 0) {
+      this.logger.debug('record 데이터 GET 성공');
+
+      const result = cachedRecords.filter((record) => {
+        const cachedDate = new Date(record.date);
+        return cachedDate >= startDate && cachedDate <= endDate;
+      });
+
+      return result;
+    }
+
+    const records = await this.recordsRepository.getUsersRecords(id);
+    recordCache.set(`record:${id}`, records);
+
+    const recordResult = await this.recordsRepository.getRecordsByDateRange(
+      start,
+      end,
+      id,
+    );
+    this.logger.error('record 데이터 GET 실패');
+
+    return recordResult;
   }
 }
