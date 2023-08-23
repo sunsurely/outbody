@@ -109,6 +109,12 @@ export class UserRepository extends Repository<User> {
     return result;
   }
 
+  // 사용자 점수 수정 (재용)
+  async updateUserPoint(userId: number, point: number) {
+    const result = await this.update({ id: userId }, { point });
+    return result;
+  }
+
   //비밀번호 수정
   async updatePassword(id, newPassword) {
     const result = await this.update({ id }, { password: newPassword });

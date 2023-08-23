@@ -4,12 +4,14 @@ import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class ChallengeScheduler {
-  private readonly logger = new Logger(ChallengeScheduler.name);
-
   constructor(private readonly challengesRepository: ChallengesRepository) {}
+  private readonly logger = new Logger(ChallengeScheduler.name);
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     await this.challengesRepository.automaticDelete();
+  }
+  async pointCrom() {
+    await this.challengesRepository.pointsDistribute();
   }
 }

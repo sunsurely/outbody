@@ -27,8 +27,16 @@ export class ChallengesService {
 
   // 도전 생성 (재용)
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
+    const isExistingChallenger =
+      await this.challengersRepository.getChallengerByUserId(userId);
+
+    if (isExistingChallenger) {
+      throw new BadRequestException(
+        '동시에 2개 이상의 도전을 생성할 수 없습니다.',
+      );
+    }
+
     const {
-      type,
       title,
       imgUrl,
       startDate,
@@ -42,7 +50,7 @@ export class ChallengesService {
       fat,
     } = body;
 
-    const totalPoint =
+    const entryPoint =
       attend * Point.ATTEND +
       weight * Point.WEIGHT +
       muscle * Point.MUSCLE +
@@ -63,7 +71,7 @@ export class ChallengesService {
       userNumberLimit,
       publicView,
       description,
-      totalPoint,
+      entryPoint,
     });
 
     await this.goalsRepository.createGoal({
@@ -77,7 +85,7 @@ export class ChallengesService {
     await this.challengersRepository.createChallenger({
       userId,
       challengeId: challenge.id,
-      type,
+      type: Position.HOST,
       done: false,
     });
   }
@@ -102,7 +110,7 @@ export class ChallengesService {
         endDate: challenge.endDate,
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
-        totalPoint: challenge.totalPoint,
+        entryPoint: challenge.entryPoint,
       };
     });
   }
@@ -111,7 +119,7 @@ export class ChallengesService {
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
     return challenge;
   }
@@ -123,7 +131,7 @@ export class ChallengesService {
     );
 
     if (!myChallenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
     const startDate = new Date(myChallenge.startDate);
@@ -151,7 +159,11 @@ export class ChallengesService {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
 
     if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
+    } else if (challenge.publicView === false) {
+      throw new BadRequestException(
+        '비공개 도전은 초대를 받은 회원만 참여가 가능합니다.',
+      );
     }
 
     const isExistingChallenger =
@@ -164,7 +176,7 @@ export class ChallengesService {
     }
 
     const user = await this.userRepository.getUserById(userId);
-    if (user.point < challenge.totalPoint) {
+    if (user.point < challenge.entryPoint) {
       throw new BadRequestException(
         '현재 가지고 있는 점수가 입장 점수보다 낮아서, 도전에 참가할 수 없습니다.',
       );
@@ -172,8 +184,6 @@ export class ChallengesService {
 
     const startDate = new Date(challenge.startDate);
     const today = new Date();
-    console.log(startDate);
-    console.log(today);
 
     if (today > startDate) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
@@ -182,26 +192,28 @@ export class ChallengesService {
     await this.challengersRepository.createChallenger({
       userId,
       challengeId: challenge.id,
-      type,
+      type: Position.GUEST,
       done: false,
     });
   }
 
-  // 도전 방 퇴장 (상우)
+  // 도전 방 퇴장 (상우, 재용)
   async leaveChallenge(challengeId: number, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
+
     if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
+
     const startdate = new Date(challenge.startDate);
     const today = new Date();
+
     const user = await this.userRepository.getUserById(userId);
 
     if (startdate <= today) {
-      user.point = user.point - challenge.totalPoint;
-      return {
-        message: '도전 시작일 전 퇴장을 하셨으므로, total포인트가 차감됩니다.',
-      };
+      user.point = user.point - challenge.entryPoint;
+      const updateUserPoint = user.point;
+      await this.userRepository.updateUserPoint(userId, updateUserPoint);
     }
 
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
@@ -214,28 +226,29 @@ export class ChallengesService {
     userId: number,
   ) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
+
     if (!challenge) {
-      throw new NotFoundException('도전 게시글을 찾을 수 없습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
     const { email } = body;
     if (!email || email == undefined) {
       throw new BadRequestException(
-        '도전에 초대할 친구 이메일을 입력해주세요.',
+        '도전에 초대할 친구의 계정(e-mail)을 입력해주세요.',
       );
     }
 
     const invitedUser = await this.userRepository.getUserByEmail(email);
     if (!invitedUser || invitedUser == undefined) {
-      throw new NotFoundException('초대하려는 사용자를 찾을 수 없습니다.');
+      throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
-    const friend = await this.followsRepository.getFollowById(
-      invitedUser.id,
-      userId,
-    );
+    // const friend = await this.followsRepository.getFollowById(
+    //   invitedUser.id,
+    //   userId,
+    // );
 
-    // 초대된 참가자가 이미 참가한 도전자인지 확인 (상우)
+    // 초대된 참가자가 이미 참가한 도전자인지 확인
     const existingChallenger = await this.challengersRepository.getChallenger(
       challengeId,
     );
@@ -244,7 +257,7 @@ export class ChallengesService {
     }
 
     const message =
-      '도전에 참가하시겠습니까? (yes/no) (해당 초대메시지는 24시간 동안 유효합니다.)';
+      '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
 
     const invitation = cache.set(
       `invitation_${challengeId}_${invitedUser.id}`,
@@ -254,23 +267,26 @@ export class ChallengesService {
     // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
-  // 도전 초대수락 (상우)
+  // 도전 초대 수락 (상우)
   async acceptChallenge(
     challengeId: number,
     body: ResponseChallengeDto,
     userId: number,
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+
     if (!invitation) {
-      throw new NotFoundException('새로운 초대메시지가 없습니다.');
+      throw new NotFoundException('새로운 초대가 없습니다.');
     }
     console.log('invitation', invitation);
+
     const challenge = await this.challengesRepository.getChallenge(challengeId);
+
     if (!challenge) {
-      throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
+      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     } else if (!body) {
       throw new BadRequestException(
-        '도전방 초대 수락 여부를 `yes`또는 `no`로 작성해주세요.',
+        '초대 수락 답변의 형식이 올바르지 않습니다.',
       );
     }
 

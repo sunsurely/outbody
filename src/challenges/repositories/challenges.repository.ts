@@ -1,11 +1,12 @@
+import { ChallengersRepository } from './challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, EntityManager } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
-import { Challenger } from '../entities/challenger.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
 import { Position } from '../challengerInfo';
 import { Follow } from 'src/follows/entities/follow.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -13,6 +14,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     private readonly dataSource: DataSource,
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
+    private readonly challengersRepository: ChallengersRepository,
   ) {
     super(Challenge, dataSource.createEntityManager());
   }
@@ -38,7 +40,7 @@ export class ChallengesRepository extends Repository<Challenge> {
   }
 
   // 도전 삭제 (상우, 재용)
-  async deleteChallenge(challengeId): Promise<any> {
+  async deleteChallenge(challengeId: number): Promise<any> {
     const result = await this.delete(challengeId);
     return result;
   }
@@ -66,6 +68,40 @@ export class ChallengesRepository extends Repository<Challenge> {
       this.logger.debug(
         `도전 시작일이 경과되었으나 참가자가 없어서, 도전이 삭제되었습니다.`,
       );
+    }
+  }
+
+  // 도전 방 종료시 포인트 자동분배 (상우)
+  async pointsDistribute(challengeId): Promise<void> {
+    const challenge = await this.getChallenge(challengeId);
+    const endDate = new Date(challenge.endDate); // 도전종료날짜
+    const today = new Date(); // 현재날짜
+    const entryPoint = challenge.totalPoint; // 1인당 참가비용
+
+    const users = await this.challengersRepository.getChallengers(challengeId); // 참가한 전체유저
+    const succeedUsers = users.filter((user) => user.done); // 성공한 유저목록
+    const failedUsers = users.filter((user) => !user.done); // 실패한 유저목록
+    const totalEntryPoint = challenge.totalPoint * Number(users); // 전체유저가 입장시 낸 포인트
+
+    if (endDate <= today) {
+      const entityManager = this.userRepository.manager;
+      await entityManager.transaction(async (transactionalEntityManager) => {
+        for (const challenger of challenge.challenger) {
+          const user = challenger.user;
+          let userPoint = user.point;
+
+          if (succeedUsers.includes(challenger)) {
+            userPoint += entryPoint;
+          } else if (failedUsers.includes(challenger)) {
+            userPoint -= entryPoint;
+          }
+          await transactionalEntityManager.update(
+            User,
+            { id: user.id },
+            { point: userPoint },
+          );
+        }
+      });
     }
   }
 }

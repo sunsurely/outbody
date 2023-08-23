@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // cors
   app.enableCors({
-    origin: ['http://127.0.0.1:3000'],
+    origin: ['http://127.0.0.1:8080'],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
   });
@@ -19,6 +19,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  await app.listen(8080);
+  await app.listen(3000);
 }
 bootstrap();
