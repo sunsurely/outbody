@@ -52,8 +52,8 @@ export class PostsController {
   // 오운완 삭제
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Delete('/:challengeId/post/:postId')
-  deletePost(@Param('postId') postId: number) {
-    const deletePost = this.postsService.deletePost(postId);
+  deletePost(@Param('postId') postId: number, @Req() req: any) {
+    const deletePost = this.postsService.deletePost(postId, req.user.id);
 
     if (deletePost) {
       return { message: '오운완 삭제가 완료 되었습니다.' };

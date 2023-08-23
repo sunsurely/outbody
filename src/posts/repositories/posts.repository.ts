@@ -64,4 +64,12 @@ export class PostsRepository extends Repository<Post> {
 
     return deletePost;
   }
+
+  // 오운완 작성자 조회 (상우)
+  async getUserById(userId: number): Promise<Post> {
+    const author = await this.findOne({
+      where: { userId },
+    });
+    return author;
+  }
 }

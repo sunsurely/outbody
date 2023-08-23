@@ -14,6 +14,6 @@ export class ChallengeScheduler {
 
   @Cron(CronExpression.EVERY_SECOND)
   async pointCron() {
-    await this.challengesRepository.pointsDistribute();
+    // await this.challengesRepository.pointsDistribute();
   }
 }

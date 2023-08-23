@@ -42,8 +42,14 @@ export class PostsService {
     return await this.postsRepository.getOnePost(postId);
   }
 
-  // 오운완 삭제
-  async deletePost(postId: number) {
+  // 오운완 삭제 (상우: 로직추가)
+  async deletePost(postId: number, userId: number) {
+    const author = await this.postsRepository.getUserById(userId);
+    if (!author) {
+      throw new BadRequestException(
+        '본인이 만든 오운완 게시글만 삭제 가능합니다.',
+      );
+    }
     return await this.postsRepository.deletePost(postId);
   }
 }
