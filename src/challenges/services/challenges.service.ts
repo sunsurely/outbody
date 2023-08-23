@@ -126,10 +126,17 @@ export class ChallengesService {
   }
 
   // 도전 삭제 (상우, 재용)
-  async deleteChallenge(challengeId: number) {
+  async deleteChallenge(challengeId: number, userId: number) {
     const myChallenge = await this.challengesRepository.getChallenge(
       challengeId,
     );
+
+    const host = await this.challengersRepository.getChallengerByUserId(userId);
+    if (!host) {
+      throw new UnauthorizedException(
+        '본인이 만든 도전 방만 삭제가 가능합니다.',
+      );
+    }
 
     if (!myChallenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
