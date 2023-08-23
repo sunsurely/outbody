@@ -16,7 +16,7 @@ export enum Status {
 export interface CurrentUser {
   id: number;
   name: string;
-  birthday: string;
+  birthday: Date;
   height: number;
   email: string;
   password: string;

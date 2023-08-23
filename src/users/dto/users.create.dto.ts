@@ -34,8 +34,8 @@ export class UserCreateDto {
   @Transform(({ value }) => bcrypt.hashSync(value, 10))
   readonly password: string;
 
-  @IsNumber()
-  readonly age: number;
+  @IsString()
+  readonly birthday: string;
 
   @IsNumber()
   readonly height: number;
