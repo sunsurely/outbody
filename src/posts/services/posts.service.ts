@@ -23,16 +23,13 @@ export class PostsService {
     );
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  // 오운완 전체 조회
+  async findAll(challengeId: number) {
+    return this.postsRepository.findAll(challengeId);
   }
 
   findOne(id: number) {
     return `This action returns a #${id} post`;
-  }
-
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
   }
 
   remove(id: number) {

@@ -8,13 +8,21 @@ export class PostsRepository extends Repository<Post> {
   //   constructor() {}
 
   // 오운완 인증 게시글 생성
-  async createPost(description, imgUrl, challengeId, userId) {
+  async createPost(description, imgUrl, challengeId, userId): Promise<Post> {
     const newPost = await this.create({
       description,
       imgUrl,
       challengeId,
       userId,
     });
-    return await this.save(newPost);
+    return newPost;
+  }
+
+  // 오운완 전체 조회
+  async findAll(challengeId): Promise<Post[]> {
+    const allPost = await this.findAll({
+      where: { challengeId },
+    });
+    return allPost;
   }
 }

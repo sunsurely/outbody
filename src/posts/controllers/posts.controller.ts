@@ -35,19 +35,16 @@ export class PostsController {
     }
   }
 
+  // 오운완 전체 조회
+  // http://localhost:3000/challenge/:challengeId/post
   @Get('/:challengeId/post')
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Param('challengeId') challengeId: number) {
+    return this.postsService.findAll(challengeId);
   }
 
   @Get('/:challengeId/post/:postid')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
-  }
-
-  @Patch('/:challengeId/post/:postid')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
   }
 
   @Delete('/:challengeId/post/:postid')
