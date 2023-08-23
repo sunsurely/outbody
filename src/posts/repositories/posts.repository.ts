@@ -27,7 +27,7 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 전체 조회
-  async findAll(challengeId): Promise<Post[]> {
+  async findAll(challengeId: number): Promise<Post[]> {
     const allPost = await this.find({
       where: { challengeId },
     });
