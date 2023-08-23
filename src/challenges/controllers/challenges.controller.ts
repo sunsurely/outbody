@@ -79,11 +79,7 @@ export class ChallengesController {
     @Body() type: Position,
     @Req() req: any,
   ) {
-    return await this.challengesService.joinChallenge(
-      challengeId,
-      type,
-      req.user.id,
-    );
+    return await this.challengesService.joinChallenge(challengeId, req.user.id);
   }
 
   // 도전 방 퇴장 (완성)

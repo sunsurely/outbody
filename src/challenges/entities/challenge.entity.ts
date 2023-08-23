@@ -39,7 +39,7 @@ export class Challenge {
     type: 'date',
     nullable: false,
   })
-  startDate: string;
+  startDate: Date;
 
   @Column({
     type: 'int',
