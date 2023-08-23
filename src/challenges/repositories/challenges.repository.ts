@@ -72,11 +72,12 @@ export class ChallengesRepository extends Repository<Challenge> {
 
   // 도전 방 종료시 포인트 자동분배 (상우)
   async pointsDistribute(): Promise<any> {
-    const today = new Date(); // 현재날짜
-    const todayString = today.toISOString();
+    // const today = new Date(); // 현재날짜
+    // const todayString = today.toISOString();
     const endChallenges = await this.find({
       where: {
         // endDate: LessThanOrEqual(todayString),
+        endDate: LessThanOrEqual(new Date()),
       },
     });
     const challengeIds = endChallenges.map((challenge) => challenge.id);
