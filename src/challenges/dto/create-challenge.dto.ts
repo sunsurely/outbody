@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsDate,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -23,8 +24,8 @@ export class CreateChallengeDto {
   imgUrl: string;
 
   @IsNotEmpty()
-  @IsString()
-  startDate: string;
+  @IsDate()
+  startDate: Date;
 
   @IsNotEmpty()
   @IsNumber()
@@ -32,8 +33,8 @@ export class CreateChallengeDto {
   challengeWeek: number;
 
   @IsNotEmpty()
-  @IsString()
-  endDate: string;
+  @IsDate()
+  endDate: Date;
 
   @IsNotEmpty()
   @IsNumber()

@@ -27,15 +27,6 @@ export class ChallengesService {
 
   // 도전 생성 (재용)
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
-    const isExistingChallenger =
-      await this.challengersRepository.getChallengerByUserId(userId);
-
-    if (isExistingChallenger) {
-      throw new BadRequestException(
-        '동시에 2개 이상의 도전을 생성할 수 없습니다.',
-      );
-    }
-
     const {
       title,
       imgUrl,
@@ -50,6 +41,15 @@ export class ChallengesService {
       fat,
     } = body;
 
+    const isExistingChallenger =
+      await this.challengersRepository.getChallengerByUserId(userId);
+
+    if (isExistingChallenger) {
+      throw new BadRequestException(
+        '동시에 2개 이상의 도전을 생성할 수 없습니다.',
+      );
+    }
+
     const entryPoint =
       attend * Point.ATTEND +
       weight * Point.WEIGHT +
@@ -57,15 +57,14 @@ export class ChallengesService {
       fat * Point.FAT;
 
     const startDateObject = new Date(startDate);
-    const endDateObject = new Date(startDateObject);
-    endDateObject.setDate(startDateObject.getDate() + challengeWeek * 7);
-    const endDate = endDateObject.toISOString();
+    const endDate = new Date();
+    endDate.setDate(startDateObject.getDate() + challengeWeek * 7);
 
     const challenge = await this.challengesRepository.createChallenge({
       userId,
       title,
       imgUrl,
-      startDate,
+      startDate: startDateObject,
       challengeWeek,
       endDate,
       userNumberLimit,
@@ -125,37 +124,40 @@ export class ChallengesService {
   }
 
   // 도전 삭제 (상우, 재용)
-  async deleteChallenge(challengeId: number) {
-    const myChallenge = await this.challengesRepository.getChallenge(
-      challengeId,
-    );
+  async deleteChallenge(challengeId: number, userId: number) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
 
-    if (!myChallenge) {
+    if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    const startDate = new Date(myChallenge.startDate);
-    const endDate = new Date(myChallenge.endDate);
-    const today = new Date();
+    const host = await this.challengersRepository.getChallengerByUserId(userId);
+    if (!host) {
+      throw new UnauthorizedException(
+        '본인이 만든 도전 방만 삭제가 가능합니다.',
+      );
+    }
 
     const challengerCount = await this.challengersRepository.getChallengerCount(
       challengeId,
     );
 
+    const today = new Date();
+
     if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');
-    } else if (startDate <= today && challengerCount >= 2) {
+    } else if (challenge.startDate <= today && challengerCount >= 2) {
       throw new BadRequestException(
         '도전에 참여한 회원이 이미 존재하며, 도전 시작일이 경과되었습니다.',
       );
-    } else if (endDate <= today) {
-      throw new BadRequestException('이미 종료된 도전입니다.');
+    } else if (challenge.endDate <= today) {
+      throw new BadRequestException('이미 종료된 도전은 삭제할 수 없습니다.');
     }
     return await this.challengesRepository.deleteChallenge(challengeId);
   }
 
   // 도전 방 입장 (재용)
-  async joinChallenge(challengeId: number, type: Position, userId: number) {
+  async joinChallenge(challengeId: number, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
 
     if (!challenge) {
@@ -182,10 +184,9 @@ export class ChallengesService {
       );
     }
 
-    const startDate = new Date(challenge.startDate);
     const today = new Date();
 
-    if (today > startDate) {
+    if (today > challenge.startDate) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
     }
 
@@ -205,12 +206,11 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    const startdate = new Date(challenge.startDate);
     const today = new Date();
 
     const user = await this.userRepository.getUserById(userId);
 
-    if (startdate <= today) {
+    if (challenge.startDate <= today) {
       user.point = user.point - challenge.entryPoint;
       const updateUserPoint = user.point;
       await this.userRepository.updateUserPoint(userId, updateUserPoint);
@@ -219,7 +219,7 @@ export class ChallengesService {
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
   }
 
-  // 도전 친구초대 (상우)
+  // 도전 친구 초대 (상우)
   async inviteChallenge(
     challengeId: number,
     body: InviteChallengeDto,
@@ -229,6 +229,13 @@ export class ChallengesService {
 
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
+    }
+
+    const challenger = await this.challengersRepository.getChallenger(
+      challengeId,
+    );
+    if (challenger.type !== Position.HOST) {
+      throw new UnauthorizedException('방장만 다른 유저를 초대할 수 있습니다.');
     }
 
     const { email } = body;
@@ -243,10 +250,16 @@ export class ChallengesService {
       throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
-    // const friend = await this.followsRepository.getFollowById(
-    //   invitedUser.id,
-    //   userId,
-    // );
+    const friend = await this.followsRepository.getFollowById(
+      invitedUser.id,
+      userId,
+    );
+    console.log('friend', friend);
+    if (!friend) {
+      throw new NotFoundException(
+        '해당 유저가 회원님의 친구가 아니므로 초대할 수 없습니다.',
+      );
+    }
 
     // 초대된 참가자가 이미 참가한 도전자인지 확인
     const existingChallenger = await this.challengersRepository.getChallenger(
@@ -263,7 +276,7 @@ export class ChallengesService {
       `invitation_${challengeId}_${invitedUser.id}`,
       message,
     );
-    console.log('invitation', invitation);
+    console.log('invitation 요청', invitation);
     // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
@@ -274,11 +287,11 @@ export class ChallengesService {
     userId: number,
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+    console.log('invitation 수락', invitation);
 
     if (!invitation) {
       throw new NotFoundException('새로운 초대가 없습니다.');
     }
-    console.log('invitation', invitation);
 
     const challenge = await this.challengesRepository.getChallenge(challengeId);
 

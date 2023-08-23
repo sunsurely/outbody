@@ -48,8 +48,14 @@ export class ChallengesController {
   // 도전 삭제 (완성)
   // DELETE http://localhost:3000/challenge/:id
   @Delete('/:challengeId')
-  async deleteChallenge(@Param('challengeId') challengeId: number) {
-    const remove = await this.challengesService.deleteChallenge(challengeId);
+  async deleteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Req() req: any,
+  ) {
+    const remove = await this.challengesService.deleteChallenge(
+      challengeId,
+      req.user.id,
+    );
     if (remove) {
       return { message: '도전이 성공적으로 삭제되었습니다.' };
     }
@@ -73,11 +79,7 @@ export class ChallengesController {
     @Body() type: Position,
     @Req() req: any,
   ) {
-    return await this.challengesService.joinChallenge(
-      challengeId,
-      type,
-      req.user.id,
-    );
+    return await this.challengesService.joinChallenge(challengeId, req.user.id);
   }
 
   // 도전 방 퇴장 (완성)

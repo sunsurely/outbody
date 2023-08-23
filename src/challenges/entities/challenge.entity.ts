@@ -10,6 +10,7 @@ import {
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Post } from 'src/posts/entities/post.entity';
 
 @Entity()
 export class Challenge {
@@ -38,7 +39,7 @@ export class Challenge {
     type: 'date',
     nullable: false,
   })
-  startDate: string;
+  startDate: Date;
 
   @Column({
     type: 'int',
@@ -50,7 +51,7 @@ export class Challenge {
     type: 'date',
     nullable: false,
   })
-  endDate: string;
+  endDate: Date;
 
   @Column({
     type: 'int',
@@ -88,4 +89,10 @@ export class Challenge {
   @ManyToOne(() => User, (user) => user.challenges)
   // @JoinColumn({ name: 'userId' })
   user: User;
+
+  // Challenge => Post 1:N
+  @OneToMany(() => Post, (post) => post.challenges, {
+    cascade: true,
+  })
+  post: Post[];
 }
