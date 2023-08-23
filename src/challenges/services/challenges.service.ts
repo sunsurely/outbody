@@ -219,7 +219,7 @@ export class ChallengesService {
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
   }
 
-  // 도전 친구초대 (상우)
+  // 도전 친구 초대 (상우)
   async inviteChallenge(
     challengeId: number,
     body: InviteChallengeDto,

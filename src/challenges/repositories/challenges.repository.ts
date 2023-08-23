@@ -1,11 +1,9 @@
 import { ChallengersRepository } from './challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource, Repository, EntityManager } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { Position } from '../challengerInfo';
-import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
@@ -76,12 +74,12 @@ export class ChallengesRepository extends Repository<Challenge> {
     const challenge = await this.getChallenge(challengeId);
     const endDate = new Date(challenge.endDate); // 도전종료날짜
     const today = new Date(); // 현재날짜
-    const entryPoint = challenge.totalPoint; // 1인당 참가비용
+    const entryPoint = challenge.entryPoint; // 1인당 참가비용
 
     const users = await this.challengersRepository.getChallengers(challengeId); // 참가한 전체유저
     const succeedUsers = users.filter((user) => user.done); // 성공한 유저목록
     const failedUsers = users.filter((user) => !user.done); // 실패한 유저목록
-    const totalEntryPoint = challenge.totalPoint * Number(users); // 전체유저가 입장시 낸 포인트
+    const totalPoint = challenge.entryPoint * Number(users); // 전체유저가 입장시 낸 포인트
 
     if (endDate <= today) {
       const entityManager = this.userRepository.manager;
