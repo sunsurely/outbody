@@ -232,6 +232,13 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
+    const challenger = await this.challengersRepository.getChallenger(
+      challengeId,
+    );
+    if (challenger.type !== Position.HOST) {
+      throw new UnauthorizedException('방장만 다른 유저를 초대할 수 있습니다.');
+    }
+
     const { email } = body;
     if (!email || email == undefined) {
       throw new BadRequestException(
@@ -244,10 +251,15 @@ export class ChallengesService {
       throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
-    // const friend = await this.followsRepository.getFollowById(
-    //   invitedUser.id,
-    //   userId,
-    // );
+    const friend = await this.followsRepository.getFollowById(
+      invitedUser.id,
+      userId,
+    );
+    if (!friend) {
+      throw new NotFoundException(
+        '해당 유저가 회원님의 친구가 아니므로 초대할 수 없습니다.',
+      );
+    }
 
     // 초대된 참가자가 이미 참가한 도전자인지 확인
     const existingChallenger = await this.challengersRepository.getChallenger(

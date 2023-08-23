@@ -12,8 +12,8 @@ export class ChallengeScheduler {
     await this.challengesRepository.automaticDelete();
   }
 
-  // @Cron(CronExpression.EVERY_SECOND)
-  // async pointCrom() {
-  //   await this.challengesRepository.pointsDistribute();
-  // }
+  @Cron(CronExpression.EVERY_MINUTE)
+  async pointCrom() {
+    await this.challengesRepository.pointsDistribute();
+  }
 }
