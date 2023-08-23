@@ -4,9 +4,9 @@ import { Like } from '../entities/like.entity';
 
 @Injectable()
 export class LikesRepository extends Repository<Like> {
-  constructor(private readonly dataSource: DataSource) {
-    super(Like, dataSource.createEntityManager());
-  }
+  // constructor(private readonly dataSource: DataSource) {
+  //   super(Like, dataSource.createEntityManager());
+  // }
 
   // 좋아요 생성
   async createLike(postId: number, userId: number): Promise<Like> {

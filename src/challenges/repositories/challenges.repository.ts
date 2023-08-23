@@ -1,16 +1,9 @@
 import { ChallengersRepository } from './challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  DataSource,
-  Repository,
-  EntityManager,
-  LessThanOrEqual,
-} from 'typeorm';
+import { DataSource, Repository, LessThanOrEqual } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { Position } from '../challengerInfo';
-import { Follow } from 'src/follows/entities/follow.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
