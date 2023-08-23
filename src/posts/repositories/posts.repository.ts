@@ -25,4 +25,13 @@ export class PostsRepository extends Repository<Post> {
     });
     return allPost;
   }
+
+  // 오운완 상세 조회
+  async findOne(challengeId: number, postId: number): Promise<Post> {
+    const onePost = await this.findOne({
+      where: { challengeId, id: postId },
+    });
+
+    return onePost;
+  }
 }

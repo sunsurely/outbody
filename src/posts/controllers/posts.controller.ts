@@ -38,13 +38,18 @@ export class PostsController {
   // 오운완 전체 조회
   // http://localhost:3000/challenge/:challengeId/post
   @Get('/:challengeId/post')
-  findAll(@Param('challengeId') challengeId: number) {
-    return this.postsService.findAll(challengeId);
+  async findAll(@Param('challengeId') challengeId: number) {
+    return await this.postsService.findAll(challengeId);
   }
 
+  // 오운완 상세 조회
+  // http://localhost:3000/challenge/:challengeId/post/:postId
   @Get('/:challengeId/post/:postid')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  async findOne(
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+  ) {
+    return await this.postsService.findOne(challengeId, postId);
   }
 
   @Delete('/:challengeId/post/:postid')

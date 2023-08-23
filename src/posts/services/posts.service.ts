@@ -25,11 +25,12 @@ export class PostsService {
 
   // 오운완 전체 조회
   async findAll(challengeId: number) {
-    return this.postsRepository.findAll(challengeId);
+    return await this.postsRepository.findAll(challengeId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  // 오운완 상세 조회
+  async findOne(challengeId: number, postId: number) {
+    return await this.postsRepository.findOne(challengeId, postId);
   }
 
   remove(id: number) {
