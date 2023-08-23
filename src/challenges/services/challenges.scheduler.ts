@@ -11,7 +11,7 @@ export class ChallengeScheduler {
   async handleCron() {
     await this.challengesRepository.automaticDelete();
   }
-  async pointCrom() {
-    await this.challengesRepository.pointsDistribute();
+  async pointCrom(challengeId: number) {
+    await this.challengesRepository.pointsDistribute(challengeId);
   }
 }
