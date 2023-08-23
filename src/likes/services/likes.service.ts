@@ -3,7 +3,6 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { LikesRepository } from '../repositories/likes.repository';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
