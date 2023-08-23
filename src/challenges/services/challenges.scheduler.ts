@@ -11,7 +11,10 @@ export class ChallengeScheduler {
   async handleCron() {
     await this.challengesRepository.automaticDelete();
   }
+
+  @Cron(CronExpression.EVERY_SECOND)
   async pointCrom() {
+    this.logger.debug('저 살아있습니다!');
     await this.challengesRepository.pointsDistribute();
   }
 }

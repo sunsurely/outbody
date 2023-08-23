@@ -263,7 +263,7 @@ export class ChallengesService {
       `invitation_${challengeId}_${invitedUser.id}`,
       message,
     );
-    console.log('invitation', invitation);
+    console.log('invitation 요청', invitation);
     // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
@@ -274,11 +274,11 @@ export class ChallengesService {
     userId: number,
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+    console.log('invitation 수락', invitation);
 
     if (!invitation) {
       throw new NotFoundException('새로운 초대가 없습니다.');
     }
-    console.log('invitation', invitation);
 
     const challenge = await this.challengesRepository.getChallenge(challengeId);
 
