@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { LikesService } from '../services/likes.service';
 
 @Controller('challenge')
+@UseInterceptors(Response)
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 

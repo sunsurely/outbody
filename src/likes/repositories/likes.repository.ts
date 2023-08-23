@@ -4,9 +4,9 @@ import { Like } from '../entities/like.entity';
 
 @Injectable()
 export class LikesRepository extends Repository<Like> {
-  // constructor(private readonly dataSource: DataSource) {
-  //   super(Like, dataSource.createEntityManager());
-  // }
+  constructor(private readonly dataSource: DataSource) {
+    super(Like, dataSource.createEntityManager());
+  }
 
   // 좋아요 생성
   async createLike(postId: number, userId: number): Promise<Like> {
@@ -30,9 +30,9 @@ export class LikesRepository extends Repository<Like> {
     await this.delete(likeId);
   }
 
-  // 유저 조회
-  async getUserInfo(userId: number): Promise<Like> {
-    const likedUser = await this.findOne({ where: { userId: userId } });
+  // likeId로 유저 조회
+  async getUserInfo(postId: number, userId: number): Promise<Like> {
+    const likedUser = await this.findOne({ where: { postId, userId } });
     console.log('likedUser', likedUser);
     return likedUser;
   }
