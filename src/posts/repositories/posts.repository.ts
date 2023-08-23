@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
 import { Post } from '../entities/post.entity';
 
 @Injectable()
@@ -24,6 +24,21 @@ export class PostsRepository extends Repository<Post> {
     await this.save(newPost);
 
     return newPost;
+  }
+
+  // 오늘 게시글을 올렸는지 확인
+  async existTodayPost(userId: number): Promise<boolean> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const count = await this.count({
+      where: {
+        userId,
+        createdAt: MoreThanOrEqual(today),
+      },
+    });
+
+    return count > 0;
   }
 
   // 오운완 전체 조회
