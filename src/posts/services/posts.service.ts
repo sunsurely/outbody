@@ -24,13 +24,13 @@ export class PostsService {
   }
 
   // 오운완 전체 조회
-  async findAll(challengeId: number) {
-    return await this.postsRepository.findAll(challengeId);
+  async getAllPost(challengeId: number) {
+    return await this.postsRepository.getAllPost(challengeId);
   }
 
   // 오운완 상세 조회
-  async findOne(postId: number) {
-    return await this.postsRepository.findOne(postId);
+  async getOnePost(postId: number) {
+    return await this.postsRepository.getOnePost(postId);
   }
 
   // 오운완 삭제

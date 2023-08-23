@@ -27,7 +27,7 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 전체 조회
-  async findAll(challengeId: number): Promise<Post[]> {
+  async getAllPost(challengeId: number): Promise<Post[]> {
     const allPost = await this.find({
       where: { challengeId },
     });
@@ -35,11 +35,10 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 상세 조회
-  async findOne(postId): Promise<Post> {
+  async getOnePost(postId: number): Promise<Post> {
     const onePost = await this.findOne({
       where: { id: postId },
     });
-
     return onePost;
   }
 

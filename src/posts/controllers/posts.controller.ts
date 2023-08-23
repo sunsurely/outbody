@@ -38,15 +38,15 @@ export class PostsController {
   // 오운완 전체 조회
   // http://localhost:3000/challenge/:challengeId/post
   @Get('/:challengeId/post')
-  async findAll(@Param('challengeId') challengeId: number) {
-    return await this.postsService.findAll(challengeId);
+  async getAllPost(@Param('challengeId') challengeId: number) {
+    return await this.postsService.getAllPost(challengeId);
   }
 
   // 오운완 상세 조회
   // http://localhost:3000/challenge/:challengeId/post/:postId
-  @Get('/:challengeId/post/:postid')
-  async findOne(@Param('postId') postId: number) {
-    return await this.postsService.findOne(postId);
+  @Get('/:challengeId/post/:postId')
+  async getOnePost(@Param('postId') postId: number) {
+    return await this.postsService.getOnePost(postId);
   }
 
   // 오운완 삭제
