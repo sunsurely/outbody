@@ -29,11 +29,12 @@ export class PostsService {
   }
 
   // 오운완 상세 조회
-  async findOne(challengeId: number, postId: number) {
-    return await this.postsRepository.findOne(challengeId, postId);
+  async findOne(postId: number) {
+    return await this.postsRepository.findOne(postId);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  // 오운완 삭제
+  async deletePost(postId: number) {
+    return await this.postsRepository.deletePost(postId);
   }
 }

@@ -45,15 +45,18 @@ export class PostsController {
   // 오운완 상세 조회
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Get('/:challengeId/post/:postid')
-  async findOne(
-    @Param('challengeId') challengeId: number,
-    @Param('postId') postId: number,
-  ) {
-    return await this.postsService.findOne(challengeId, postId);
+  async findOne(@Param('postId') postId: number) {
+    return await this.postsService.findOne(postId);
   }
 
+  // 오운완 삭제
+  // http://localhost:3000/challenge/:challengeId/post/:postId
   @Delete('/:challengeId/post/:postid')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  deletePost(@Param('postId') postId: number) {
+    const deletePost = this.postsService.deletePost(postId);
+
+    if (deletePost) {
+      return { message: '오운완 삭제가 완료 되었습니다.' };
+    }
   }
 }

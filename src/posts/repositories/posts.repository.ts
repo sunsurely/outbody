@@ -8,7 +8,12 @@ export class PostsRepository extends Repository<Post> {
   //   constructor() {}
 
   // 오운완 인증 게시글 생성
-  async createPost(description, imgUrl, challengeId, userId): Promise<Post> {
+  async createPost(
+    description: string,
+    imgUrl: string,
+    challengeId: number,
+    userId: number,
+  ): Promise<Post> {
     const newPost = await this.create({
       description,
       imgUrl,
@@ -27,11 +32,18 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 상세 조회
-  async findOne(challengeId: number, postId: number): Promise<Post> {
+  async findOne(postId): Promise<Post> {
     const onePost = await this.findOne({
-      where: { challengeId, id: postId },
+      where: { id: postId },
     });
 
     return onePost;
+  }
+
+  // 오운완 삭제
+  async deletePost(postId: number): Promise<any> {
+    const deletePost = await this.delete(postId);
+
+    return deletePost;
   }
 }
