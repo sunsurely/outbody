@@ -1,5 +1,6 @@
 import { ChallengesRepository } from './../../challenges/repositories/challenges.repository';
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -25,9 +26,10 @@ export class LikesService {
     if (!post || post == undefined) {
       throw new NotFoundException('해당 오운완 게시글이 조회되지 않습니다.');
     }
+    console.log('userId', userId);
     const clickedUser = await this.likesRepository.getUserInfo(postId, userId);
-    if (clickedUser.userId == userId) {
-      throw new UnauthorizedException('이미 좋아요를 누른 게시글입니다.');
+    if (clickedUser) {
+      throw new BadRequestException('이미 좋아요를 누른 게시글입니다.');
     }
 
     const like = await this.likesRepository.createLike(postId, userId);
@@ -66,7 +68,7 @@ export class LikesService {
     const clickedUser = await this.likesRepository.getUserInfo(postId, userId);
     // const like = await this.likesRepository.getLike(likeId);
 
-    if (clickedUser.userId !== userId) {
+    if (!clickedUser) {
       throw new NotFoundException(
         '해당 오운완 게시글에 좋아요를 누르지 않았습니다.',
       );

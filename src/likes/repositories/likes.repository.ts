@@ -21,19 +21,22 @@ export class LikesRepository extends Repository<Like> {
   async getLikes(postId: number): Promise<Like[]> {
     const likes = await this.find({
       where: { postId },
+      order: { createdAt: 'DESC' },
     });
     return likes;
   }
 
   // 좋아요 취소
   async deleteLike(likeId: number): Promise<any> {
-    await this.delete(likeId);
+    return await this.delete(likeId);
   }
 
-  // likeId로 유저 조회
+  // 유저 조회
   async getUserInfo(postId: number, userId: number): Promise<Like> {
-    const likedUser = await this.findOne({ where: { postId, userId } });
-    console.log('likedUser', likedUser);
+    const likedUser = await this.findOne({
+      where: { postId: postId, userId: userId },
+    });
+
     return likedUser;
   }
 }

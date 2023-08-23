@@ -16,10 +16,16 @@ export class Like {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   postId: number;
 
-  @Column('int')
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   userId: number;
 
   @CreateDateColumn()
