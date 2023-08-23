@@ -51,7 +51,7 @@ export class PostsController {
 
   // 오운완 삭제
   // http://localhost:3000/challenge/:challengeId/post/:postId
-  @Delete('/:challengeId/post/:postid')
+  @Delete('/:challengeId/post/:postId')
   deletePost(@Param('postId') postId: number) {
     const deletePost = this.postsService.deletePost(postId);
 
