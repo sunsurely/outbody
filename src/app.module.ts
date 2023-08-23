@@ -20,6 +20,8 @@ import { AuthMiddleware } from './common/middlewares/auth.middleware';
 import { FollowsModule } from './follows/follows.module';
 import { ReportsModule } from './reports/reports.module';
 import { BlackListModule } from './blacklists/blacklists.module';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { BlackListModule } from './blacklists/blacklists.module';
     FollowsModule,
     ReportsModule,
     BlackListModule,
+    LikesModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

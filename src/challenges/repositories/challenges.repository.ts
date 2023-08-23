@@ -147,17 +147,17 @@ export class ChallengesRepository extends Repository<Challenge> {
               userPoint -= entryPoint;
             }
 
-            await transactionalEntityManager.update(
-              User,
-              { id: user.id },
-              { point: userPoint },
-            );
-          }
-        });
-      }
-      this.logger.debug(
-        `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
-      );
-    }
-  }
+  //           await transactionalEntityManager.update(
+  //             User,
+  //             { id: user.id },
+  //             { point: userPoint },
+  //           );
+  //         }
+  //       });
+  //     }
+  //     this.logger.debug(
+  //       `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
+  //     );
+  //   }
+  // }
 }
