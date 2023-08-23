@@ -30,6 +30,7 @@ export class PostsRepository extends Repository<Post> {
   async getAllPost(challengeId: number): Promise<Post[]> {
     const allPost = await this.find({
       where: { challengeId },
+      order: { createdAt: 'DESC' },
     });
     return allPost;
   }
