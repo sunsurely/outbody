@@ -31,7 +31,7 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challenger;
   }
 
-  // 도전자 조회 (재용) => By. userId
+  // 도전자 조회 (재용)
   async getChallengerByUserId(userId: number): Promise<Challenger> {
     const challenger = await this.findOne({
       where: { userId, done: false },

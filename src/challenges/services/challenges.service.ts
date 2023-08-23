@@ -171,8 +171,6 @@ export class ChallengesService {
 
     const startDate = new Date(challenge.startDate);
     const today = new Date();
-    console.log(startDate);
-    console.log(today);
 
     if (today > startDate) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
