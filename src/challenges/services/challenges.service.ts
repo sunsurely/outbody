@@ -27,15 +27,6 @@ export class ChallengesService {
 
   // 도전 생성 (재용)
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
-    const isExistingChallenger =
-      await this.challengersRepository.getChallengerByUserId(userId);
-
-    if (isExistingChallenger) {
-      throw new BadRequestException(
-        '동시에 2개 이상의 도전을 생성할 수 없습니다.',
-      );
-    }
-
     const {
       title,
       imgUrl,
@@ -50,6 +41,15 @@ export class ChallengesService {
       fat,
     } = body;
 
+    const isExistingChallenger =
+      await this.challengersRepository.getChallengerByUserId(userId);
+
+    if (isExistingChallenger) {
+      throw new BadRequestException(
+        '동시에 2개 이상의 도전을 생성할 수 없습니다.',
+      );
+    }
+
     const entryPoint =
       attend * Point.ATTEND +
       weight * Point.WEIGHT +
@@ -57,16 +57,14 @@ export class ChallengesService {
       fat * Point.FAT;
 
     const startDateObject = new Date(startDate);
-    const endDateObject = new Date(startDateObject);
-    endDateObject.setDate(startDateObject.getDate() + challengeWeek * 7);
-    // const endDate = endDateObject.toISOString();
-    const endDate = new Date(endDateObject);
+    const endDate = new Date();
+    endDate.setDate(startDateObject.getDate() + challengeWeek * 7);
 
     const challenge = await this.challengesRepository.createChallenge({
       userId,
       title,
       imgUrl,
-      startDate,
+      startDate: startDateObject,
       challengeWeek,
       endDate,
       userNumberLimit,
@@ -127,36 +125,32 @@ export class ChallengesService {
 
   // 도전 삭제 (상우, 재용)
   async deleteChallenge(challengeId: number) {
-    const myChallenge = await this.challengesRepository.getChallenge(
-      challengeId,
-    );
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
 
-    if (!myChallenge) {
+    if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
-
-    const startDate = new Date(myChallenge.startDate);
-    const endDate = new Date(myChallenge.endDate);
-    const today = new Date();
 
     const challengerCount = await this.challengersRepository.getChallengerCount(
       challengeId,
     );
 
+    const today = new Date();
+
     if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');
-    } else if (startDate <= today && challengerCount >= 2) {
+    } else if (challenge.startDate <= today && challengerCount >= 2) {
       throw new BadRequestException(
         '도전에 참여한 회원이 이미 존재하며, 도전 시작일이 경과되었습니다.',
       );
-    } else if (endDate <= today) {
-      throw new BadRequestException('이미 종료된 도전입니다.');
+    } else if (challenge.endDate <= today) {
+      throw new BadRequestException('이미 종료된 도전은 삭제할 수 없습니다.');
     }
     return await this.challengesRepository.deleteChallenge(challengeId);
   }
 
   // 도전 방 입장 (재용)
-  async joinChallenge(challengeId: number, type: Position, userId: number) {
+  async joinChallenge(challengeId: number, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
 
     if (!challenge) {
@@ -183,10 +177,9 @@ export class ChallengesService {
       );
     }
 
-    const startDate = new Date(challenge.startDate);
     const today = new Date();
 
-    if (today > startDate) {
+    if (today > challenge.startDate) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
     }
 
@@ -206,12 +199,11 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    const startdate = new Date(challenge.startDate);
     const today = new Date();
 
     const user = await this.userRepository.getUserById(userId);
 
-    if (startdate <= today) {
+    if (challenge.startDate <= today) {
       user.point = user.point - challenge.entryPoint;
       const updateUserPoint = user.point;
       await this.userRepository.updateUserPoint(userId, updateUserPoint);
@@ -220,7 +212,7 @@ export class ChallengesService {
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
   }
 
-  // 도전 친구초대 (상우)
+  // 도전 친구 초대 (상우)
   async inviteChallenge(
     challengeId: number,
     body: InviteChallengeDto,
