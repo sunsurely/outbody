@@ -43,7 +43,7 @@ export class RecordsController {
   }
 
   //기간별 기록정보 불러오기  localhost:3000/record/date
-  @Post('/date')
+  @Get('/date/period')
   async getRecordsByDateRange(@Body() date: RangeRecordDto, @Req() req: any) {
     return await this.recordesService.getRecordsByDateRange(
       date.start,

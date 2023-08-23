@@ -11,4 +11,4 @@ import { RecordCachingService } from './services/recordsCache.service';
   controllers: [RecordsController],
   providers: [RecordsService, RecordsRepository, RecordCachingService],
 })
-export class RecodesModule {}
+export class RecordsModule {}

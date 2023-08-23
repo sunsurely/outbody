@@ -9,7 +9,7 @@ export class FollowsRepository extends Repository<Follow> {
   }
 
   //친구추가
-  async createFollower(followId: number, userId: number) {
+  async createFollow(followId: number, userId: number) {
     const follow = await this.create({ followId, userId });
     return await this.save(follow);
   }
@@ -21,7 +21,8 @@ export class FollowsRepository extends Repository<Follow> {
   }
 
   //친구삭제
-  async deleteFollower(followId: number, userId: number) {
-    return await this.delete({ followId, userId });
+  async deleteFollower(userId: number, followId: number) {
+    const deleted = await this.delete({ followId, userId });
+    return deleted;
   }
 }

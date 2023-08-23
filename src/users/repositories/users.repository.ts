@@ -34,7 +34,6 @@ export class UserRepository extends Repository<User> {
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
-      .select(['user.id', 'user.password', 'user.status'])
       .where('user.email = :email', { email })
       .getOne();
 
@@ -96,6 +95,7 @@ export class UserRepository extends Repository<User> {
         'user.imgUrl',
         'user.comment',
         'user.point',
+        'user.email',
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
