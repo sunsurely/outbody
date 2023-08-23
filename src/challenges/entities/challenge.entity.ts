@@ -91,6 +91,8 @@ export class Challenge {
   user: User;
 
   // Challenge => Post 1:N
-  @OneToMany(() => Post, (post) => post.challenges)
+  @OneToMany(() => Post, (post) => post.challenges, {
+    cascade: true,
+  })
   post: Post[];
 }

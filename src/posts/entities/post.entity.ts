@@ -46,7 +46,9 @@ export class Post {
   // comment: Comment[];
 
   // Post: Challenges = N:1
-  @ManyToOne(() => Challenge, (challenges) => challenges.post)
+  @ManyToOne(() => Challenge, (challenges) => challenges.post, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'challengeId' })
   challenges: Challenge;
 
