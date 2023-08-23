@@ -31,8 +31,9 @@ export class LikesRepository extends Repository<Like> {
   }
 
   // 유저 조회
-  async getUserInfo(likeId: number, userId: number): Promise<Like> {
-    const likedUser = await this.findOne({ where: { id: likeId, userId } });
+  async getUserInfo(userId: number): Promise<Like> {
+    const likedUser = await this.findOne({ where: { userId: userId } });
+    console.log('likedUser', likedUser);
     return likedUser;
   }
 }

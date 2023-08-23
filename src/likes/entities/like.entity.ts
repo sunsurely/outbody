@@ -11,7 +11,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-@Entity({ schema: 'outbody', name: 'reports' })
+@Entity({ schema: 'outbody', name: 'likes' })
 export class Like {
   @PrimaryGeneratedColumn()
   id: number;

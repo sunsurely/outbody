@@ -21,11 +21,11 @@ export class LikesService {
     if (!challenge || challenge == undefined) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
-    const post = await this.postsRepository.findOne(postId);
+    const post = await this.postsRepository.getOnePost(postId);
     if (!post || post == undefined) {
       throw new NotFoundException('해당 오운완 게시글이 조회되지 않습니다.');
     }
-    const clickedUser = await this.likesRepository.getUserInfo(postId, userId);
+    const clickedUser = await this.likesRepository.getUserInfo(userId);
     if (clickedUser.userId == userId) {
       throw new UnauthorizedException('이미 좋아요를 누른 게시글입니다.');
     }
@@ -40,7 +40,7 @@ export class LikesService {
     if (!challenge || challenge == undefined) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
-    const post = await this.postsRepository.findOne(postId);
+    const post = await this.postsRepository.getOnePost(postId);
     if (!post || post == undefined) {
       throw new NotFoundException('해당 오운완 게시글이 조회되지 않습니다.');
     }
@@ -59,11 +59,11 @@ export class LikesService {
     if (!challenge || challenge == undefined) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
-    const post = await this.postsRepository.findOne(postId);
+    const post = await this.postsRepository.getOnePost(postId);
     if (!post || post == undefined) {
       throw new NotFoundException('해당 오운완 게시글이 조회되지 않습니다.');
     }
-    const clickedUser = await this.likesRepository.getUserInfo(likeId, userId);
+    const clickedUser = await this.likesRepository.getUserInfo(userId);
     // const like = await this.likesRepository.getLike(likeId);
 
     if (clickedUser.userId !== userId) {
