@@ -6,7 +6,6 @@ import {
   OneToOne,
   OneToMany,
   ManyToOne,
-  JoinColumn,
 } from 'typeorm';
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
@@ -72,7 +71,7 @@ export class Challenge {
     type: 'int',
     nullable: false,
   })
-  totalPoint: number;
+  entryPoint: number;
 
   @CreateDateColumn()
   createdAt: Date;

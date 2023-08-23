@@ -52,5 +52,5 @@ export class CreateChallengeDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  totalPoint: number;
+  entryPoint: number;
 }

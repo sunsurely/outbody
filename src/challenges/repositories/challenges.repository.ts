@@ -2,10 +2,7 @@ import { UserRepository } from 'src/users/repositories/users.repository';
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
-import { Challenger } from '../entities/challenger.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { Position } from '../challengerInfo';
-import { Follow } from 'src/follows/entities/follow.entity';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -38,7 +35,7 @@ export class ChallengesRepository extends Repository<Challenge> {
   }
 
   // 도전 삭제 (상우, 재용)
-  async deleteChallenge(challengeId): Promise<any> {
+  async deleteChallenge(challengeId: number): Promise<any> {
     const result = await this.delete(challengeId);
     return result;
   }
