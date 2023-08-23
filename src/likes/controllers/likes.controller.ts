@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
   Req,
@@ -30,7 +28,7 @@ export class LikesController {
       req.user.id,
     );
     if (like) {
-      return { message: `${postId} 게시글에 좋아요를 눌렀습니다.` };
+      return { message: `${postId}번 오운완 게시글에 좋아요를 눌렀습니다.` };
     }
   }
 
@@ -61,7 +59,7 @@ export class LikesController {
       req.user.id,
     );
     if (unlike) {
-      return { message: `${postId} 게시글 좋아요를 취소했습니다.` };
+      return { message: `${postId}번 오운완 게시글 좋아요를 취소했습니다.` };
     }
   }
 }

@@ -31,12 +31,11 @@ export class LikesRepository extends Repository<Like> {
     return await this.delete(likeId);
   }
 
-  // 유저 조회
+  // 좋아요 사용자 조회
   async getUserInfo(postId: number, userId: number): Promise<Like> {
     const likedUser = await this.findOne({
-      where: { postId: postId, userId: userId },
+      where: { postId, userId },
     });
-
     return likedUser;
   }
 }

@@ -38,6 +38,7 @@ export class ChallengesRepository extends Repository<Challenge> {
   }
 
   // 도전 삭제 (상우, 재용)
+  // 도전 시작일 전, 참가한 회원이 없을 경우에만 삭제 가능
   async deleteChallenge(challengeId: number): Promise<any> {
     const result = await this.delete(challengeId);
     return result;
@@ -147,17 +148,17 @@ export class ChallengesRepository extends Repository<Challenge> {
               userPoint -= entryPoint;
             }
 
-  //           await transactionalEntityManager.update(
-  //             User,
-  //             { id: user.id },
-  //             { point: userPoint },
-  //           );
-  //         }
-  //       });
-  //     }
-  //     this.logger.debug(
-  //       `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
-  //     );
-  //   }
-  // }
+            await transactionalEntityManager.update(
+              User,
+              { id: user.id },
+              { point: userPoint },
+            );
+          }
+        });
+      }
+      this.logger.debug(
+        `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
+      );
+    }
+  }
 }
