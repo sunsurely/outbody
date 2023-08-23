@@ -80,8 +80,8 @@ export class ChallengesController {
     );
   }
 
-  // 도전 방 퇴장
-  // POST http://localhost:3000/challenge/:id/leave
+  // 도전 방 퇴장 (완성)
+  // DELETE http://localhost:3000/challenge/:id/leave
   @Delete('/:challengeId/leave')
   async leaveChallenge(
     @Param('challengeId') challengeId: number,
