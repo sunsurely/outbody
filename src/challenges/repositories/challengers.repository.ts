@@ -39,10 +39,10 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challenger;
   }
 
-  //도전자 퇴장 (상우)
+  // 도전자 퇴장 (상우, 재용)
   async deleteChallenger(challengeId: number, userId: number): Promise<void> {
     const challenger = await this.findOne({
-      where: { challengeId, userId },
+      where: { challengeId, userId, done: false },
     });
     await this.remove(challenger);
   }

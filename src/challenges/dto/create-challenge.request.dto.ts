@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsIn,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -8,12 +7,8 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { Position } from '../challengerInfo';
 
 export class CreateChallengeRequestDto {
-  @IsIn([Position.HOST, Position.GUEST, Position.INVITED])
-  type: Position;
-
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
