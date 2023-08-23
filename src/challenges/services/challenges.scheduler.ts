@@ -13,8 +13,7 @@ export class ChallengeScheduler {
   }
 
   @Cron(CronExpression.EVERY_SECOND)
-  async pointCrom() {
-    this.logger.debug('저 살아있습니다!');
+  async pointCron() {
     await this.challengesRepository.pointsDistribute();
   }
 }

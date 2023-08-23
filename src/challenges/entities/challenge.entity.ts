@@ -38,7 +38,7 @@ export class Challenge {
     type: 'date',
     nullable: false,
   })
-  startDate: string;
+  startDate: Date;
 
   @Column({
     type: 'int',
@@ -50,7 +50,7 @@ export class Challenge {
     type: 'date',
     nullable: false,
   })
-  endDate: string;
+  endDate: Date;
 
   @Column({
     type: 'int',
