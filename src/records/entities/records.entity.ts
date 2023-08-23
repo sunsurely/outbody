@@ -39,7 +39,7 @@ export class Record {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date | null;
 
   @ManyToOne(() => User, (user) => user.records, { onDelete: 'CASCADE' })

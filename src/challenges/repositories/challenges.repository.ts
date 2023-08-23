@@ -68,19 +68,4 @@ export class ChallengesRepository extends Repository<Challenge> {
       );
     }
   }
-
-  // 도전 친구 초대 (상우)
-  async inviteChallenge(challengeId: number, friend: Follow): Promise<void> {
-    const newChallenger: Partial<Challenger> = {
-      challengeId,
-      userId: friend.id,
-      type: Position.GUEST,
-      done: false,
-    };
-
-    await this.createQueryBuilder('challenger')
-      .insert()
-      .values(newChallenger)
-      .execute();
-  }
 }

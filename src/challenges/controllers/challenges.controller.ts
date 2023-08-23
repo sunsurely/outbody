@@ -70,7 +70,7 @@ export class ChallengesController {
   @Post('/:challengeId/enter')
   async joinChallenge(
     @Param('challengeId') challengeId: number,
-    @Body('type') type: Position,
+    @Body() type: Position,
     @Req() req: any,
   ) {
     return await this.challengesService.joinChallenge(
@@ -98,7 +98,7 @@ export class ChallengesController {
   @Post('/:challengeId/invite')
   async inviteChallenge(
     @Param('challengeId') challengeId: number,
-    @Body('body') body: InviteChallengeDto,
+    @Body() body: InviteChallengeDto,
     @Req() req: any,
   ) {
     return await this.challengesService.inviteChallenge(
@@ -113,7 +113,7 @@ export class ChallengesController {
   @Post('/:challengeId/accept')
   async acceptChallenge(
     @Param('challengeId') challengeId: number,
-    @Body('body') body: ResponseChallengeDto,
+    @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {
     return await this.challengesService.acceptChallenge(

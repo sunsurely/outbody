@@ -13,6 +13,7 @@ import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { Point, Position } from '../challengerInfo';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
+import { cache } from '../cache/challenges.cache';
 
 @Injectable()
 export class ChallengesService {
@@ -190,6 +191,17 @@ export class ChallengesService {
     if (!challenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');
     }
+    const startdate = new Date(challenge.startDate);
+    const today = new Date();
+    const user = await this.userRepository.getUserById(userId);
+
+    if (startdate <= today) {
+      user.point = user.point - challenge.totalPoint;
+      return {
+        message: '도전 시작일 전 퇴장을 하셨으므로, total포인트가 차감됩니다.',
+      };
+    }
+
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
   }
 
@@ -220,28 +232,37 @@ export class ChallengesService {
       invitedUser.id,
       userId,
     );
-    console.log('userId', userId);
-    console.log('invitedUser.id', invitedUser.id);
-    if (!friend || friend == undefined) {
-      throw new NotFoundException('친구가 조회되지 않습니다.');
-    }
 
-    // 초대된 참가자가 이미 참가한 도전자인지 확인
+    // 초대된 참가자가 이미 참가한 도전자인지 확인 (상우)
     const existingChallenger = await this.challengersRepository.getChallenger(
       challengeId,
     );
     if (existingChallenger.userId == invitedUser.id) {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
-    await this.challengesRepository.inviteChallenge(challengeId, friend);
+
+    const message =
+      '도전에 참가하시겠습니까? (yes/no) (해당 초대메시지는 24시간 동안 유효합니다.)';
+
+    const invitation = cache.set(
+      `invitation_${challengeId}_${invitedUser.id}`,
+      message,
+    );
+    console.log('invitation', invitation);
+    // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
-  // 도전 초대수락
+  // 도전 초대수락 (상우)
   async acceptChallenge(
     challengeId: number,
     body: ResponseChallengeDto,
     userId: number,
   ) {
+    const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+    if (!invitation) {
+      throw new NotFoundException('새로운 초대메시지가 없습니다.');
+    }
+    console.log('invitation', invitation);
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
       throw new NotFoundException('해당 도전 게시글이 조회되지 않습니다.');

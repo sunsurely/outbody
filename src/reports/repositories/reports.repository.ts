@@ -21,4 +21,14 @@ export class ReportsRepository extends Repository<Report> {
     });
     return await this.save(newReport);
   }
+
+  //관리자 계정, 모든 신고기록 조회
+  async getAllReports(): Promise<Report[]> {
+    return await this.find();
+  }
+
+  //관리자 계정,  commentId에 해당하는 모든 신고기록들 조회
+  async getReportsByCommentId(commentId): Promise<Report[]> {
+    return await this.find({ where: { commentId } });
+  }
 }
