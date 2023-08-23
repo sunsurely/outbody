@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Gender, CurrentUser } from '../userInfo';
+import { Gender, CurrentUser, Status } from '../userInfo';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -17,6 +17,7 @@ export class UserRepository extends Repository<User> {
     age: number,
     height: number,
     gender: string,
+    status: string,
   ): Promise<User> {
     const newUser = this.create({
       name,
@@ -25,6 +26,7 @@ export class UserRepository extends Repository<User> {
       age,
       height,
       gender: gender as Gender,
+      status: status as Status,
     });
     return await this.save(newUser);
   }
@@ -32,15 +34,7 @@ export class UserRepository extends Repository<User> {
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.name',
-        'user.age',
-        'user.gender',
-        'user.height',
-        'user.imgUrl',
-        'user.comment',
-      ])
+      .select(['user.id', 'user.password', 'user.status'])
       .where('user.email = :email', { email })
       .getOne();
 
@@ -101,8 +95,9 @@ export class UserRepository extends Repository<User> {
         'user.height',
         'user.imgUrl',
         'user.comment',
+        'user.point',
       ])
-      .where('user.id = :id', { userId })
+      .where('user.id = :id', { id: userId })
       .getOne();
 
     return user;
@@ -111,6 +106,12 @@ export class UserRepository extends Repository<User> {
   //유저 정보 수정
   async updateUser(userId, age, height, gender) {
     const result = await this.update({ id: userId }, { age, height, gender });
+    return result;
+  }
+
+  //비밀번호 수정
+  async updatePassword(id, newPassword) {
+    const result = await this.update({ id }, { password: newPassword });
     return result;
   }
 

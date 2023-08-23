@@ -13,6 +13,7 @@ import {
 import { UserCreateDto } from '../dto/users.create.dto';
 import { UserService } from '../services/users.service';
 import { UserUpdateDto } from '../dto/users.update.dto';
+import { UserPasswordDto } from '../dto/password.update.dto';
 
 @Controller('users')
 export class UserController {
@@ -51,6 +52,12 @@ export class UserController {
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
     return await this.userService.updateUser(req.user.id, userDto);
+  }
+
+  //유저 password수정 localhost:3000/users/me/password
+  @Patch('/me/password')
+  async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
+    return await this.userService.updatePassword(req.user.id, passwordDto);
   }
 
   //회원 탈퇴 localhost:3000/users/me

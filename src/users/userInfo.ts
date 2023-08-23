@@ -8,6 +8,11 @@ export enum Provider {
   KAKAO = 'kakao',
 }
 
+export enum Status {
+  NORMAL = 'normal',
+  ADMIN = 'admin',
+}
+
 export interface CurrentUser {
   id: number;
   name: string;

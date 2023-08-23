@@ -1,9 +1,9 @@
-import { IsString, Matches, IsNumber, IsIn } from 'class-validator';
+import { IsString, Matches } from 'class-validator';
 
 import { Transform } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
-export class UserUpdateDto {
+export class UserPasswordDto {
   @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}/)
   readonly password: string;

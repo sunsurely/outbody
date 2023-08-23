@@ -42,4 +42,7 @@ export class UserCreateDto {
 
   @IsString()
   readonly gender: string;
+
+  @IsString()
+  readonly status: string;
 }

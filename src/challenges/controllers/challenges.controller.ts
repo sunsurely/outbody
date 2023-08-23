@@ -12,6 +12,7 @@ import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { Position } from '../challengerInfo';
+import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 
 @Controller('challenge')
 @UseInterceptors(Response)
@@ -26,16 +27,6 @@ export class ChallengesController {
     @Req() req: any,
   ) {
     return await this.challengesService.createChallenge(body, req.user.id);
-  }
-
-  // 도전자 목록조회 (완성)
-  // GET http://localhost:3000/challenge/:id/challenger
-  @Get('/:challengeId/challenger')
-  async getChallengers(@Param('challengeId') challengeId: number) {
-    const challengers = await this.challengesService.getChallengers(
-      challengeId,
-    );
-    return challengers;
   }
 
   // 도전 목록조회 (완성)
@@ -64,6 +55,44 @@ export class ChallengesController {
     }
   }
 
+  // 도전자 목록조회 (완성)
+  // GET http://localhost:3000/challenge/:id/challenger
+  @Get('/:challengeId/challenger')
+  async getChallengers(@Param('challengeId') challengeId: number) {
+    const challengers = await this.challengesService.getChallengers(
+      challengeId,
+    );
+    return challengers;
+  }
+
+  // 도전 방 입장
+  // POST http://localhost:3000/challenge/:id/enter
+  @Post('/:challengeId/enter')
+  async joinChallenge(
+    @Param('challengeId') challengeId: number,
+    @Body() type: Position,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.joinChallenge(
+      challengeId,
+      type,
+      req.user.id,
+    );
+  }
+
+  // 도전 방 퇴장
+  // POST http://localhost:3000/challenge/:id/leave
+  @Delete('/:challengeId/leave')
+  async leaveChallenge(
+    @Param('challengeId') challengeId: number,
+    @Req() req: any,
+  ) {
+    return await this.challengesService.leaveChallenge(
+      challengeId,
+      req.user.id,
+    );
+  }
+
   // 도전 친구초대
   // POST http://localhost:3000/challenge/:id/invite
   @Post('/:challengeId/invite')
@@ -79,29 +108,17 @@ export class ChallengesController {
     );
   }
 
-  // 도전 방 입장
-  // POST http://localhost:3000/challenge/:id/enter
-  @Post('/:challengeId/enter')
-  async joinChallenge(
+  // 도전 초대수락
+  // POST http://localhost:3000/challenge/:id/accept
+  @Post('/:challengeId/accept')
+  async acceptChallenge(
     @Param('challengeId') challengeId: number,
-    @Body('type') type: Position,
+    @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {
-    return await this.challengesService.joinChallenge(
+    return await this.challengesService.acceptChallenge(
       challengeId,
-      type,
-      req.user.id,
-    );
-  }
-
-  // 도전 방 퇴장 (강퇴아님, 자발적 퇴장) POST http://localhost:3000/challenge/:id/leave
-  @Delete('/:challengeId/leave')
-  async leaveChallenge(
-    @Param('challengeId') challengeId: number,
-    @Req() req: any,
-  ) {
-    return await this.challengesService.leaveChallenge(
-      challengeId,
+      body,
       req.user.id,
     );
   }
