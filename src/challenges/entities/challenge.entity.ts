@@ -10,6 +10,7 @@ import {
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Post } from 'src/posts/entities/post.entity';
 
 @Entity()
 export class Challenge {
@@ -88,4 +89,8 @@ export class Challenge {
   @ManyToOne(() => User, (user) => user.challenges)
   // @JoinColumn({ name: 'userId' })
   user: User;
+
+  // Challenge => Post 1:N
+  @OneToMany(() => Post, (post) => post.challenges)
+  post: Post[];
 }

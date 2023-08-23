@@ -16,6 +16,7 @@ import { Challenger } from 'src/challenges/entities/challenger.entity';
 import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { BlackList } from 'src/reports/entities/blacklist.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Post } from 'src/posts/entities/post.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -88,6 +89,11 @@ export class User {
   @OneToMany(() => BlackList, (blacklist) => blacklist.user)
   blacklists: BlackList[];
 
-  @OneToMany(() => Like, (like) => like.post)
+  @OneToMany(() => Like, (like) => like.user, {
+    cascade: true,
+  })
   like: Like[];
+
+  @OneToMany(() => Post, (post) => post.user)
+  post: Post[];
 }
