@@ -1,19 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common';
-import { RecordsRepository } from '../repositories/records.repository';
-import { recordCache } from '../cache/initRecord.cache';
-import { Record } from '../entities/records.entity';
+import { Injectable } from '@nestjs/common';
 import { RecordCachingService } from './recordsCache.service';
 
 @Injectable()
 export class RecordsService {
-  constructor(
-    private readonly recordsRepository: RecordsRepository,
-    private readonly recordCachingService: RecordCachingService,
-  ) {}
+  constructor(private readonly recordCachingService: RecordCachingService) {}
 
   //측정기록 생성 그리고 캐싱등록
   async createRecord(body, id) {
@@ -31,19 +21,11 @@ export class RecordsService {
   }
 
   //기간별 기록정보 불러오기
-  async getRecordsByDateRange(start: Date, end: Date, id: number) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    const getRecords = await this.recordsRepository.getRecordsByDateRange(
+  async getRecordsByDateRange(startDate: string, endDate: string, id: number) {
+    return await this.recordCachingService.getCacheRecordsByDateRange(
       startDate,
       endDate,
       id,
     );
-    if (!getRecords || getRecords.length <= 0) {
-      throw new NotFoundException('데이터 조회에 실패했습니다.');
-    }
-
-    return getRecords;
   }
 }

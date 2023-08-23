@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Record } from '../entities/records.entity';
 import { DataSource, Repository, Between } from 'typeorm';
 import { CreateRecordDto } from '../dto/create.records.dto';
+import { start } from 'repl';
 
 @Injectable()
 export class RecordsRepository extends Repository<Record> {
@@ -10,16 +11,21 @@ export class RecordsRepository extends Repository<Record> {
   }
 
   //측정기록 생성
-  async createRecord(body: CreateRecordDto, id: number): Promise<Record> {
-    const { bmr, weight, muscle, fat, date } = body;
-
+  async createRecord(
+    bmr: number,
+    weight: number,
+    muscle: number,
+    fat: number,
+    userId: number,
+    date: Date,
+  ): Promise<Record> {
     const newUser = this.create({
       bmr,
       weight,
       muscle,
       fat,
       date,
-      userId: id,
+      userId,
     });
     return await this.save(newUser);
   }
@@ -36,14 +42,17 @@ export class RecordsRepository extends Repository<Record> {
 
   //기간별 기록들 불러오기
   async getRecordsByDateRange(
-    startDate: Date,
-    endDate: Date,
+    start: string,
+    end: string,
     id: number,
   ): Promise<Record[]> {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
     startDate.setDate(startDate.getDate() - 1);
     const records = await this.find({
-      where: { date: Between(startDate, endDate), id },
+      where: { date: Between(startDate, endDate), userId: id },
     });
+
     return records;
   }
 }

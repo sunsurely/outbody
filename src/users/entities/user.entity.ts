@@ -48,7 +48,7 @@ export class User {
   @Column('varchar', { nullable: true })
   comment: string;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'int', default: 1000 })
   point: number;
 
   @Column({ type: 'enum', enum: Status, default: Status.NORMAL })
