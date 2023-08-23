@@ -1,8 +1,10 @@
+import { Like } from 'src/likes/entities/like.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ schema: 'outbody', name: 'posts' })
@@ -30,4 +32,7 @@ export class Post {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Like, (like) => like.post)
+  like: Like[];
 }

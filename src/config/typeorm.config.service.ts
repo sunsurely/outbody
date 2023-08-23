@@ -9,6 +9,8 @@ import { Record } from 'src/records/entities/records.entity';
 import { Report } from 'src/reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
 import { BlackList } from 'src/reports/entities/blacklist.entity';
+import { Post } from 'src/posts/entities/post.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -31,6 +33,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         Report,
         Challenger,
         BlackList,
+        Post,
+        Like,
       ],
       synchronize: true,
     };

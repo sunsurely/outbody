@@ -254,6 +254,7 @@ export class ChallengesService {
       invitedUser.id,
       userId,
     );
+    console.log('friend', friend);
     if (!friend) {
       throw new NotFoundException(
         '해당 유저가 회원님의 친구가 아니므로 초대할 수 없습니다.',

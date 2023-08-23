@@ -15,6 +15,7 @@ import { Report } from '../../reports/entities/report.entity';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
 import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { BlackList } from 'src/reports/entities/blacklist.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -86,4 +87,7 @@ export class User {
 
   @OneToMany(() => BlackList, (blacklist) => blacklist.user)
   blacklists: BlackList[];
+
+  @OneToMany(() => Like, (like) => like.post)
+  like: Like[];
 }
