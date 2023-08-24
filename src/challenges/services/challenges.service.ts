@@ -250,22 +250,22 @@ export class ChallengesService {
       throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
-    const friend = await this.followsRepository.getFollowById(
+    const isFriend = await this.followsRepository.getFollowById(
       invitedUser.id,
       userId,
     );
-    console.log('friend', friend);
-    if (!friend) {
+
+    if (!isFriend) {
       throw new NotFoundException(
         '해당 회원은 친구가 아니므로 초대할 수 없습니다.',
       );
     }
 
     // 초대된 참가자가 이미 참가한 도전자인지 확인
-    const existingChallenger = await this.challengersRepository.getChallenger(
+    const isExistingChallenger = await this.challengersRepository.getChallenger(
       challengeId,
     );
-    if (existingChallenger.userId == invitedUser.id) {
+    if (isExistingChallenger.userId == invitedUser.id) {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
 
@@ -276,8 +276,8 @@ export class ChallengesService {
       `invitation_${challengeId}_${invitedUser.id}`,
       message,
     );
+
     console.log('invitation 요청', invitation);
-    // await this.challengesRepository.inviteChallenge(challengeId, friend);
   }
 
   // 도전 초대 수락 (상우)
@@ -287,6 +287,7 @@ export class ChallengesService {
     userId: number,
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+
     console.log('invitation 수락', invitation);
 
     if (!invitation) {
