@@ -6,18 +6,35 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { CommentsService } from '../services/comments.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
 
-@Controller('comments')
+@Controller('chellenge')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  // 오운완 게시글에 댓글 작성
+  // http://localhost:3000/challenge/:challengeId/post/:postId/comment
+  @Post('/:chellengeId/post/:postId/comment')
+  createComment(
+    @Body() createCmt: CreateCommentDto,
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+    @Req() req: any,
+  ) {
+    const newComment = this.commentsService.createComment(
+      createCmt,
+      challengeId,
+      postId,
+      req.user.id,
+    );
+
+    if (newComment) {
+      return { message: '댓글이 작성되었습니다.' };
+    }
   }
 
   @Get()
