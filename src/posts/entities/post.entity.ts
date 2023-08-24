@@ -1,6 +1,7 @@
 import { Challenge } from 'src/challenges/entities/challenge.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -42,8 +43,10 @@ export class Post {
   like: Like[];
 
   // Post : Comment = 1:N
-  // @OneToMany(() => Comment, (comment) => comment.post)
-  // comment: Comment[];
+  @OneToMany(() => Comment, (comments) => comments.post, {
+    cascade: true,
+  })
+  comments: Comment[];
 
   // Post: Challenges = N:1
   @ManyToOne(() => Challenge, (challenges) => challenges.post, {

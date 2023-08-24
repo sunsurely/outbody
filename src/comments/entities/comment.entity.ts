@@ -1,8 +1,10 @@
+import { Post } from 'src/posts/entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -42,4 +44,10 @@ export class Comment {
 
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
+
+  @ManyToOne(() => Post, (post) => post.comments, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'postId' })
+  post: Post;
 }
