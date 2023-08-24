@@ -37,14 +37,14 @@ export class CommentsController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.commentsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
+  // 오운완 게시글에 댓글 전체 조회
+  // http://localhost:3000/challenge/:challengeId/post/:postId/comment
+  @Get('/:chellengeId/post/:postId/comment')
+  async getComment(
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+  ) {
+    return await this.commentsService.getComment(challengeId, postId);
   }
 
   @Patch(':id')

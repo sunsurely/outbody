@@ -27,12 +27,9 @@ export class CommentsService {
     );
   }
 
-  findAll() {
-    return `This action returns all comments`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  // 오운완 게시글에 댓글 전체 조회
+  async getComment(challengeId: number, postId: number) {
+    return await this.commentsRepository.getComment(challengeId, postId);
   }
 
   update(id: number, updateCommentDto: UpdateCommentDto) {
