@@ -31,11 +31,7 @@ export class Follow extends BaseEntity {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => User, (user) => user.followers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.follows, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  follower: User;
-
-  @ManyToOne(() => User, (user) => user.followeds, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'followId' })
-  followed: User;
+  user: User;
 }

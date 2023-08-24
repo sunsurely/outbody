@@ -12,12 +12,14 @@ import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
+import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly blacklistRepository: BlackListRepository,
+    private readonly followRepository: FollowsRepository,
   ) {}
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
@@ -52,7 +54,24 @@ export class UserService {
   }
 
   //로그인 한 유저 정보조회
-  async getCurrentUser(user) {}
+  async getCurrentUser(user) {
+    const {
+      id,
+      name,
+      birthday,
+      email,
+      gender,
+      imgUrl,
+      comment,
+      point,
+      status,
+      createdAt,
+    } = user;
+
+    const usersFollows = await this.followRepository.getUsersFollow(user.id);
+    console.log(usersFollows);
+    return;
+  }
 
   //사용자 정보조회
   async getUserById(userId: number) {
@@ -82,22 +101,24 @@ export class UserService {
   }
 
   // 유저 password수정
-  // async updatePassword(id: number, passwordDto: UserPasswordDto) {
-  //   const { password, newPassword } = passwordDto;
-  //   // const user = await this.getCurrentUserById(id);
+  async updatePassword(user, passwordDto: UserPasswordDto) {
+    const { password, newPassword } = passwordDto;
 
-  //   const ComparedPassword = await bcrypt.compare(password, user.password);
+    const ComparedPassword = await bcrypt.compare(password, user.password);
 
-  //   if (!ComparedPassword) {
-  //     throw new UnauthorizedException('password가 일치하지 않습니다');
-  //   }
+    if (!ComparedPassword) {
+      throw new UnauthorizedException('password가 일치하지 않습니다');
+    }
 
-  //   const update = await this.usersRepository.updatePassword(id, newPassword);
+    const update = await this.usersRepository.updatePassword(
+      user.id,
+      newPassword,
+    );
 
-  //   if (!update) {
-  //     throw new NotImplementedException('해당 작업을 수행하지 못했습니다.');
-  //   }
-  // }
+    if (!update) {
+      throw new NotImplementedException('해당 작업을 수행하지 못했습니다.');
+    }
+  }
 
   //회원탈퇴
   async deletUser(userId: number): Promise<any> {

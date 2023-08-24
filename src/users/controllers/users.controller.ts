@@ -26,13 +26,6 @@ export class UserController {
     return createUserResult;
   }
 
-  // 내 정보와 친구목록 함께 조회 localhost:3000/users/me
-  @Get('/me')
-  async getCurrentUser(@Req() req: any) {
-    const getUserInfoResult = await this.userService.getCurrentUser(req.users);
-    return getUserInfoResult;
-  }
-
   //사용자 정보 조회 localhost:3000/users/userId
   @Get('/:userId')
   async getUserById(
@@ -46,17 +39,23 @@ export class UserController {
     return getUserInfoResult;
   }
 
+  //내 정보 + 친구목록 조회  localhost:3000/users/me/frofile
+  @Get('/me/profile')
+  async getCurrentUser(@Req() req: any) {
+    return await this.userService.getCurrentUser(req.user);
+  }
+
   //내 정보 수정 localhost:3000/users/me
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
-    return await this.userService.updateUser(req.user.id, userDto);
+    return await this.userService.updateUser(req.user, userDto);
   }
 
   //유저 password수정 localhost:3000/users/me/password
-  // @Patch('/me/password')
-  // async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
-  //   return await this.userService.updatePassword(req.user.id, passwordDto);
-  // }
+  @Patch('/me/password')
+  async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
+    return await this.userService.updatePassword(req.user.id, passwordDto);
+  }
 
   //회원 탈퇴 localhost:3000/users/me
   @Delete('/me')
