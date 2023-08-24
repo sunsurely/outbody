@@ -79,27 +79,23 @@ export class ChallengesRepository extends Repository<Challenge> {
     });
 
     const challengeIds = endChallenges.map((challenge) => challenge.id);
-    console.log('challengeIds 1', challengeIds);
 
     for (const challengeId of challengeIds) {
       const challenge = await this.getChallenge(challengeId);
       const entryPoint = challenge.entryPoint; // 개인 참가 점수
-      console.log('challenge 2', challenge);
-      console.log('entryPoint 3', entryPoint);
+
       const users = await this.challengersRepository.getChallengers(
         challengeId,
       );
-      console.log('users 4', users);
+
       const succeedUsers = users.filter((user) => user.done === true); // 성공한 회원 목록
       const failedUsers = users.filter((user) => user.done === false); // 실패한 회원 목록
 
-      console.log('succeedUsers 5', succeedUsers);
-      console.log('failedUsers 6', failedUsers);
       const challengerCount =
         await this.challengersRepository.getChallengerCount(challengeId);
-      console.log('challengerCount 7', challengerCount);
+
       const totalPoint = challenge.entryPoint * challengerCount; // 사용자 참가 점수 합계
-      console.log('totalPoint 8', totalPoint);
+
       if (users.length === succeedUsers.length) {
         // 모두 성공한 경우
         const entityManager = this.userRepository.manager;
@@ -113,12 +109,11 @@ export class ChallengesRepository extends Repository<Challenge> {
             const user = await this.userRepository.getUserById(
               challenger.userId,
             );
-            console.log('user 9', user);
+
             let userPoint = user.point;
-            console.log('userPoint 10', userPoint);
+
             if (succeedUsers.includes(challenger)) {
               userPoint += entryPoint;
-              console.log('userPoint 11', userPoint);
             }
             await transactionalEntityManager.update(
               User,
