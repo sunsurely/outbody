@@ -3,14 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
-import { UpdatePostDto } from '../dto/update-post.dto';
 
 @Controller('challenge')
 export class PostsController {
@@ -52,11 +50,7 @@ export class PostsController {
   // 오운완 삭제
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Delete('/:challengeId/post/:postId')
-  deletePost(@Param('postId') postId: number, @Req() req: any) {
-    const deletePost = this.postsService.deletePost(postId, req.user.id);
-
-    if (deletePost) {
-      return { message: '오운완 삭제가 완료 되었습니다.' };
-    }
+  async deletePost(@Param('postId') postId: number, @Req() req: any) {
+    return await this.postsService.deletePost(postId, req.user.id);
   }
 }
