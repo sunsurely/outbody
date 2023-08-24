@@ -58,7 +58,7 @@ export class ChallengesRepository extends Repository<Challenge> {
           .where('subChallenger.challengeId = challenge.id');
         return subQuery;
       }, 'challengerCount')
-      .where('challenge.startDate <= :today', { today: today.toISOString() })
+      .where('challenge.startDate <= :today', { today })
       .having('challengerCount <= 1')
       .getMany();
 
@@ -70,35 +70,46 @@ export class ChallengesRepository extends Repository<Challenge> {
     }
   }
 
-  // 도전 방 종료시 포인트 자동분배 (상우)
-  async pointsDistribute(): Promise<any> {
-    // const today = new Date(); // 현재날짜
-    // const todayString = today.toISOString();
+  // 도전 종료시 점수 자동분배 (상우, 재용)
+  async pointDistribute(): Promise<any> {
     const endChallenges = await this.find({
       where: {
-        // endDate: LessThanOrEqual(todayString),
         endDate: LessThanOrEqual(new Date()),
       },
     });
+
     const challengeIds = endChallenges.map((challenge) => challenge.id);
+
     for (const challengeId of challengeIds) {
       const challenge = await this.getChallenge(challengeId);
-      const entryPoint = challenge.entryPoint; // 1인당 참가비용
+      const entryPoint = challenge.entryPoint; // 개인 참가 점수
 
       const users = await this.challengersRepository.getChallengers(
         challengeId,
       );
-      // 참가한 전체유저
-      const succeedUsers = users.filter((user) => user.done); // 성공한 유저목록
-      const failedUsers = users.filter((user) => !user.done); // 실패한 유저목록
-      const totalPoint = challenge.entryPoint * Number(users); // 전체유저가 입장시 낸 포인트
+
+      const succeedUsers = users.filter((user) => user.done === true); // 성공한 회원 목록
+      const failedUsers = users.filter((user) => user.done === false); // 실패한 회원 목록
+
+      const challengerCount =
+        await this.challengersRepository.getChallengerCount(challengeId);
+
+      const totalPoint = challenge.entryPoint * challengerCount; // 사용자 참가 점수 합계
 
       if (users.length === succeedUsers.length) {
-        // 도전자 모두 성공한 경우 += 엔트리포인트
+        // 모두 성공한 경우
         const entityManager = this.userRepository.manager;
+
         await entityManager.transaction(async (transactionalEntityManager) => {
-          for (const challenger of challenge.challenger) {
-            const user = challenger.user;
+          const challengers = await this.challengersRepository.getChallengers(
+            challengeId,
+          );
+
+          for (const challenger of challengers) {
+            const user = await this.userRepository.getUserById(
+              challenger.userId,
+            );
+
             let userPoint = user.point;
 
             if (succeedUsers.includes(challenger)) {
@@ -112,16 +123,23 @@ export class ChallengesRepository extends Repository<Challenge> {
           }
         });
       } else {
-        // 도전자중 일부만 성공한 경우
+        // 일부만 성공한 경우
         const entityManager = this.userRepository.manager;
+
         await entityManager.transaction(async (transactionalEntityManager) => {
-          for (const challenger of challenge.challenger) {
-            const user = challenger.user;
+          const challengers = await this.challengersRepository.getChallengers(
+            challengeId,
+          );
+
+          for (const challenger of challengers) {
+            const user = await this.userRepository.getUserById(
+              challenger.userId,
+            );
+
             let userPoint = user.point;
 
-            // 성공유저 = 전체포인트/성공유저수 && 실패유저 =-엔트리포인트
             if (succeedUsers.includes(challenger)) {
-              userPoint += Math.floor(totalPoint / Number(succeedUsers));
+              userPoint += Math.floor(totalPoint / succeedUsers.length);
             } else if (failedUsers.includes(challenger)) {
               userPoint -= entryPoint;
             }
