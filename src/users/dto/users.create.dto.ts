@@ -6,7 +6,6 @@ import {
   MaxLength,
   IsEmail,
   Matches,
-  IsNumber,
 } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 
@@ -36,9 +35,6 @@ export class UserCreateDto {
 
   @IsString()
   readonly birthday: string;
-
-  @IsNumber()
-  readonly height: number;
 
   @IsString()
   readonly gender: string;
