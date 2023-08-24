@@ -5,7 +5,6 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
-import { UpdatePostDto } from '../dto/update-post.dto';
 import { PostsRepository } from '../repositories/posts.repository';
 
 @Injectable()
@@ -43,7 +42,7 @@ export class PostsService {
     return await this.postsRepository.getOnePost(postId);
   }
 
-  // 오운완 삭제 (상우: 로직추가)
+  // 오운완 삭제 (상우)
   async deletePost(postId: number, userId: number) {
     const post = await this.postsRepository.getOnePost(postId);
 
