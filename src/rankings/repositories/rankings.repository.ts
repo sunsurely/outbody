@@ -20,7 +20,7 @@ export class RankingsRepository extends Repository<User> {
 
   // 사용자가 팔로우한 Id userId로 조회
   async followUserId(userId: number): Promise<number[]> {
-    // 현재 유저를 follows 테이블까지 참조해 조회
+    // 현재 로그인한 유저를 조회하는데 follows 테이블까지 참조해서 조회
     const followUser = await this.find({
       relations: ['follows'],
       where: {
@@ -30,21 +30,23 @@ export class RankingsRepository extends Repository<User> {
       },
     });
 
-    // 조회한 유저가 팔로우한 followId 모두를 조회
+    // 현재 로그인한 유저가 팔로우한 유저의 Id(followId)만 가져옴
     const followUserId = followUser.flatMap((user) =>
       user.follows.map((follow) => follow.followId),
     );
+
     return followUserId;
   }
 
   // 친구 순위 조회
   async getFollowingRank(followUserId: number[]): Promise<User[]> {
+    // followUserId 함수로 가져온 유저들 Id로 유저 조회를 해서 name과 point만 가져옴
     const getFollowingRank = await this.find({
       where: { id: In(followUserId) },
       order: { point: 'DESC' },
       select: ['name', 'point'],
     });
-    console.log(getFollowingRank);
+
     return getFollowingRank;
   }
 }
