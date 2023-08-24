@@ -61,10 +61,37 @@ export class CommentsService {
       );
     }
 
-    return await this.commentsRepository.updateComment(commentId, comment);
+    return await this.commentsRepository.updateComment(
+      challengeId,
+      postId,
+      commentId,
+      comment,
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  // 오운완 게시글에 댓글 삭제
+  async deleteComment(
+    challengeId: number,
+    postId: number,
+    commentId: number,
+    userId: number,
+  ) {
+    // 댓글 유무 조회
+    const existComment = await this.commentsRepository.existComment(commentId);
+
+    if (!existComment) {
+      throw new NotFoundException('해당 댓글을 찾을 수 없습니다.');
+    }
+    if (existComment.userId !== userId) {
+      throw new UnauthorizedException(
+        '자신이 작성한 댓글만 수정할 수 있습니다.',
+      );
+    }
+
+    return await this.commentsRepository.deleteComment(
+      challengeId,
+      postId,
+      commentId,
+    );
   }
 }

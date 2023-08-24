@@ -70,8 +70,23 @@ export class CommentsController {
     }
   }
 
+  // 오운완 게시글에 댓글 삭제
+  // http://localhost:3000/challenge/:challengeId/post/:postId/comment/:commentId
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  async deleteComment(
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+    @Param('commentId') commentId: number,
+    @Req() req: any,
+  ) {
+    const deleteComment = await this.commentsService.deleteComment(
+      challengeId,
+      postId,
+      commentId,
+      req.user.id,
+    );
+    if (deleteComment) {
+      return { message: '댓글이 삭제되었습니다.' };
+    }
   }
 }

@@ -36,8 +36,16 @@ export class CommentsRepository extends Repository<Comment> {
   }
 
   // 오운완 게시글에 댓글 수정
-  async updateComment(commentId: number, comment: string): Promise<Comment> {
-    const updateComment = await this.update({ id: commentId }, { comment });
+  async updateComment(
+    challengeId: number,
+    postId: number,
+    commentId: number,
+    comment: string,
+  ): Promise<Comment> {
+    const updateComment = await this.update(
+      { challengeId, postId, id: commentId },
+      { comment },
+    );
     return updateComment.raw[0];
   }
 
@@ -47,5 +55,19 @@ export class CommentsRepository extends Repository<Comment> {
       where: { id: commentId },
     });
     return comment;
+  }
+
+  // 오운완 게시글에 댓글 삭제
+  async deleteComment(
+    challengeId: number,
+    postId: number,
+    commentId: number,
+  ): Promise<any> {
+    const deleteComment = await this.delete({
+      challengeId,
+      postId,
+      id: commentId,
+    });
+    return deleteComment;
   }
 }
