@@ -17,7 +17,6 @@ export interface CurrentUser {
   id: number;
   name: string;
   birthday: Date;
-  height: number;
   email: string;
   password: string;
   gender: string;

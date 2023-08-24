@@ -293,6 +293,8 @@ export class ChallengesService {
 
     const message =
       '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
+    // 메시지만 넣어서는 처리가 안됨. 배열로 저장, 초대정보를 담아야 함
+    // 보낸 사람의 정보, 받는사람의 이메일/아이디 등의 정보로 challenger만듦.
 
     const invitation = cache.set(
       `invitation_${challengeId}_${invitedUser.id}`,

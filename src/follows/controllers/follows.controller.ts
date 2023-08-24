@@ -41,7 +41,7 @@ export class FollowsController {
     @Req() req: any,
     @Body() data: ResponseDto,
     @Param(
-      'usderId',
+      'userId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     userId: number,
