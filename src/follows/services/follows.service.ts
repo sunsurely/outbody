@@ -24,8 +24,12 @@ export class FollowsService {
       followId,
       user.id,
     );
+    const existFollowUser = await this.followRepository.getFollowById(
+      user.Id,
+      followId,
+    );
 
-    if (existFollow) {
+    if (existFollow || existFollowUser) {
       throw new NotAcceptableException('수행할 수 없는 요청입니다');
     }
 
