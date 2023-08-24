@@ -12,13 +12,13 @@ import { CommentsService } from '../services/comments.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
 
-@Controller('chellenge')
+@Controller('challenge')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   // 오운완 게시글에 댓글 작성
-  // http://localhost:3000/challenge/:challengeId/post/:postId/comment
-  @Post('/:chellengeId/post/:postId/comment')
+  // http://localhost:3000/challenge/:chellengeId/post/:postId/comment
+  @Post('/:challengeId/post/:postId/comment')
   createComment(
     @Body() createCmt: CreateCommentDto,
     @Param('challengeId') challengeId: number,
@@ -39,7 +39,7 @@ export class CommentsController {
 
   // 오운완 게시글에 댓글 전체 조회
   // http://localhost:3000/challenge/:challengeId/post/:postId/comment
-  @Get('/:chellengeId/post/:postId/comment')
+  @Get('/:challengeId/post/:postId/comment')
   async getComment(
     @Param('challengeId') challengeId: number,
     @Param('postId') postId: number,
@@ -72,7 +72,7 @@ export class CommentsController {
 
   // 오운완 게시글에 댓글 삭제
   // http://localhost:3000/challenge/:challengeId/post/:postId/comment/:commentId
-  @Delete(':id')
+  @Delete('/:challengeId/post/:postId/comment/:commentId')
   async deleteComment(
     @Param('challengeId') challengeId: number,
     @Param('postId') postId: number,
