@@ -134,7 +134,7 @@ export class ChallengesService {
     const host = await this.challengersRepository.getChallengerByUserId(userId);
     if (!host) {
       throw new UnauthorizedException(
-        '본인이 만든 도전 방만 삭제가 가능합니다.',
+        '본인이 생성한 도전만 삭제가 가능합니다.',
       );
     }
 
