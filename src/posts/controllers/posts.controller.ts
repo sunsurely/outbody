@@ -17,20 +17,12 @@ export class PostsController {
   // 오운완 인증 게시글 생성
   // http://localhost:3000/challenge/:challengeId/post
   @Post('/:challengeId/post')
-  createPost(
+  async createPost(
     @Body() post: CreatePostDto,
     @Param('challengeId') challengeId: number,
     @Req() req: any,
   ) {
-    const newPost = this.postsService.createPost(
-      post,
-      challengeId,
-      req.user.id,
-    );
-
-    if (newPost) {
-      return { message: '오운완 생성이 완료되었습니다.' };
-    }
+    return await this.postsService.createPost(post, challengeId, req.user.id);
   }
 
   // 오운완 전체 조회
