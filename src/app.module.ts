@@ -22,7 +22,6 @@ import { ReportsModule } from './reports/reports.module';
 import { BlackListModule } from './blacklists/blacklists.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
-import { CommentsRepository } from './comments/repositories/comments.repository';
 
 @Module({
   imports: [
@@ -47,7 +46,6 @@ import { CommentsRepository } from './comments/repositories/comments.repository'
     BlackListModule,
     LikesModule,
     CommentsModule,
-    CommentsRepository,
   ],
   controllers: [AppController],
   providers: [AppService],
