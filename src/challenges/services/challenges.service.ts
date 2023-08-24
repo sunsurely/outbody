@@ -5,6 +5,7 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -131,9 +132,8 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    const host = await this.challengersRepository.getChallengerByUserId(userId);
-    if (!host) {
-      throw new UnauthorizedException(
+    if (challenge.userId !== userId) {
+      throw new NotAcceptableException(
         '본인이 만든 도전 방만 삭제가 가능합니다.',
       );
     }
