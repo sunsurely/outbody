@@ -14,16 +14,17 @@ export class UserRepository extends Repository<User> {
     name: string,
     email: string,
     password: string,
-    age: number,
+    birthday: string,
     height: number,
     gender: string,
     status: string,
   ): Promise<User> {
+    const birthdayDate = new Date(birthday);
     const newUser = this.create({
       name,
       email,
       password,
-      age,
+      birthday: birthdayDate,
       height,
       gender: gender as Gender,
       status: status as Status,
@@ -34,7 +35,6 @@ export class UserRepository extends Repository<User> {
   //유저 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
-      .select(['user.id', 'user.password', 'user.status'])
       .where('user.email = :email', { email })
       .getOne();
 
@@ -49,7 +49,7 @@ export class UserRepository extends Repository<User> {
         'user.name',
         'user.email',
         'user.gender',
-        'user.age',
+        'user.birthday',
         'user.height',
         'user.comment',
         'user.point',
@@ -73,7 +73,7 @@ export class UserRepository extends Repository<User> {
     return {
       id: user.id,
       name: user.name,
-      age: user.age,
+      birthday: user.birthday,
       height: user.height,
       email: user.email,
       password: user.password,
@@ -96,6 +96,7 @@ export class UserRepository extends Repository<User> {
         'user.imgUrl',
         'user.comment',
         'user.point',
+        'user.email',
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
@@ -104,8 +105,12 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 정보 수정
-  async updateUser(userId, age, height, gender) {
-    const result = await this.update({ id: userId }, { age, height, gender });
+  async updateUser(userId, birthday, height, gender) {
+    const birthdayDate = new Date(birthday);
+    const result = await this.update(
+      { id: userId },
+      { birthday: birthdayDate, height, gender },
+    );
     return result;
   }
 

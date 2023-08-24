@@ -26,8 +26,8 @@ export class User {
   @Column('varchar', { length: 30 })
   name: string;
 
-  @Column('int')
-  age: number;
+  @Column('date')
+  birthday: Date;
 
   @Column('int')
   height: number;

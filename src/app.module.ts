@@ -15,7 +15,7 @@ import { JwtConfigService } from './config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChallengeModule } from './challenges/challenges.module';
 import { PostModule } from './posts/posts.module';
-import { RecodesModule } from './records/records.module';
+import { RecordsModule } from './records/records.module';
 import { AuthMiddleware } from './common/middlewares/auth.middleware';
 import { FollowsModule } from './follows/follows.module';
 import { ReportsModule } from './reports/reports.module';
@@ -40,7 +40,7 @@ import { CommentsModule } from './comments/comments.module';
     UserModule,
     ChallengeModule,
     PostModule,
-    RecodesModule,
+    RecordsModule,
     FollowsModule,
     ReportsModule,
     BlackListModule,

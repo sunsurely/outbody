@@ -58,7 +58,7 @@ export class ChallengesRepository extends Repository<Challenge> {
           .where('subChallenger.challengeId = challenge.id');
         return subQuery;
       }, 'challengerCount')
-      .where('challenge.startDate <= :today', { today: today.toISOString() })
+      .where('challenge.startDate <= :today', { today })
       .having('challengerCount <= 1')
       .getMany();
 
@@ -66,6 +66,94 @@ export class ChallengesRepository extends Repository<Challenge> {
       await this.remove(challenge);
       this.logger.debug(
         `도전 시작일이 경과되었으나 참가자가 없어서, 도전이 삭제되었습니다.`,
+      );
+    }
+  }
+
+  // 도전 종료시 점수 자동분배 (상우, 재용)
+  async pointDistribute(): Promise<any> {
+    const endChallenges = await this.find({
+      where: {
+        endDate: LessThanOrEqual(new Date()),
+      },
+    });
+
+    const challengeIds = endChallenges.map((challenge) => challenge.id);
+
+    for (const challengeId of challengeIds) {
+      const challenge = await this.getChallenge(challengeId);
+      const entryPoint = challenge.entryPoint; // 개인 참가 점수
+
+      const users = await this.challengersRepository.getChallengers(
+        challengeId,
+      );
+
+      const succeedUsers = users.filter((user) => user.done === true); // 성공한 회원 목록
+      const failedUsers = users.filter((user) => user.done === false); // 실패한 회원 목록
+
+      const challengerCount =
+        await this.challengersRepository.getChallengerCount(challengeId);
+
+      const totalPoint = challenge.entryPoint * challengerCount; // 사용자 참가 점수 합계
+
+      if (users.length === succeedUsers.length) {
+        // 모두 성공한 경우
+        const entityManager = this.userRepository.manager;
+
+        await entityManager.transaction(async (transactionalEntityManager) => {
+          const challengers = await this.challengersRepository.getChallengers(
+            challengeId,
+          );
+
+          for (const challenger of challengers) {
+            const user = await this.userRepository.getUserById(
+              challenger.userId,
+            );
+
+            let userPoint = user.point;
+
+            if (succeedUsers.includes(challenger)) {
+              userPoint += entryPoint;
+            }
+            await transactionalEntityManager.update(
+              User,
+              { id: user.id },
+              { point: userPoint },
+            );
+          }
+        });
+      } else {
+        // 일부만 성공한 경우
+        const entityManager = this.userRepository.manager;
+
+        await entityManager.transaction(async (transactionalEntityManager) => {
+          const challengers = await this.challengersRepository.getChallengers(
+            challengeId,
+          );
+
+          for (const challenger of challengers) {
+            const user = await this.userRepository.getUserById(
+              challenger.userId,
+            );
+
+            let userPoint = user.point;
+
+            if (succeedUsers.includes(challenger)) {
+              userPoint += Math.floor(totalPoint / succeedUsers.length);
+            } else if (failedUsers.includes(challenger)) {
+              userPoint -= entryPoint;
+            }
+
+            await transactionalEntityManager.update(
+              User,
+              { id: user.id },
+              { point: userPoint },
+            );
+          }
+        });
+      }
+      this.logger.debug(
+        `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
       );
     }
   }

@@ -235,7 +235,7 @@ export class ChallengesService {
       challengeId,
     );
     if (challenger.type !== Position.HOST) {
-      throw new UnauthorizedException('방장만 다른 유저를 초대할 수 있습니다.');
+      throw new UnauthorizedException('방장만 다른 회원을 초대할 수 있습니다.');
     }
 
     const { email } = body;
@@ -257,7 +257,7 @@ export class ChallengesService {
     console.log('friend', friend);
     if (!friend) {
       throw new NotFoundException(
-        '해당 유저가 회원님의 친구가 아니므로 초대할 수 없습니다.',
+        '해당 회원은 친구가 아니므로 초대할 수 없습니다.',
       );
     }
 
