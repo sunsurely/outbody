@@ -84,7 +84,7 @@ export class CommentsService {
     }
     if (existComment.userId !== userId) {
       throw new UnauthorizedException(
-        '자신이 작성한 댓글만 수정할 수 있습니다.',
+        '자신이 작성한 댓글만 삭제할 수 있습니다.',
       );
     }
 
