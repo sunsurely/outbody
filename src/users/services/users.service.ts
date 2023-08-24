@@ -22,7 +22,7 @@ export class UserService {
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
   async createUser(user: UserCreateDto) {
-    const { name, email, password, birthday, height, gender, status } = user;
+    const { name, email, password, birthday, gender, status } = user;
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
@@ -44,7 +44,6 @@ export class UserService {
       email,
       password,
       birthday,
-      height,
       gender,
       status,
     );
@@ -53,14 +52,7 @@ export class UserService {
   }
 
   //로그인 한 유저 정보조회
-  async getCurrentUserById(userId: number) {
-    const getUser = await this.usersRepository.getCurrentUserById(userId);
-    if (!getUser) {
-      throw new NotFoundException('유저가 존재하지 않습니다.');
-    }
-
-    return getUser;
-  }
+  async getCurrentUser(user) {}
 
   //사용자 정보조회
   async getUserById(userId: number) {
@@ -74,17 +66,12 @@ export class UserService {
 
   //유저 정보 수정
   async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { age, height, gender } = userDto;
-    const user = await this.getCurrentUserById(userId);
-    if (!user) {
-      throw new NotFoundException('해당 유저가 존재하지 않습니다.');
-    }
+    const { imgUrl, comment } = userDto;
 
     const updateUser = await this.usersRepository.updateUser(
       userId,
-      age,
-      height,
-      gender,
+      imgUrl,
+      comment,
     );
 
     if (!updateUser) {
@@ -94,23 +81,23 @@ export class UserService {
     return updateUser;
   }
 
-  //유저 password수정
-  async updatePassword(id: number, passwordDto: UserPasswordDto) {
-    const { password, newPassword } = passwordDto;
-    const user = await this.getCurrentUserById(id);
+  // 유저 password수정
+  // async updatePassword(id: number, passwordDto: UserPasswordDto) {
+  //   const { password, newPassword } = passwordDto;
+  //   // const user = await this.getCurrentUserById(id);
 
-    const ComparedPassword = await bcrypt.compare(password, user.password);
+  //   const ComparedPassword = await bcrypt.compare(password, user.password);
 
-    if (!ComparedPassword) {
-      throw new UnauthorizedException('password가 일치하지 않습니다');
-    }
+  //   if (!ComparedPassword) {
+  //     throw new UnauthorizedException('password가 일치하지 않습니다');
+  //   }
 
-    const update = await this.usersRepository.updatePassword(id, newPassword);
+  //   const update = await this.usersRepository.updatePassword(id, newPassword);
 
-    if (!update) {
-      throw new NotImplementedException('해당 작업을 수행하지 못했습니다.');
-    }
-  }
+  //   if (!update) {
+  //     throw new NotImplementedException('해당 작업을 수행하지 못했습니다.');
+  //   }
+  // }
 
   //회원탈퇴
   async deletUser(userId: number): Promise<any> {

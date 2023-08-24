@@ -15,7 +15,6 @@ export class UserRepository extends Repository<User> {
     email: string,
     password: string,
     birthday: string,
-    height: number,
     gender: string,
     status: string,
   ): Promise<User> {
@@ -25,7 +24,6 @@ export class UserRepository extends Repository<User> {
       email,
       password,
       birthday: birthdayDate,
-      height,
       gender: gender as Gender,
       status: status as Status,
     });
@@ -42,7 +40,7 @@ export class UserRepository extends Repository<User> {
   }
 
   //로그인한 회원 정보조회 ,
-  async getCurrentUserById(userId: number): Promise<CurrentUser> {
+  async getCurrentUser(userId: number): Promise<CurrentUser> {
     const queryBuilder = await this.createQueryBuilder('user')
       .select([
         'user.id',
@@ -50,7 +48,6 @@ export class UserRepository extends Repository<User> {
         'user.email',
         'user.gender',
         'user.birthday',
-        'user.height',
         'user.comment',
         'user.point',
         'user.password',
@@ -74,7 +71,6 @@ export class UserRepository extends Repository<User> {
       id: user.id,
       name: user.name,
       birthday: user.birthday,
-      height: user.height,
       email: user.email,
       password: user.password,
       gender: user.gender,
@@ -90,7 +86,7 @@ export class UserRepository extends Repository<User> {
       .select([
         'user.id',
         'user.name',
-        'user.age',
+        'user.birthday',
         'user.gender',
         'user.height',
         'user.imgUrl',
@@ -105,12 +101,8 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 정보 수정
-  async updateUser(userId, birthday, height, gender) {
-    const birthdayDate = new Date(birthday);
-    const result = await this.update(
-      { id: userId },
-      { birthday: birthdayDate, height, gender },
-    );
+  async updateUser(userId: number, imgUrl: string, comment: string) {
+    const result = await this.update({ id: userId }, { imgUrl, comment });
     return result;
   }
 

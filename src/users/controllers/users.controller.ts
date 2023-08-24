@@ -28,10 +28,8 @@ export class UserController {
 
   // 내 정보와 친구목록 함께 조회 localhost:3000/users/me
   @Get('/me')
-  async getCurrentUserById(@Req() req: any) {
-    const getUserInfoResult = await this.userService.getCurrentUserById(
-      req.user.id,
-    );
+  async getCurrentUser(@Req() req: any) {
+    const getUserInfoResult = await this.userService.getCurrentUser(req.users);
     return getUserInfoResult;
   }
 
@@ -55,10 +53,10 @@ export class UserController {
   }
 
   //유저 password수정 localhost:3000/users/me/password
-  @Patch('/me/password')
-  async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
-    return await this.userService.updatePassword(req.user.id, passwordDto);
-  }
+  // @Patch('/me/password')
+  // async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
+  //   return await this.userService.updatePassword(req.user.id, passwordDto);
+  // }
 
   //회원 탈퇴 localhost:3000/users/me
   @Delete('/me')

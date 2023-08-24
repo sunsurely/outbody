@@ -29,9 +29,6 @@ export class User {
   @Column('date')
   birthday: Date;
 
-  @Column('int')
-  height: number;
-
   @Column('varchar')
   email: string;
 
