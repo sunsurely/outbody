@@ -47,8 +47,6 @@ export class ChallengesRepository extends Repository<Challenge> {
   // 자동 삭제 (상우, 재용)
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우
   async automaticDelete(): Promise<void> {
-    const today = new Date();
-
     const challengesToDelete = await this.createQueryBuilder('challenge')
       .leftJoinAndSelect('challenge.challenger', 'challenger')
       .addSelect((subQuery) => {
@@ -58,7 +56,7 @@ export class ChallengesRepository extends Repository<Challenge> {
           .where('subChallenger.challengeId = challenge.id');
         return subQuery;
       }, 'challengerCount')
-      .where('challenge.startDate <= :today', { today })
+      .where('challenge.startDate <= :today', { today: new Date() })
       .having('challengerCount <= 1')
       .getMany();
 
@@ -115,6 +113,7 @@ export class ChallengesRepository extends Repository<Challenge> {
             if (succeedUsers.includes(challenger)) {
               userPoint += entryPoint;
             }
+
             await transactionalEntityManager.update(
               User,
               { id: user.id },
@@ -152,6 +151,7 @@ export class ChallengesRepository extends Repository<Challenge> {
           }
         });
       }
+
       this.logger.debug(
         `${challengeId}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
       );

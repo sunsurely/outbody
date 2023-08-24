@@ -162,9 +162,21 @@ export class ChallengesService {
 
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
-    } else if (challenge.publicView === false) {
+    }
+
+    if (challenge.publicView === false) {
       throw new BadRequestException(
         '비공개 도전은 초대를 받은 회원만 참여가 가능합니다.',
+      );
+    }
+
+    const challengerCount = await this.challengersRepository.getChallengerCount(
+      challengeId,
+    );
+
+    if (challenge.userNumberLimit <= challengerCount) {
+      throw new BadRequestException(
+        '참가자 수 초과로 인해, 도전에 참가할 수 없습니다.',
       );
     }
 
@@ -229,6 +241,16 @@ export class ChallengesService {
 
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
+    }
+
+    const challengerCount = await this.challengersRepository.getChallengerCount(
+      challengeId,
+    );
+
+    if (challenge.userNumberLimit <= challengerCount) {
+      throw new BadRequestException(
+        '참가자 수 초과로 인해, 도전에 초대할 수 없습니다.',
+      );
     }
 
     const challenger = await this.challengersRepository.getChallenger(
