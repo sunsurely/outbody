@@ -34,4 +34,18 @@ export class CommentsRepository extends Repository<Comment> {
     });
     return allComment;
   }
+
+  // 오운완 게시글에 댓글 수정
+  async updateComment(commentId: number, comment: string): Promise<Comment> {
+    const updateComment = await this.update({ id: commentId }, { comment });
+    return updateComment.raw[0];
+  }
+
+  // 댓글 유무 조회
+  async existComment(commentId: number): Promise<Comment> {
+    const comment = await this.findOne({
+      where: { id: commentId },
+    });
+    return comment;
+  }
 }

@@ -47,9 +47,27 @@ export class CommentsController {
     return await this.commentsService.getComment(challengeId, postId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
+  // 오운완 게시글에 댓글 수정
+  // http://localhost:3000/challenge/:challengeId/post/:postId/comment/:commentId
+  @Patch('/:challengeId/post/:postId/comment/:commentId')
+  updateComment(
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+    @Param('commentId') commentId: number,
+    @Req() req: any,
+    @Body() updateCmt: UpdateCommentDto,
+  ) {
+    const updateComment = this.commentsService.updateComment(
+      challengeId,
+      postId,
+      commentId,
+      req.user.id,
+      updateCmt,
+    );
+
+    if (updateComment) {
+      return { message: '댓글이 수정되었습니다.' };
+    }
   }
 
   @Delete(':id')

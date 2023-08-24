@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
 import { CommentsRepository } from '../repositories/comments.repository';
@@ -32,8 +37,31 @@ export class CommentsService {
     return await this.commentsRepository.getComment(challengeId, postId);
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  // 오운완 게시글에 댓글 수정
+  async updateComment(
+    challengeId: number,
+    postId: number,
+    commentId: number,
+    userId: number,
+    updateCmt: UpdateCommentDto,
+  ) {
+    const { comment } = updateCmt;
+    // 댓글 유무 조회
+    const existComment = await this.commentsRepository.existComment(commentId);
+
+    if (!updateCmt.comment) {
+      throw new BadRequestException('댓글을 입력해주세요.');
+    }
+    if (!existComment) {
+      throw new NotFoundException('해당 댓글을 찾을 수 없습니다.');
+    }
+    if (existComment.userId !== userId) {
+      throw new UnauthorizedException(
+        '자신이 작성한 댓글만 수정할 수 있습니다.',
+      );
+    }
+
+    return await this.commentsRepository.updateComment(commentId, comment);
   }
 
   remove(id: number) {
