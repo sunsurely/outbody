@@ -27,12 +27,25 @@ export class CommentsRepository extends Repository<Comment> {
   }
 
   // 오운완 게시글에 댓글 전체 조회
-  async getComment(challengeId: number, postId: number): Promise<Comment[]> {
+  async getComment(
+    challengeId: number,
+    postId: number,
+  ): Promise<{ comment: string; username: string }[]> {
     const allComment = await this.find({
       where: { challengeId, postId },
       order: { createdAt: 'DESC' },
+      select: ['comment'],
+      relations: ['user'],
     });
-    return allComment;
+
+    const allComments = allComment.map((comment) => {
+      return {
+        comment: comment.comment,
+        username: comment.user.name,
+      };
+    });
+
+    return allComments;
   }
 
   // 오운완 게시글에 댓글 수정
