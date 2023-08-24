@@ -2,9 +2,9 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
-import { UpdatePostDto } from '../dto/update-post.dto';
 import { PostsRepository } from '../repositories/posts.repository';
 
 @Injectable()
@@ -42,11 +42,12 @@ export class PostsService {
     return await this.postsRepository.getOnePost(postId);
   }
 
-  // 오운완 삭제 (상우: 로직추가)
+  // 오운완 삭제 (상우)
   async deletePost(postId: number, userId: number) {
-    const author = await this.postsRepository.getUserById(userId);
-    if (!author) {
-      throw new BadRequestException(
+    const post = await this.postsRepository.getOnePost(postId);
+
+    if (post.userId !== userId) {
+      throw new NotAcceptableException(
         '본인이 만든 오운완 게시글만 삭제 가능합니다.',
       );
     }
