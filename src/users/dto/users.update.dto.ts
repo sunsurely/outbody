@@ -1,13 +1,9 @@
-import { IsNumber, IsIn } from 'class-validator';
-import { Gender } from '../userInfo';
+import { IsString } from 'class-validator';
 
 export class UserUpdateDto {
-  @IsNumber()
-  readonly age: number;
+  @IsString()
+  readonly imgUrl: string;
 
-  @IsNumber()
-  readonly height: number;
-
-  @IsIn([Gender.MALE, Gender.FEMALE])
-  readonly gender: Gender;
+  @IsString()
+  readonly comment: string;
 }
