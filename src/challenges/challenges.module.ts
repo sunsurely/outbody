@@ -13,6 +13,7 @@ import { GoalsRepository } from './repositories/goals.repository';
 import { ChallengersRepository } from './repositories/challengers.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RecordsRepository } from 'src/records/repositories/records.repository';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserRepository,
     ChallengeScheduler,
     FollowsRepository,
+    RecordsRepository,
   ],
   exports: [
     ChallengesService,

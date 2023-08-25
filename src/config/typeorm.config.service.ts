@@ -39,7 +39,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         Comment,
       ],
       synchronize: true,
-      logging: true,
+      // logging: true,
     };
   }
 }
