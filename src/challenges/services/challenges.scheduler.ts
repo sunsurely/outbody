@@ -156,7 +156,7 @@ export class ChallengeScheduler {
   async goalComplete() {
     const challenges = await this.challengesRepository.find({
       where: {
-        endDate: LessThanOrEqual(new Date('2023-08-24')),
+        endDate: LessThanOrEqual(new Date()),
         isDistributed: false,
       },
     });
@@ -190,7 +190,7 @@ export class ChallengeScheduler {
           });
 
           if (
-            // posts.length >= attend &&
+            posts.length >= attend &&
             (record.fat <= fat || fat === null) &&
             (record.muscle >= muscle || muscle === null) &&
             (record.weight <= weight || weight === null)
