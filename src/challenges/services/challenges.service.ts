@@ -5,7 +5,6 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
-  NotAcceptableException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -72,6 +71,7 @@ export class ChallengesService {
       publicView,
       description,
       entryPoint,
+      isDistributed: false,
     });
 
     await this.goalsRepository.createGoal({
@@ -111,6 +111,7 @@ export class ChallengesService {
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
         entryPoint: challenge.entryPoint,
+        isDistribute: challenge.isDistributed,
       };
     });
   }
@@ -133,7 +134,7 @@ export class ChallengesService {
     }
 
     if (challenge.userId !== userId) {
-      throw new NotAcceptableException(
+      throw new UnauthorizedException(
         '본인이 생성한 도전만 삭제가 가능합니다.',
       );
     }
@@ -162,9 +163,21 @@ export class ChallengesService {
 
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
-    } else if (challenge.publicView === false) {
+    }
+
+    if (challenge.publicView === false) {
       throw new BadRequestException(
         '비공개 도전은 초대를 받은 회원만 참여가 가능합니다.',
+      );
+    }
+
+    const challengerCount = await this.challengersRepository.getChallengerCount(
+      challengeId,
+    );
+
+    if (challenge.userNumberLimit <= challengerCount) {
+      throw new BadRequestException(
+        '참가자 수 초과로 인해, 도전에 참가할 수 없습니다.',
       );
     }
 
@@ -231,6 +244,16 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
+    const challengerCount = await this.challengersRepository.getChallengerCount(
+      challengeId,
+    );
+
+    if (challenge.userNumberLimit <= challengerCount) {
+      throw new BadRequestException(
+        '참가자 수 초과로 인해, 도전에 초대할 수 없습니다.',
+      );
+    }
+
     const challenger = await this.challengersRepository.getChallenger(
       challengeId,
     );
@@ -271,15 +294,14 @@ export class ChallengesService {
 
     const message =
       '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
-    // 메시지만 넣어서는 처리가 안됨. 배열로 저장, 초대정보를 담아야 함
-    // 보낸 사람의 정보, 받는사람의 이메일/아이디 등의 정보로 challenger만듦.
+    // 초대문만 넣어서는 처리가 안됨. 배열로 저장, 초대정보를 담아야 함
 
     const invitation = cache.set(
       `invitation_${challengeId}_${invitedUser.id}`,
       message,
     );
 
-    console.log('invitation 요청', invitation);
+    console.log('초대 요청', invitation);
   }
 
   // 도전 초대 수락 (상우)
@@ -290,7 +312,7 @@ export class ChallengesService {
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
 
-    console.log('invitation 수락', invitation);
+    console.log('초대 수락', invitation);
 
     if (!invitation) {
       throw new NotFoundException('새로운 초대가 없습니다.');

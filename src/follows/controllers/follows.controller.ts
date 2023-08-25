@@ -12,11 +12,12 @@ import {
 import { FollowsService } from '../services/follows.service';
 import { ResponseDto } from '../dto/response.dto';
 
-@Controller('follows')
+@Controller('follow')
 export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}
 
-  //친구요정 , localhost:3000/follows/request/folowerId
+  // 친구 요청
+  // POST http://localhost:3000/follow/request/folowerId
   @Post('/request/:followId')
   async requestFollow(
     @Param(
@@ -29,13 +30,15 @@ export class FollowsController {
     return await this.followsService.requestFollow(followId, req.user);
   }
 
-  //친구 요청 메시지 전체 조회
+  // 친구 요청 메시지 전체 조회
+  // GET http://localhost:3000/follow/request
   @Get('/request')
   async getUsersRequests(@Req() req: any) {
     return await this.followsService.getUsersRequests(req.user.id);
   }
 
-  //친구 수락여부 결정   data.response 의  yes or no  여부로 수락 or 취소 결정
+  // 친구 수락여부 결정 data.response의  yes or no 여부로 수락 or 취소 결정
+  // POST http://localhost:3000/follow/userId/accept
   @Post('/:userId/accept')
   async acceptFollow(
     @Req() req: any,
@@ -53,7 +56,8 @@ export class FollowsController {
     );
   }
 
-  //친구 취소 ,  follow삭제
+  // 친구 취소, follow 삭제
+  // DELETE http://localhost:3000/follow/userId
   @Delete('/:userId')
   async deleteFollow(
     @Param(
