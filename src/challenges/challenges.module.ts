@@ -41,4 +41,4 @@ import { ScheduleModule } from '@nestjs/schedule';
     FollowsRepository,
   ],
 })
-export class ChallengeModule {}
+export class ChallengesModule {}

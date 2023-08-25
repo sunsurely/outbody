@@ -54,4 +54,8 @@ export class CreateChallengeDto {
   @IsNumber()
   @Min(0)
   entryPoint: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isDistributed: boolean;
 }

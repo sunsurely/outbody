@@ -8,13 +8,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config/typeorm.config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './users/users.module';
+import { AuthsModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ChallengeModule } from './challenges/challenges.module';
-import { PostModule } from './posts/posts.module';
+import { ChallengesModule } from './challenges/challenges.module';
+import { PostsModule } from './posts/posts.module';
 import { RecordsModule } from './records/records.module';
 import { AuthMiddleware } from './common/middlewares/auth.middleware';
 import { FollowsModule } from './follows/follows.module';
@@ -22,6 +22,7 @@ import { ReportsModule } from './reports/reports.module';
 import { BlackListModule } from './blacklists/blacklists.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -36,16 +37,17 @@ import { CommentsModule } from './comments/comments.module';
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
-    AuthModule,
-    UserModule,
-    ChallengeModule,
-    PostModule,
+    AuthsModule,
+    UsersModule,
+    ChallengesModule,
+    PostsModule,
     RecordsModule,
     FollowsModule,
     ReportsModule,
     BlackListModule,
     LikesModule,
     CommentsModule,
+    RankingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -56,7 +58,7 @@ export class AppModule implements NestModule {
       .apply(AuthMiddleware)
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
-        { path: 'users/signup', method: RequestMethod.POST },
+        { path: 'user/signup', method: RequestMethod.POST },
         { path: 'auth/kakao', method: RequestMethod.GET },
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL });

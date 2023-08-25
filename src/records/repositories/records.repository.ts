@@ -1,12 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Record } from '../entities/records.entity';
-import { DataSource, Repository, Between } from 'typeorm';
+import {
+  DataSource,
+  Repository,
+  Between,
+  LessThanOrEqual,
+  EntityManager,
+  Transaction,
+} from 'typeorm';
 import { CreateRecordDto } from '../dto/create.records.dto';
 import { start } from 'repl';
+import { ChallengesRepository } from 'src/challenges/repositories/challenges.repository';
 
 @Injectable()
 export class RecordsRepository extends Repository<Record> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(
+    private readonly dataSource: DataSource,
+  ) // private readonly challengesRepository: ChallengesRepository,
+  // private readonly logger: Logger,
+  // private readonly entityManager: EntityManager,
+  {
     super(Record, dataSource.createEntityManager());
   }
 
@@ -55,4 +68,38 @@ export class RecordsRepository extends Repository<Record> {
 
     return records;
   }
+
+  // 종료 1시간 내에 도전기간 내 가장 최신화되어있는 체성분 자동으로 가져와서 체성분 인증 (상우)
+  // async bodyStatusRecord(): Promise<any> {
+  //   const now = new Date();
+  //   const oneHourAgo = new Date(now);
+  //   oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+  //   const endChallenges = await this.challengesRepository.find({
+  //     where: {
+  //       endDate: LessThanOrEqual(oneHourAgo),
+  //     },
+  //     relations: ['challenger'],
+  //   });
+
+  //   for (const challenge of endChallenges) {
+  //     const challengers = challenge.challenger;
+
+  //     await this.entityManager.transaction(
+  //       async (transactionalEntityManager) => {
+  //         for (const challenger of challengers) {
+  //           const userId = challenger.userId;
+
+  //           const allRecords = await transactionalEntityManager
+  //             .getRepository(Record)
+  //             .createQueryBuilder('record')
+  //             .where('record.userId = :userId', { userId })
+  //             .getMany();
+
+  //           return await transactionalEntityManager.save(Record, allRecords);
+  //         }
+  //       },
+  //     );
+  //   }
+  // }
 }

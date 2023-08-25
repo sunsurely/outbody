@@ -18,4 +18,4 @@ import { BlackListRepository } from 'src/blacklists/repository/blacklist.reposit
     BlackListRepository,
   ],
 })
-export class UserModule {}
+export class UsersModule {}
