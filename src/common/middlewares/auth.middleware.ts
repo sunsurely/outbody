@@ -4,14 +4,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(
-    private jwtService: JwtService,
-    private userRepository: UserRepository,
-  ) {}
+  constructor(private jwtService: JwtService) {}
 
   async use(req: any, res: any, next: Function) {
     const authHeader = req.headers.authorization;
@@ -20,17 +16,13 @@ export class AuthMiddleware implements NestMiddleware {
       throw new UnauthorizedException('JWT not found');
     }
 
-    const [bearer, token] = authHeader.split(' ');
-
-    if (bearer !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Invalid JWT format');
-    }
-
-    // 로그인 상태 확인과 유저정보 최신화 업데이트
+    let token: string;
     try {
-      const { decoded } = await this.jwtService.verify(token);
-      req.user = decoded;
+      token = authHeader.split(' ')[1];
 
+      const { user } = await this.jwtService.verify(token);
+
+      req.user = user;
       next();
     } catch (err) {
       throw new UnauthorizedException(`Invalid JWT: ${token}`);

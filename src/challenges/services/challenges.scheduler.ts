@@ -18,13 +18,13 @@ export class ChallengeScheduler {
   ) {}
 
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
-  @Cron(CronExpression.EVERY_SECOND)
+  @Cron(CronExpression.EVERY_HOUR)
   async automaticDelete() {
     await this.challengesRepository.automaticDeleteChallenge();
   }
 
   // 도전 종료시 점수 자동분배
-  @Cron(CronExpression.EVERY_SECOND)
+  @Cron(CronExpression.EVERY_HOUR)
   async pointDistribute(): Promise<any> {
     const challengesToDistribute = await this.challengesRepository.find({
       where: {

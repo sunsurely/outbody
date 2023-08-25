@@ -21,23 +21,6 @@ export class AuthController {
     return await this.authService.login(user);
   }
 
-  //Refresh토큰을 이용한 엑세스 토큰 재발급 localhost:3000/auth/refresh
-  //유저가 로그인 상태일 때만 사용 가능한 엔드포인트
-  @UseGuards(AuthGuard('jwt'))
-  @Post('refresh')
-  async refresh(@Req() req: any) {
-    const { refresh_token } = req.header;
-
-    if (refresh_token) {
-      throw new BadRequestException('Refresh token is required');
-    }
-
-    const newAccessToken = await this.authService.refreshAccessToken(
-      refresh_token,
-    );
-    return { access_token: newAccessToken };
-  }
-
   // 카카오 소셜 로그인 페이지 로딩 기능
   // GET http://localhost:3000/auth/kakao
   @Get('kakao')
