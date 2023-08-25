@@ -18,6 +18,7 @@ import { BlackList } from 'src/reports/entities/blacklist.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
@@ -62,6 +63,10 @@ export class User {
 
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date | null;
+
+  @Column({ nullable: true })
+  @Exclude()
+  refreshToken: string;
 
   @OneToMany(() => Record, (record) => record.user, { cascade: true })
   records: Record[];
