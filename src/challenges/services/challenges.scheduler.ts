@@ -160,7 +160,7 @@ export class ChallengeScheduler {
         isDistributed: false,
       },
     });
-    console.log(challenges);
+
     for (const challenge of challenges) {
       const challengers = await this.challengersRepository.getChallengers(
         challenge.id,
