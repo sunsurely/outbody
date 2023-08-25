@@ -14,6 +14,7 @@ import { ChallengersRepository } from '../repositories/challengers.repository';
 import { Point, Position } from '../challengerInfo';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 import { cache } from '../cache/challenges.cache';
+import { RecordsRepository } from 'src/records/repositories/records.repository';
 
 @Injectable()
 export class ChallengesService {
@@ -23,6 +24,7 @@ export class ChallengesService {
     private readonly challengersRepository: ChallengersRepository,
     private readonly userRepository: UserRepository,
     private readonly followsRepository: FollowsRepository,
+    private readonly recordsRepository: RecordsRepository,
   ) {}
 
   // 도전 생성 (재용)
@@ -197,10 +199,28 @@ export class ChallengesService {
       );
     }
 
-    const today = new Date();
-
-    if (today > challenge.startDate) {
+    if (new Date() > challenge.startDate) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
+    }
+
+    const goal = await this.goalsRepository.getGoal(challengeId);
+
+    if (goal.weight || goal.muscle || goal.fat) {
+      const latestUserRecord = await this.recordsRepository.getLatestUserRecord(
+        userId,
+      );
+
+      const startDateObject = new Date(challenge.startDate);
+
+      const timeDifference =
+        startDateObject.getTime() - latestUserRecord.createdAt.getTime();
+      const dayDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+      if (dayDifference > 7) {
+        throw new BadRequestException(
+          '체성분 인증이 필요한 도전의 경우, 도전 시작일 기준 7일 이내의 측정 기록이 필요합니다.',
+        );
+      }
     }
 
     await this.challengersRepository.createChallenger({

@@ -14,4 +14,10 @@ export class GoalsRepository extends Repository<Goal> {
     const newGoal = await this.create(Goal);
     return await this.save(newGoal);
   }
+
+  // 목표 조회 (재용)
+  async getGoal(challengeId: number): Promise<Goal> {
+    const goal = await this.findOne({ where: { challengeId } });
+    return goal;
+  }
 }
