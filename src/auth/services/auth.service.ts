@@ -43,4 +43,13 @@ export class AuthService {
     const access_token = this.jwtService.sign(user);
     return access_token;
   }
+
+  async naverLogin(user) {
+    const existUser = await this.userRepository.getUserByEmail(user.email);
+    if (!existUser) {
+      // await this.userService.createUser();
+    }
+    const access_token = this.jwtService.sign(user);
+    return access_token;
+  }
 }
