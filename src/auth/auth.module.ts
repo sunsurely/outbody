@@ -10,6 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRepository } from 'src/users/repositories/users.repository';
+import { NaverStrategy } from './strategies/naver.strategy';
 
 @Module({
   imports: [
@@ -22,6 +23,12 @@ import { UserRepository } from 'src/users/repositories/users.repository';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, KakaoStrategy, UserRepository],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    KakaoStrategy,
+    UserRepository,
+    NaverStrategy,
+  ],
 })
 export class AuthsModule {}
