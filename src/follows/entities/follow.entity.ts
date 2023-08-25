@@ -34,4 +34,8 @@ export class Follow extends BaseEntity {
   @ManyToOne(() => User, (user) => user.follows, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
+  imgUrl: any;
+  follower: any;
+  followed: any;
+  name: any;
 }

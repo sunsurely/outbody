@@ -20,9 +20,11 @@ export class FollowsRepository extends Repository<Follow> {
       where: { followId, userId },
     });
   }
-  async getUsersFollow(userId: number): Promise<any> {
+
+  // 내 아이디로 나와 친구관계 유저목록 불러오기
+  async getUsersFollow(userId: number): Promise<any[]> {
     const usersFollowed = await this.createQueryBuilder('follow')
-      .leftJoinAndSelect('follow.user', 'follower')
+      .leftJoinAndSelect('follow.follower', 'follower')
       .leftJoinAndSelect('follow.followed', 'followed')
       .where('(follow.userId = :userId OR follow.followId = :userId)', {
         userId,
@@ -37,18 +39,18 @@ export class FollowsRepository extends Repository<Follow> {
       ])
       .getMany();
 
-    // return usersFollowed.map((follow) => ({
-    //   follower: {
-    //     id: follow.id,
-    //     imgUrl: follow.imgUrl,
-    //     name: follow.follower.name,
-    //   },
-    //   followed: {
-    //     id: follow.followed.id,
-    //     imgUrl: follow.followed.imgUrl,
-    //     name: follow.name,
-    //   },
-    // }));
+    return usersFollowed.map((follow) => ({
+      follower: {
+        id: follow.follower.id,
+        imgUrl: follow.follower.imgUrl,
+        name: follow.follower.name,
+      },
+      followed: {
+        id: follow.followed.id,
+        imgUrl: follow.followed.imgUrl,
+        name: follow.followed.name,
+      },
+    }));
   }
 
   //친구삭제
