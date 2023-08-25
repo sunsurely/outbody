@@ -4,7 +4,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtConfigService } from 'src/config/jwt.config.service';
@@ -24,4 +24,4 @@ import { UserRepository } from 'src/users/repositories/users.repository';
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, KakaoStrategy, UserRepository],
 })
-export class AuthModule {}
+export class AuthsModule {}
