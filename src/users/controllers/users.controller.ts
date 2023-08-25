@@ -53,11 +53,11 @@ export class UserController {
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
     const userId = req.user.id;
-    const { updateUser, token } = await this.userService.updateUser(
+    const { updateUser, refreshToken } = await this.userService.updateUser(
       userId,
       userDto,
     );
-    return { updateUser, token };
+    return { updateUser, refreshToken };
   }
 
   // 유저 password수정

@@ -8,7 +8,7 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly authService: AuthService) {
     super({
       clientID: process.env.NAVER_ID,
-      callbackURL: process.env.NAVER_CALLBACK_URL,
+      clientSecret: process.env.NAVER_CALLBACK_URL,
     });
   }
 

@@ -89,19 +89,21 @@ export class UserService {
   async updateUser(userId: number, userDto: UserUpdateDto) {
     const { imgUrl, comment } = userDto;
 
+    const user = await this.usersRepository.getUserById(userId);
+    const refreshToken = this.jwtService.sign({ user });
+
     const updateUser = await this.usersRepository.updateUser(
       userId,
       imgUrl,
       comment,
+      refreshToken,
     );
 
     if (!updateUser) {
       throw new NotImplementedException('업데이트에 실패했습니다');
     }
-    const user = await this.usersRepository.getUserById(userId);
-    const token = this.jwtService.sign({ user });
 
-    return { updateUser, token };
+    return { updateUser, refreshToken };
   }
 
   // 유저 password수정
@@ -131,7 +133,6 @@ export class UserService {
     if (!result) {
       throw new NotImplementedException('해당 작업을 완료하지 못했습니다');
     }
-
     return result;
   }
 }

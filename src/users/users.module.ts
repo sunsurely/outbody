@@ -12,6 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'src/config/jwt.config.service';
+import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JwtConfigService } from 'src/config/jwt.config.service';
     FollowsRepository,
     BlackListRepository,
     AuthService,
+    AuthMiddleware,
   ],
 })
 export class UsersModule {}

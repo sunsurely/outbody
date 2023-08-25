@@ -1,24 +1,55 @@
+import { UserService } from './../../users/services/users.service';
 import {
   Controller,
   Post,
   UseGuards,
   Get,
   Req,
+  Res,
   BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   // 로컬 로그인
   // POST http://localhost:3000/auth/login
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Req() user: any) {
-    return await this.authService.login(user);
+  async login(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    const user = req.user;
+
+    const { accessToken, ...accessOption } =
+      await this.authService.getAccessToken(user.id);
+
+    const { refreshToken, ...refreshOption } =
+      await this.authService.getRefreshToken(user.id);
+
+    await this.authService.setRefreshToken(refreshToken, user.id);
+
+    res.cookie('Authentication', accessToken, accessOption);
+    res.cookie('Refresh', refreshToken, refreshOption);
+
+    return { accessToken, refreshToken };
+  }
+
+  // 로그아웃
+  // POST http://localhost:3000/auth/logout
+  @UseGuards(AuthGuard('local'))
+  @Post('logout')
+  async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+    // const { accessOption, refreshOption } = this.authService.logout();
+    await this.authService.removeRefreshToken(req.user.id);
+
+    // res.cookie('Authentication', '', accessOption);
+    // res.cookie('Refresh', '', refreshOption);
   }
 
   // 카카오 소셜 로그인 페이지 로딩 기능
