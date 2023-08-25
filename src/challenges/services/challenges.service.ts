@@ -71,6 +71,7 @@ export class ChallengesService {
       publicView,
       description,
       entryPoint,
+      isDistributed: false,
     });
 
     await this.goalsRepository.createGoal({
@@ -110,6 +111,7 @@ export class ChallengesService {
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
         entryPoint: challenge.entryPoint,
+        isDistribute: challenge.isDistributed,
       };
     });
   }

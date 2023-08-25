@@ -74,6 +74,12 @@ export class Challenge {
   })
   entryPoint: number;
 
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isDistributed: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
