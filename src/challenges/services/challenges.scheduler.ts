@@ -140,4 +140,9 @@ export class ChallengeScheduler {
       );
     }
   }
+
+  // @Cron(CronExpression.EVERY_MINUTE)
+  // async outbodyCron() {
+  //   await this.recordsRepository.bodyStatusRecord();
+  // }
 }
