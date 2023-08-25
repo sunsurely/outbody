@@ -1,3 +1,5 @@
+import { JwtService } from '@nestjs/jwt';
+import { UserRepository } from 'src/users/repositories/users.repository';
 import {
   Injectable,
   NotFoundException,
@@ -6,7 +8,6 @@ import {
   UnauthorizedException,
   NotAcceptableException,
 } from '@nestjs/common';
-import { UserRepository } from '../repositories/users.repository';
 import { UserCreateDto } from '../dto/users.create.dto';
 import * as bcrypt from 'bcrypt';
 import { UserUpdateDto } from '../dto/users.update.dto';
@@ -20,6 +21,7 @@ export class UserService {
     private readonly usersRepository: UserRepository,
     private readonly blacklistRepository: BlackListRepository,
     private readonly followRepository: FollowsRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
@@ -96,8 +98,10 @@ export class UserService {
     if (!updateUser) {
       throw new NotImplementedException('업데이트에 실패했습니다');
     }
+    const user = await this.usersRepository.getUserById(userId);
+    const token = this.jwtService.sign({ user });
 
-    return updateUser;
+    return { updateUser, token };
   }
 
   // 유저 password수정

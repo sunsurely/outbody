@@ -1,4 +1,11 @@
-import { Controller, Post, UseGuards, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Get,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
 
@@ -11,7 +18,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() user: any) {
-    return this.authService.login(user);
+    return await this.authService.login(user);
   }
 
   // 카카오 소셜 로그인 페이지 로딩 기능
@@ -24,7 +31,7 @@ export class AuthController {
   // GET http://localhost:3000/auth/kakao/redirect
   @Get('kakao/redirect')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoLoginRedirect(@Req() req) {
-    return this.authService.kakaoLogin(req.user);
+  async kakaoLoginRedirect(@Req() req: any) {
+    return await this.authService.kakaoLogin(req.user);
   }
 }

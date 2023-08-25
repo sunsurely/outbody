@@ -26,19 +26,19 @@ export class Goal {
 
   @Column({
     type: 'int',
-    nullable: false,
+    nullable: true,
   })
   weight: number;
 
   @Column({
     type: 'int',
-    nullable: false,
+    nullable: true,
   })
   muscle: number;
 
   @Column({
     type: 'int',
-    nullable: false,
+    nullable: true,
   })
   fat: number;
 

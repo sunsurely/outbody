@@ -13,7 +13,7 @@ export class AuthMiddleware implements NestMiddleware {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      throw new UnauthorizedException('JWT not fount');
+      throw new UnauthorizedException('JWT not found');
     }
 
     let token: string;

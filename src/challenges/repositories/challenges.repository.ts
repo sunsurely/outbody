@@ -46,13 +46,13 @@ export class ChallengesRepository extends Repository<Challenge> {
       .leftJoinAndSelect('challenge.challenger', 'challenger')
       .addSelect((subQuery) => {
         subQuery
-          .select('COUNT(inChallenger.id)', 'challengerCount')
-          .from('challenger', 'inChallenger')
-          .where('inChallenger.challengeId = challenge.id');
+          .select('COUNT(userInChallenge.id)', 'userCount')
+          .from('challenger', 'userInChallenge')
+          .where('userInChallenge.challengeId = challenge.id');
         return subQuery;
-      }, 'challengerCount')
+      }, 'userCount')
       .where('challenge.startDate <= :today', { today: new Date() })
-      .having('challengerCount <= 1')
+      .having('userCount <= 1')
       .getMany();
 
     for (const challenge of challengesToDelete) {

@@ -1,24 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Record } from '../entities/records.entity';
-import {
-  DataSource,
-  Repository,
-  Between,
-  LessThanOrEqual,
-  EntityManager,
-  Transaction,
-} from 'typeorm';
-import { CreateRecordDto } from '../dto/create.records.dto';
-import { start } from 'repl';
-import { ChallengesRepository } from 'src/challenges/repositories/challenges.repository';
+import { DataSource, Repository, Between } from 'typeorm';
 
 @Injectable()
 export class RecordsRepository extends Repository<Record> {
-  constructor(
-    private readonly dataSource: DataSource, // private readonly challengesRepository: ChallengesRepository,
-  ) // private readonly logger: Logger,
-  // private readonly entityManager: EntityManager,
-  {
+  constructor(private readonly dataSource: DataSource) {
     super(Record, dataSource.createEntityManager());
   }
 
@@ -50,6 +36,14 @@ export class RecordsRepository extends Repository<Record> {
   //현 유저의 상세 기록 불러오기
   async getRecordDeTail(id: number): Promise<Record> {
     return await this.findOne({ where: { id } });
+  }
+
+  // 현재 사용자의 최신 기록 1개만 불러오기 (재용)
+  async getLatestUserRecord(id: number): Promise<Record> {
+    return await this.findOne({
+      where: { userId: id },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   //기간별 기록들 불러오기
