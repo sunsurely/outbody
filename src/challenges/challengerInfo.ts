@@ -10,8 +10,3 @@ export enum Point {
   FAT = 40, // 체지방율
   MUSCLE = 60, // 골격근량
 }
-
-export enum Answer {
-  YES = 'yes',
-  NO = 'no',
-}

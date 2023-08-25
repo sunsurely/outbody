@@ -10,7 +10,7 @@ export class CreateChallengerDto {
   @IsNumber()
   challengeId: number;
 
-  @IsIn([Position.HOST, Position.GUEST, Position.INVITED])
+  @IsIn([Position.HOST, Position.GUEST, Position.GUEST])
   type: Position;
 
   @IsNotEmpty()

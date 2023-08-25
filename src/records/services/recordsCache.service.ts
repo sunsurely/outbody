@@ -4,7 +4,6 @@ import {
   NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Record } from '../entities/records.entity';
 import { CreateRecordDto } from '../dto/create.records.dto';
 import { recordCache } from '../cache/initRecord.cache';

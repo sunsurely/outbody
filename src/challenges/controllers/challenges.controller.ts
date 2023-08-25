@@ -112,14 +112,14 @@ export class ChallengesController {
 
   // 도전 초대수락
   // POST http://localhost:3000/challenge/:id/accept
-  @Post('/:challengeId/accept')
+  @Post('/:userId/accept')
   async acceptChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param('userId') userId: number,
     @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {
     return await this.challengesService.acceptChallenge(
-      challengeId,
+      userId,
       body,
       req.user.id,
     );

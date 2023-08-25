@@ -207,6 +207,7 @@ export class ChallengeScheduler {
         }
       } catch (error) {
         await queryRunner.rollbackTransaction();
+        this.logger.error('요청작업이 실패했습니다.');
         throw new NotImplementedException('요청작업이 실패했습니다.');
       }
     }

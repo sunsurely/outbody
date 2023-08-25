@@ -1,5 +1,6 @@
 import {
   Injectable,
+  NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -22,6 +23,9 @@ export class AuthService {
     }
 
     const comparedPassword = await compare(password, user.password);
+    if (!comparedPassword) {
+      throw new NotAcceptableException('비밀번호가 일치하지 않습니다.');
+    }
 
     if (user && comparedPassword) {
       return user;
