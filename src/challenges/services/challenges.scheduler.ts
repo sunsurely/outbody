@@ -10,7 +10,6 @@ import { User } from 'src/users/entities/user.entity';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
-import { Challenger } from '../entities/challenger.entity';
 
 @Injectable()
 export class ChallengeScheduler {
@@ -152,16 +151,16 @@ export class ChallengeScheduler {
   //   await this.recordRepository.bodyStatusRecord();
   // }
 
-  //도전 종료 시 성공여부 (Challenger done 컬럼 true 로 변환여부) 체크 및 변환
+  // 도전 종료 시 성공여부 (Challenger done 컬럼 true 로 변환여부) 체크 및 변환
   @Cron(CronExpression.EVERY_SECOND)
   async goalComplete() {
     const challenges = await this.challengesRepository.find({
       where: {
-        endDate: LessThanOrEqual(new Date()),
+        endDate: LessThanOrEqual(new Date('2023-08-24')),
         isDistributed: false,
       },
     });
-
+    console.log(challenges);
     for (const challenge of challenges) {
       const challengers = await this.challengersRepository.getChallengers(
         challenge.id,
@@ -191,10 +190,10 @@ export class ChallengeScheduler {
           });
 
           if (
-            (posts.length >= attend,
-            record.fat <= fat &&
-              record.muscle >= muscle &&
-              record.weight <= weight)
+            // posts.length >= attend &&
+            (record.fat <= fat || fat === null) &&
+            (record.muscle >= muscle || muscle === null) &&
+            (record.weight <= weight || weight === null)
           ) {
             await queryRunner.manager.update(
               Challenger,
