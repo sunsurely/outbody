@@ -89,17 +89,19 @@ export class UserService {
   async updateUser(userId: number, userDto: UserUpdateDto) {
     const { imgUrl, comment } = userDto;
 
+    const user = await this.usersRepository.getUserById(userId);
+    const refreshToken = this.jwtService.sign({ user });
+
     const updateUser = await this.usersRepository.updateUser(
       userId,
       imgUrl,
       comment,
+      refreshToken,
     );
 
     if (!updateUser) {
       throw new NotImplementedException('업데이트에 실패했습니다');
     }
-    const user = await this.usersRepository.getUserById(userId);
-    const refreshToken = this.jwtService.sign({ user });
 
     return { updateUser, refreshToken };
   }

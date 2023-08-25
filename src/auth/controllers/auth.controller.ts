@@ -45,11 +45,11 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('logout')
   async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
-    const { accessOption, refreshOption } = this.authService.logout();
+    // const { accessOption, refreshOption } = this.authService.logout();
     await this.authService.removeRefreshToken(req.user.id);
 
-    res.cookie('Authentication', '', accessOption);
-    res.cookie('Refresh', '', refreshOption);
+    // res.cookie('Authentication', '', accessOption);
+    // res.cookie('Refresh', '', refreshOption);
   }
 
   // 카카오 소셜 로그인 페이지 로딩 기능
