@@ -1,12 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { DataSource, LessThanOrEqual } from 'typeorm';
+import { Between, DataSource, LessThanOrEqual } from 'typeorm';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { Challenge } from '../entities/challenge.entity';
 import { Challenger } from '../entities/challenger.entity';
 import { User } from 'src/users/entities/user.entity';
+import { GoalsRepository } from '../repositories/goals.repository';
+import { RecordsRepository } from 'src/records/repositories/records.repository';
+import { PostsRepository } from 'src/posts/repositories/posts.repository';
 
 @Injectable()
 export class ChallengeScheduler {
@@ -16,6 +19,9 @@ export class ChallengeScheduler {
     private readonly challengesRepository: ChallengesRepository,
     private readonly challengersRepository: ChallengersRepository,
     private readonly userRepository: UserRepository,
+    private readonly goalRepository: GoalsRepository,
+    private readonly recordRepository: RecordsRepository,
+    private readonly postRepository: PostsRepository,
   ) {}
 
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
@@ -204,6 +210,70 @@ export class ChallengeScheduler {
 
         this.logger.debug(
           `${user.id}번 회원은 2주일 동안 어떠한 도전에도 참여하지 않아, 점수가 20점 차감되었습니다.`,
+        );
+      }
+    }
+  }
+
+  // 도전 종료 시 성공 여부 확인 및 변환
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async goalComplete() {
+    const challenges = await this.challengesRepository.find({
+      where: {
+        endDate: LessThanOrEqual(new Date()),
+        isDistributed: false,
+      },
+    });
+
+    for (const challenge of challenges) {
+      const challengers = await this.challengersRepository.getChallengers(
+        challenge.id,
+      );
+      const startDate = new Date(challenge.startDate);
+      startDate.setDate(startDate.getDate() - 1);
+      const endDate = new Date(challenge.endDate);
+
+      const { weight, fat, muscle, attend } = await this.goalRepository.findOne(
+        {
+          where: { challengeId: challenge.id },
+        },
+      );
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+
+      try {
+        for (const challenger of challengers) {
+          await queryRunner.startTransaction();
+          const posts = await this.postRepository.find({
+            where: { createdAt: Between(startDate, endDate) },
+          });
+          const record = await this.recordRepository.findOne({
+            where: { userId: challenger.userId },
+            order: { createdAt: 'DESC' },
+          });
+
+          if (
+            posts.length >= attend &&
+            (record.fat <= fat || fat === null) &&
+            (record.muscle >= muscle || muscle === null) &&
+            (record.weight <= weight || weight === null)
+          ) {
+            await queryRunner.manager.update(
+              Challenger,
+              { userId: challenger.userId },
+              { done: true },
+            );
+
+            this.logger.debug('도전 성공 여부가 갱신되었습니다.');
+            await queryRunner.commitTransaction();
+          }
+        }
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+        this.logger.error('도전 성공 여부 갱신이 실패했습니다.');
+        throw new NotImplementedException(
+          '도전 성공 여부 갱신이 실패했습니다.',
         );
       }
     }

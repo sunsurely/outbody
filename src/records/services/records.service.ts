@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RecordCachingService } from './recordsCache.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class RecordsService {
@@ -27,5 +28,29 @@ export class RecordsService {
       endDate,
       id,
     );
+  }
+
+  //최근 측정표 기반 진단내용 조회
+  async getResultFromRecord(user: User) {
+    const records = await this.recordCachingService.getCacheAllUsersReports(
+      user.id,
+    );
+    const sortedRecords = records.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+    const { weight, bmr, muscle, height, fat } = sortedRecords[0];
+    const stdWeight = Math.pow(height / 100, 2) * 22;
+    const stdMuscle = (weight * 45) / 100;
+    const wetPerHgt = Math.round(weight / height);
+    const stdFat =
+      user.gender === '남자'
+        ? Math.floor(weight * 1.1 - wetPerHgt)
+        : Math.floor(weight * 1.07 - wetPerHgt);
+    const resWeight =
+      weight === stdWeight
+        ? 0
+        : weight > stdFat
+        ? stdFat - weight
+        : weight - stdFat;
   }
 }

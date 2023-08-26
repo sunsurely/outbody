@@ -61,8 +61,14 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 정보 수정
-  async updateUser(userId: number, imgUrl: string, comment: string) {
-    const result = await this.update({ id: userId }, { imgUrl, comment });
+  async updateUser(
+    userId: number,
+    imgUrl: string,
+    comment: string,
+    refreshToken: string,
+  ) {
+    await this.update({ id: userId }, { imgUrl, comment, refreshToken });
+    const result = await this.findOne({ where: { id: userId } });
     return result;
   }
 

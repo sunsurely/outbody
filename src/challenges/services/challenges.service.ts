@@ -3,17 +3,20 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  Logger,
+  NotImplementedException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
+import { RecordsRepository } from 'src/records/repositories/records.repository';
 import { FollowsRepository } from './../../follows/repositories/follows.repository';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
-import { RecordsRepository } from 'src/records/repositories/records.repository';
+import { CreateChallengerDto } from '../dto/create-challengers.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
-import { Point, Position } from '../challengerInfo';
+import { Invitiation, Point, Position } from '../challengerInfo';
 import { cache } from '../cache/challenges.cache';
 
 @Injectable()
@@ -25,6 +28,7 @@ export class ChallengesService {
     private readonly userRepository: UserRepository,
     private readonly followsRepository: FollowsRepository,
     private readonly recordsRepository: RecordsRepository,
+    private readonly logger: Logger,
   ) {}
 
   // 도전 생성 (재용)
@@ -341,43 +345,128 @@ export class ChallengesService {
     const message =
       '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
 
-    cache.set(`invitation_${challengeId}_${invitedUser.id}`, message);
+    const newInvite: Invitiation = {
+      userId,
+      invitedUserId: invitedUser.id,
+      message,
+      challengeId,
+    };
+    const cachedInvities: Invitiation[] = cache.get(`invite_${invitedUser.id}`);
+
+    if (cachedInvities) {
+      const newCachedInvites = cachedInvities.push(newInvite);
+      const cacheInvite = cache.set(
+        `invite_${invitedUser.id}`,
+        newCachedInvites,
+      );
+
+      if (cacheInvite) {
+        this.logger.debug('inviteUser 캐싱 SET 성공');
+        return newInvite;
+      }
+      this.logger.error('invitedUser 캐싱 SET 실패');
+      throw new BadRequestException('초대실패');
+    }
+
+    const newCachedInvites = cache.set(`invite_${invitedUser.id}`, [newInvite]);
+
+    if (newCachedInvites) {
+      this.logger.debug('inviteUser 캐싱 SET 성공');
+      return newInvite;
+    }
+    this.logger.error('invitedUser 캐싱 SET 실패');
+    throw new BadRequestException('초대실패');
+  }
+
+  //도전 친구초대 전체조회
+  async getInvitedChallengies(invitedId) {
+    const cachedInvites: Invitiation[] = cache.get(`invite_${invitedId}`);
+
+    if (!cachedInvites || cachedInvites.length <= 0) {
+      this.logger.error('Invite 캐시 GET 실패');
+      throw new NotFoundException('초대 목록이 없습니다.');
+    }
+
+    this.logger.debug('Invite 캐시 Get 성공');
+    return cachedInvites;
   }
 
   // 도전 초대 수락 (상우)
   async acceptChallenge(
-    challengeId: number,
-    body: ResponseChallengeDto,
     userId: number,
+    body: ResponseChallengeDto,
+    invitedId: number,
   ) {
-    const invitation = cache.get(`invitation_${challengeId}_${userId}`);
+    if (body.response === 'no') {
+      const usersInvities: Invitiation[] = cache.get(`invite_${invitedId}`);
 
-    if (!invitation) {
+      if (!usersInvities || usersInvities.length <= 0) {
+        this.logger.error('Invite 캐싱 GET 실패');
+        throw new NotFoundException('초대 내역이 없습니다.');
+      }
+
+      const newUsersInvities = usersInvities.filter(
+        (invite) => invite.userId !== userId,
+      );
+
+      const cachedInvities = cache.set(`invite_${invitedId}`, newUsersInvities);
+
+      if (!cachedInvities) {
+        this.logger.error('Invite 캐싱 SET 실패');
+        throw new BadRequestException('해당 작업을 수행하지 못했습니다.');
+      }
+
+      this.logger.debug('Invite 캐싱 성공');
+      return { message: '초대거부 TEST중' };
+    }
+
+    const invitations: Invitiation[] = cache.get(`invite_${invitedId}`);
+
+    if (!invitations || invitations.length <= 0) {
+      this.logger.error('invitations');
       throw new NotFoundException('새로운 초대가 없습니다.');
     }
+    const usersInvite: Invitiation = invitations.find(
+      (invite) => invite.userId === userId,
+    );
 
-    const challenge = await this.challengesRepository.getChallenge(challengeId);
-
-    if (!challenge) {
-      throw new NotFoundException('해당 도전이 조회되지 않습니다.');
-    } else if (!body) {
-      throw new BadRequestException(
-        '초대 수락 답변의 형식이 올바르지 않습니다.',
+    if (usersInvite) {
+      const challenge = await this.challengesRepository.getChallenge(
+        usersInvite.challengeId,
       );
+
+      if (!challenge) {
+        throw new NotFoundException('해당 도전이 조회되지 않습니다.');
+      }
+
+      const challangerDto: CreateChallengerDto = {
+        userId,
+        challengeId: usersInvite.challengeId,
+        type: Position.INVITED,
+        done: false,
+      };
+
+      // isInChallenge: false => true
+      await this.userRepository.updateUserIsInChallenge(userId, true);
+
+      const newChallenger = await this.challengersRepository.createChallenger(
+        challangerDto,
+      );
+      const newCachedChallenges = invitations.filter(
+        (invite) => invite.userId !== userId,
+      );
+
+      const cachedResult = cache.set(
+        `invite_${invitedId}`,
+        newCachedChallenges,
+      );
+
+      if (cachedResult) {
+        this.logger.debug('Invite 캐싱 SET 성공');
+        return newChallenger;
+      }
+      this.logger.error('Invite 캐싱 SET 실패');
+      throw new NotImplementedException('요청한 작업을 수행하지 못했습니다.');
     }
-
-    if (body.response !== 'yes') {
-      throw new UnauthorizedException('초대 수락을 거절했습니다.');
-    }
-
-    await this.challengersRepository.createChallenger({
-      userId,
-      challengeId: challenge.id,
-      type: Position.INVITED,
-      done: false,
-    });
-
-    // isInChallenge: false => true
-    await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 }

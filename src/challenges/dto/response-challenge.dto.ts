@@ -1,9 +1,7 @@
-import { IsNotEmpty } from 'class-validator';
-import { Column } from 'typeorm';
-import { Answer } from '../challengerInfo';
+import { IsIn, IsNotEmpty } from 'class-validator';
 
 export class ResponseChallengeDto {
   @IsNotEmpty()
-  @Column({ type: 'enum', enum: Answer })
-  response: Answer;
+  @IsIn(['yes', 'no'])
+  response: string;
 }

@@ -11,7 +11,9 @@ export enum Point {
   MUSCLE = 60, // 골격근량
 }
 
-export enum Answer {
-  YES = 'yes',
-  NO = 'no',
-}
+export type Invitiation = {
+  userId: number;
+  invitedUserId: number;
+  challengeId: number;
+  message: string;
+};

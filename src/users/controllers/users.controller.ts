@@ -28,7 +28,7 @@ export class UserController {
   }
 
   // 사용자 정보 조회
-  // GET http://localhost:3000/user/userId
+  // GET http://localhost:3000/user/:userId
   @Get('/:userId')
   async getUserById(
     @Param(
@@ -52,7 +52,12 @@ export class UserController {
   // PATCH http://localhost:3000/user/me
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
-    return await this.userService.updateUser(req.user, userDto);
+    const userId = req.user.id;
+    const { updateUser, refreshToken } = await this.userService.updateUser(
+      userId,
+      userDto,
+    );
+    return { updateUser, refreshToken };
   }
 
   // 유저 password수정

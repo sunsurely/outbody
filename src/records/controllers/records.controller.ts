@@ -54,4 +54,11 @@ export class RecordsController {
       req.user.id,
     );
   }
+
+  //최근 측정표 기반 진단내용 조회
+  // GET http://localhost:3000/record/result
+  @Get('/result')
+  async getResultFromRecord(@Req() req: any) {
+    return await this.getResultFromRecord(req.user);
+  }
 }
