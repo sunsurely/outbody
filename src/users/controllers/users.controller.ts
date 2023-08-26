@@ -42,10 +42,12 @@ export class UserController {
   }
 
   // 내 정보 + 친구목록 조회
-  // GET http://localhost:3000/user/me/frofile
+  // GET http://localhost:3000/user/me/profile
   @Get('/me/profile')
   async getCurrentUser(@Req() req: any) {
-    return await this.userService.getCurrentUser(req.user);
+    const MeAndFollowersInfo = await this.userService.getUserInfo(req.user);
+
+    return MeAndFollowersInfo;
   }
 
   // 내 정보 수정

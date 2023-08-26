@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { DataSource, Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class FollowsRepository extends Repository<Follow> {
@@ -20,36 +21,20 @@ export class FollowsRepository extends Repository<Follow> {
     });
   }
 
-  // 내 아이디로 나와 친구관계 유저목록 불러오기
+  // 내 follow 목록 가져오기
   async getUsersFollow(userId: number): Promise<any[]> {
-    const usersFollowed = await this.createQueryBuilder('follow')
-      .leftJoinAndSelect('follow.follower', 'follower')
-      .leftJoinAndSelect('follow.followed', 'followed')
-      .where('(follow.userId = :userId OR follow.followId = :userId)', {
-        userId,
-      })
+    const followers = await this.createQueryBuilder('follow')
       .select([
-        'follower.id AS followerId',
-        'follower.imgUrl AS followerImgUrl',
-        'follower.name AS followerName',
-        'followed.id AS followedId',
-        'followed.imgUrl AS followedImgUrl',
-        'followed.name AS followedName',
+        'user.id as id',
+        'user.name as name',
+        'user.email as email',
+        'user.imgUrl as imgUrl',
       ])
-      .getMany();
+      .innerJoin(User, 'user', 'user.id = follow.followId') // Inner join with the 'user' relation
+      .where('follow.userId = :userId', { userId })
+      .getRawMany();
 
-    return usersFollowed.map((follow) => ({
-      follower: {
-        id: follow.follower.id,
-        imgUrl: follow.follower.imgUrl,
-        name: follow.follower.name,
-      },
-      followed: {
-        id: follow.followed.id,
-        imgUrl: follow.followed.imgUrl,
-        name: follow.followed.name,
-      },
-    }));
+    return followers;
   }
 
   //친구삭제
