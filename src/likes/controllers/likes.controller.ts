@@ -62,4 +62,23 @@ export class LikesController {
       return { message: `${postId}번 오운완 게시글 좋아요를 취소했습니다.` };
     }
   }
+
+  // 유저가 누른 좋아요 조회
+  // http://localhost:3000/challenge/:challengeId/post/:postId/like/user
+  @Get('/:challengeId/post/:postId/like/user')
+  async usersLikes(
+    @Param('challengeId') challengeId: number,
+    @Param('postId') postId: number,
+    @Req() req: any,
+  ) {
+    const userId = req.user.id;
+    const [userLikes, userLikesCount] = await this.likesService.usersLikes(
+      userId,
+    );
+
+    return {
+      totalLikes: userLikesCount,
+      likedPostId: userLikes.map((like) => like.postId),
+    };
+  }
 }
