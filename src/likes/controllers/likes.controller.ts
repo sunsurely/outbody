@@ -63,7 +63,7 @@ export class LikesController {
     }
   }
 
-  // 유저가 누른 좋아요 조회
+  // 유저가 누른 좋아요 숫자 + 게시글목록 조회
   // http://localhost:3000/challenge/:challengeId/post/:postId/like/user
   @Get('/:challengeId/post/:postId/like/user')
   async usersLikes(
@@ -76,9 +76,16 @@ export class LikesController {
       userId,
     );
 
+    const likedPosts = userLikes.map((like) => {
+      return {
+        postId: like.postId,
+        description: like.post.description,
+      };
+    });
+
     return {
       totalLikes: userLikesCount,
-      likedPostId: userLikes.map((like) => like.postId),
+      likedPosts: likedPosts,
     };
   }
 }

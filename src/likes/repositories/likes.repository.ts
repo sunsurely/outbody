@@ -45,6 +45,7 @@ export class LikesRepository extends Repository<Like> {
     return await this.findAndCount({
       where: { userId },
       order: { createdAt: 'DESC' },
+      relations: ['post'],
     });
   }
 }
