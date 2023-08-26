@@ -54,6 +54,12 @@ export class User {
   @Column({ type: 'enum', enum: Status, default: Status.NORMAL })
   status: Status;
 
+  @Column({ type: 'boolean', default: false })
+  isInChallenge: boolean;
+
+  @Column({ type: 'date', nullable: true })
+  latestChallengeDate: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

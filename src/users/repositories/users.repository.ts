@@ -44,13 +44,15 @@ export class UserRepository extends Repository<User> {
     const user = await this.createQueryBuilder('user')
       .select([
         'user.id',
+        'user.email',
         'user.name',
         'user.birthday',
         'user.gender',
         'user.imgUrl',
         'user.comment',
         'user.point',
-        'user.email',
+        'user.isInChallenge',
+        'user.latestChallengeDate',
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
@@ -61,6 +63,12 @@ export class UserRepository extends Repository<User> {
   //유저 정보 수정
   async updateUser(userId: number, imgUrl: string, comment: string) {
     const result = await this.update({ id: userId }, { imgUrl, comment });
+    return result;
+  }
+
+  // 사용자 도전 참여 여부 수정 (재용)
+  async updateUserIsInChallenge(userId: number, isInChallenge: boolean) {
+    const result = await this.update({ id: userId }, { isInChallenge });
     return result;
   }
 

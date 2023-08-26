@@ -1,5 +1,3 @@
-import { FollowsRepository } from './../../follows/repositories/follows.repository';
-import { UserRepository } from 'src/users/repositories/users.repository';
 import {
   Injectable,
   NotFoundException,
@@ -7,21 +5,23 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
-import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
-import { InviteChallengeDto } from '../dto/invite-challenge.dto';
-import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
-import { Point, Position } from '../challengerInfo';
-import { ResponseChallengeDto } from '../dto/response-challenge.dto';
-import { cache } from '../cache/challenges.cache';
+import { GoalsRepository } from '../repositories/goals.repository';
+import { UserRepository } from 'src/users/repositories/users.repository';
+import { FollowsRepository } from './../../follows/repositories/follows.repository';
+import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
+import { InviteChallengeDto } from '../dto/invite-challenge.dto';
+import { ResponseChallengeDto } from '../dto/response-challenge.dto';
+import { Point, Position } from '../challengerInfo';
+import { cache } from '../cache/challenges.cache';
 
 @Injectable()
 export class ChallengesService {
   constructor(
     private readonly challengesRepository: ChallengesRepository,
-    private readonly goalsRepository: GoalsRepository,
     private readonly challengersRepository: ChallengersRepository,
+    private readonly goalsRepository: GoalsRepository,
     private readonly userRepository: UserRepository,
     private readonly followsRepository: FollowsRepository,
     private readonly recordsRepository: RecordsRepository,
@@ -90,17 +90,12 @@ export class ChallengesService {
       type: Position.HOST,
       done: false,
     });
+
+    // isInChallenge: false => true
+    await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 
-  // 도전자 목록조회 (재용)
-  async getChallengers(challengeId) {
-    const challengers = await this.challengersRepository.getChallengers(
-      challengeId,
-    );
-    return challengers;
-  }
-
-  // 도전 목록조회 (상우, 재용)
+  // 도전 목록 조회 (상우, 재용)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges.map((challenge) => {
@@ -118,7 +113,7 @@ export class ChallengesService {
     });
   }
 
-  // 도전 상세조회 (상우)
+  // 도전 상세 조회 (상우)
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -156,7 +151,11 @@ export class ChallengesService {
     } else if (challenge.endDate <= today) {
       throw new BadRequestException('이미 종료된 도전은 삭제할 수 없습니다.');
     }
-    return await this.challengesRepository.deleteChallenge(challengeId);
+
+    await this.challengesRepository.deleteChallenge(challengeId);
+
+    // isInChallenge: true => false
+    await this.userRepository.updateUserIsInChallenge(userId, false);
   }
 
   // 도전 방 입장 (재용)
@@ -183,9 +182,10 @@ export class ChallengesService {
       );
     }
 
-    const isExistingChallenger =
-      await this.challengersRepository.getChallengerByUserId(userId);
-
+    const isExistingChallenger = await this.challengersRepository.getChallenger(
+      challengeId,
+      userId,
+    );
     if (isExistingChallenger) {
       throw new BadRequestException(
         '동시에 2개 이상의 도전을 진행할 수 없습니다.',
@@ -210,6 +210,10 @@ export class ChallengesService {
         userId,
       );
 
+      if (!latestUserRecord) {
+        throw new NotFoundException('측정 기록이 존재하지 않습니다.');
+      }
+
       const startDateObject = new Date(challenge.startDate);
 
       const timeDifference =
@@ -229,6 +233,9 @@ export class ChallengesService {
       type: Position.GUEST,
       done: false,
     });
+
+    // isInChallenge: false => true
+    await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 
   // 도전 방 퇴장 (상우, 재용)
@@ -239,17 +246,34 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    const today = new Date();
+    const challenger = await this.challengersRepository.getChallenger(
+      challengeId,
+      userId,
+    );
+
+    if (challenger.type === Position.HOST) {
+      throw new BadRequestException(
+        '본인이 생성한 도전은 퇴장이 불가능합니다.',
+      );
+    }
+
+    if (challenge.endDate <= new Date()) {
+      throw new BadRequestException('이미 종료된 도전은 퇴장이 불가능합니다.');
+    }
 
     const user = await this.userRepository.getUserById(userId);
 
-    if (challenge.startDate <= today) {
+    // 도전 시작일이 경과한 이후에 방에서 퇴장하는 경우, 점수 차감
+    if (challenge.startDate <= new Date()) {
       user.point = user.point - challenge.entryPoint;
       const updateUserPoint = user.point;
       await this.userRepository.updateUserPoint(userId, updateUserPoint);
     }
 
     await this.challengersRepository.deleteChallenger(challenge.id, userId);
+
+    // isInChallenge: true => false
+    await this.userRepository.updateUserIsInChallenge(userId, false);
   }
 
   // 도전 친구 초대 (상우)
@@ -276,6 +300,7 @@ export class ChallengesService {
 
     const challenger = await this.challengersRepository.getChallenger(
       challengeId,
+      userId,
     );
     if (challenger.type !== Position.HOST) {
       throw new UnauthorizedException('방장만 다른 회원을 초대할 수 있습니다.');
@@ -307,6 +332,7 @@ export class ChallengesService {
     // 초대된 참가자가 이미 참가한 도전자인지 확인
     const isExistingChallenger = await this.challengersRepository.getChallenger(
       challengeId,
+      userId,
     );
     if (isExistingChallenger.userId == invitedUser.id) {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
@@ -314,14 +340,8 @@ export class ChallengesService {
 
     const message =
       '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
-    // 초대문만 넣어서는 처리가 안됨. 배열로 저장, 초대정보를 담아야 함
 
-    const invitation = cache.set(
-      `invitation_${challengeId}_${invitedUser.id}`,
-      message,
-    );
-
-    console.log('초대 요청', invitation);
+    cache.set(`invitation_${challengeId}_${invitedUser.id}`, message);
   }
 
   // 도전 초대 수락 (상우)
@@ -331,8 +351,6 @@ export class ChallengesService {
     userId: number,
   ) {
     const invitation = cache.get(`invitation_${challengeId}_${userId}`);
-
-    console.log('초대 수락', invitation);
 
     if (!invitation) {
       throw new NotFoundException('새로운 초대가 없습니다.');
@@ -358,5 +376,8 @@ export class ChallengesService {
       type: Position.INVITED,
       done: false,
     });
+
+    // isInChallenge: false => true
+    await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 }
