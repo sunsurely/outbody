@@ -10,3 +10,10 @@ export enum Point {
   FAT = 40, // 체지방율
   MUSCLE = 60, // 골격근량
 }
+
+export type Invitiation = {
+  userId: number;
+  invitedUserId: number;
+  challengeId: number;
+  message: string;
+};

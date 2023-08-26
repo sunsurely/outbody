@@ -4,10 +4,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private userRepository: UserRepository,
+  ) {}
 
   async use(req: any, res: any, next: Function) {
     const authHeader = req.headers.authorization;
@@ -20,12 +24,13 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       token = authHeader.split(' ')[1];
       const decodedToken = await this.jwtService.verify(token);
-
       if (!decodedToken || !decodedToken.id) {
         throw new UnauthorizedException(`Invalid JWT: ${decodedToken}`);
       }
-
-      req.user = { id: decodedToken.id };
+      const user = await this.userRepository.findOne({
+        where: { id: decodedToken.id },
+      });
+      req.user = user;
 
       next();
     } catch (err) {

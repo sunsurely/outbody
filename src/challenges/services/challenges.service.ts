@@ -13,7 +13,7 @@ import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
-import { Point, Position } from '../challengerInfo';
+import { Invitiation, Point, Position } from '../challengerInfo';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 import { cache } from '../cache/challenges.cache';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
@@ -320,13 +320,6 @@ export class ChallengesService {
     const message =
       '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
 
-    type Invitiation = {
-      userId: number;
-      invitedUserId: number;
-      challengeId: number;
-      message: string;
-    };
-
     const newInvite: Invitiation = {
       userId,
       invitedUserId: invitedUser.id,
@@ -360,23 +353,29 @@ export class ChallengesService {
     throw new BadRequestException('초대실패');
   }
 
+  //도전 친구초대 전체조회
+  async getInvitedChallengies(invitedId) {
+    const cachedInvites: Invitiation[] = cache.get(`invite_${invitedId}`);
+
+    if (!cachedInvites || cachedInvites.length <= 0) {
+      this.logger.error('Invite 캐시 GET 실패');
+      throw new NotFoundException('초대 목록이 없습니다.');
+    }
+
+    this.logger.debug('Invite 캐시 Get 성공');
+    return cachedInvites;
+  }
+
   // 도전 초대 수락 (상우)
   async acceptChallenge(
     userId: number,
     body: ResponseChallengeDto,
     invitedId: number,
   ) {
-    type Invitiation = {
-      userId: number;
-      invitedUserId: number;
-      message: string;
-      challengeId: number;
-    };
-
     if (body.response === 'no') {
-      const usersInvities: Invitiation[] = cache.get(`invite_${userId}`);
+      const usersInvities: Invitiation[] = cache.get(`invite_${invitedId}`);
 
-      if (!usersInvities || usersInvities.length) {
+      if (!usersInvities || usersInvities.length <= 0) {
         this.logger.error('Invite 캐싱 GET 실패');
         throw new NotFoundException('초대 내역이 없습니다.');
       }
@@ -385,7 +384,7 @@ export class ChallengesService {
         (invite) => invite.userId !== userId,
       );
 
-      const cachedInvities = cache.set(`invite_${userId}`, newUsersInvities);
+      const cachedInvities = cache.set(`invite_${invitedId}`, newUsersInvities);
 
       if (!cachedInvities) {
         this.logger.error('Invite 캐싱 SET 실패');
@@ -393,7 +392,7 @@ export class ChallengesService {
       }
 
       this.logger.debug('Invite 캐싱 성공');
-      return;
+      return { message: '초대거부 TEST중' };
     }
 
     const invitations: Invitiation[] = cache.get(`invite_${invitedId}`);

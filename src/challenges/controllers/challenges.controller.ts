@@ -110,6 +110,13 @@ export class ChallengesController {
     );
   }
 
+  //도전 친구초대 전체조회
+  // POST http://localhost:3000/challenge/invite
+  @Get('/invite')
+  async getInvitedChallengies(@Req() req: any) {
+    return await this.challengesService.getInvitedChallengies(req.user.id);
+  }
+
   // 도전 초대수락
   // POST http://localhost:3000/challenge/:id/accept
   @Post('/:userId/accept')
