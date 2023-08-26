@@ -38,19 +38,30 @@ export class RecordsService {
     const sortedRecords = records.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
-    const { weight, bmr, muscle, height, fat } = sortedRecords[0];
-    const stdWeight = Math.pow(height / 100, 2) * 22;
-    const stdMuscle = (weight * 45) / 100;
+    const { weight, muscle, height, fat } = sortedRecords[0];
+    const stdWeight = Math.pow(height / 100, 2) * 22; //적정체중
+    const stdMuscle = (weight * 45) / 100; //적정골격근량
     const wetPerHgt = Math.round(weight / height);
+
+    //성별과 키에 따른 적정 체지방량
     const stdFat =
       user.gender === '남자'
         ? Math.floor(weight * 1.1 - wetPerHgt)
         : Math.floor(weight * 1.07 - wetPerHgt);
+
+    //표준 체지방량 대비 증 감량 해야 할 수치
+    const resFat =
+      fat === stdFat ? 0 : fat > stdFat ? stdFat - fat : fat - stdFat;
+
+    //표준 체중 대비 증 감량 해야 할 수치계산
     const resWeight =
       weight === stdWeight
         ? 0
         : weight > stdFat
         ? stdFat - weight
         : weight - stdFat;
+
+    //표준 골격근량 대비 증량 해야 할 수치
+    const resMuscle = muscle >= stdMuscle ? 0 : stdMuscle - muscle;
   }
 }

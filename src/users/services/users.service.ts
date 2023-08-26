@@ -27,7 +27,7 @@ export class UserService {
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
   async createUser(user: UserCreateDto) {
-    const { name, email, password, birthday, gender, status } = user;
+    const { name, email, password, gender, status } = user;
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
@@ -48,7 +48,6 @@ export class UserService {
       name,
       email,
       password,
-      birthday,
       gender,
       status,
     );
@@ -97,23 +96,25 @@ export class UserService {
 
   //유저 정보 수정
   async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { imgUrl, comment } = userDto;
+    const { imgUrl, comment, birthday } = userDto;
 
-    const user = await this.usersRepository.getUserById(userId);
-    const refreshToken = this.jwtService.sign({ user });
+    const newRefreshToken = this.jwtService.sign({ userId });
 
     const updateUser = await this.usersRepository.updateUser(
       userId,
       imgUrl,
       comment,
-      refreshToken,
+      newRefreshToken,
+      birthday,
     );
 
+    const { password, updatedAt, deletedAt, provider, refreshToken, ...rest } =
+      updateUser;
     if (!updateUser) {
       throw new NotImplementedException('업데이트에 실패했습니다');
     }
 
-    return { updateUser, refreshToken };
+    return { rest, newRefreshToken };
   }
 
   // 유저 password수정

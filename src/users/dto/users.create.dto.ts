@@ -34,9 +34,6 @@ export class UserCreateDto {
   readonly password: string;
 
   @IsString()
-  readonly birthday: string;
-
-  @IsString()
   readonly gender: string;
 
   @IsString()
