@@ -23,15 +23,26 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  // 도전자 조회 (상우)
-  async getChallenger(challengeId: number): Promise<Challenger> {
-    const challenger = await this.findOne({
+  // 도전 생성자 조회 (재용)
+  async getHost(challengeId: number): Promise<Challenger> {
+    const host = await this.findOne({
       where: { challengeId },
+    });
+    return host;
+  }
+
+  // 특정 도전 내 도전자 조회 (상우, 재용)
+  async getChallenger(
+    challengeId: number,
+    userId: number,
+  ): Promise<Challenger> {
+    const challenger = await this.findOne({
+      where: { challengeId, userId },
     });
     return challenger;
   }
 
-  // 도전자 조회 (재용)
+  // 전체 도전 내 도전자 조회 (재용)
   async getChallengerByUserId(userId: number): Promise<Challenger> {
     const challenger = await this.findOne({
       where: { userId, done: false },

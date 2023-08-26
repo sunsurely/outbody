@@ -16,14 +16,15 @@ export class RecordCachingService {
   constructor(private readonly recordsRepository: RecordsRepository) {}
 
   async setCacheReports(body: CreateRecordDto, id: number): Promise<Record> {
-    const { bmr, weight, muscle, fat, date } = body;
+    const { bmr, weight, muscle, fat, height, date } = body;
     const newDate = new Date(date);
     const record = await this.recordsRepository.createRecord(
+      id,
       bmr,
       weight,
       muscle,
       fat,
-      id,
+      height,
       newDate,
     );
 

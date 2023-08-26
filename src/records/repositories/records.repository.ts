@@ -10,20 +10,22 @@ export class RecordsRepository extends Repository<Record> {
 
   //측정기록 생성
   async createRecord(
+    userId: number,
     bmr: number,
     weight: number,
     muscle: number,
     fat: number,
-    userId: number,
+    height: number,
     date: Date,
   ): Promise<Record> {
     const newUser = this.create({
+      userId,
       bmr,
       weight,
       muscle,
       fat,
+      height,
       date,
-      userId,
     });
     return await this.save(newUser);
   }
