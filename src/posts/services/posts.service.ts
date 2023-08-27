@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from '../dto/create-post.dto';
 import { PostsRepository } from '../repositories/posts.repository';
+import { Post } from '../entities/post.entity';
 
 @Injectable()
 export class PostsService {
@@ -52,5 +53,10 @@ export class PostsService {
       );
     }
     return await this.postsRepository.deletePost(postId);
+  }
+
+  // 유저가 생성한 오운완수 + 오운완목록조회
+  async getUserPosts(userId: number): Promise<[Post[], number]> {
+    return this.postsRepository.getUserPosts(userId);
   }
 }

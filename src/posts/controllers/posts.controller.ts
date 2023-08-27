@@ -45,4 +45,26 @@ export class PostsController {
   async deletePost(@Param('postId') postId: number, @Req() req: any) {
     return await this.postsService.deletePost(postId, req.user.id);
   }
+
+  // 유저가 생성한 오운완수 + 오운완목록조회
+  // http://localhost:3000/challenge/post/user
+  @Get('/post/user')
+  async getUserPosts(@Req() req: any) {
+    const userId = req.user.id;
+    const [posts, userPostsCount] = await this.postsService.getUserPosts(
+      userId,
+    );
+
+    const usersPosts = posts.map((post) => {
+      return {
+        postId: post.id,
+        description: post.description,
+      };
+    });
+
+    return {
+      totalPosts: userPostsCount,
+      usersPosts: usersPosts,
+    };
+  }
 }

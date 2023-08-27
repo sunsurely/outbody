@@ -64,4 +64,12 @@ export class PostsRepository extends Repository<Post> {
 
     return deletePost;
   }
+
+  // 유저가 생성한 오운완 수+목록조회
+  async getUserPosts(userId: number): Promise<[Post[], number]> {
+    return await this.findAndCount({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

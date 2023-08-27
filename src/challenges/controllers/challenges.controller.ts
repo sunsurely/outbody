@@ -79,7 +79,7 @@ export class ChallengesController {
     );
   }
 
-  // 도전 친구초대
+  // 도전 친구 초대
   // POST http://localhost:3000/challenge/:id/invite
   @Post('/:challengeId/invite')
   async inviteChallenge(
@@ -90,18 +90,18 @@ export class ChallengesController {
     return await this.challengesService.inviteChallenge(
       challengeId,
       body,
-      req.user.id,
+      req.user,
     );
   }
 
-  //도전 친구초대 전체조회
-  // POST http://localhost:3000/challenge/invite
-  @Get('/invite')
+  // 도전 친구 초대 전체조회
+  // GET http://localhost:3000/challenge/invite/list
+  @Get('/invite/list')
   async getInvitedChallengies(@Req() req: any) {
-    return await this.challengesService.getInvitedChallengies(req.user.id);
+    return await this.challengesService.getInvitedChallenges(req.user.id);
   }
 
-  // 도전 초대수락
+  // 도전 초대 수락
   // POST http://localhost:3000/challenge/:id/accept
   @Post('/:userId/accept')
   async acceptChallenge(

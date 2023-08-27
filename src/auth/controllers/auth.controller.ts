@@ -48,6 +48,12 @@ export class AuthController {
     // const { accessOption, refreshOption } = this.authService.logout();
     await this.authService.removeRefreshToken(req.user.id);
 
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res.send({
+      message: 'logout success',
+    });
+
     // res.cookie('Authentication', '', accessOption);
     // res.cookie('Refresh', '', refreshOption);
   }

@@ -1,3 +1,4 @@
+import { UserLoginDto } from './../../auth/dto/userLogin.dto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Like } from '../entities/like.entity';
@@ -17,13 +18,12 @@ export class LikesRepository extends Repository<Like> {
     return await this.save(newLike);
   }
 
-  // 좋아요 조회
-  async getLikes(postId: number): Promise<Like[]> {
-    const likes = await this.find({
+  // 좋아요수 조회
+  async likesCount(postId: number): Promise<[Like[], number]> {
+    return await this.findAndCount({
       where: { postId },
       order: { createdAt: 'DESC' },
     });
-    return likes;
   }
 
   // 좋아요 취소
@@ -37,5 +37,14 @@ export class LikesRepository extends Repository<Like> {
       where: { postId, userId },
     });
     return likedUser;
+  }
+
+  // 유저가 누른 좋아요 조회
+  async usersLikes(userId: number): Promise<[Like[], number]> {
+    return await this.findAndCount({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      relations: ['post'],
+    });
   }
 }

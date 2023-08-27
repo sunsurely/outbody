@@ -32,15 +32,19 @@ export class LikesController {
     }
   }
 
-  // 오운완 좋아요 조회 (상우)
+  // 오운완 게시글당 좋아요수 조회 (상우)
   // http://localhost:3000/challenge/:challengeId/post/:postId/like
   @Get('/:challengeId/post/:postId/like')
-  async getLikes(
+  async likesCount(
     @Param('challengeId') challengeId: number,
     @Param('postId') postId: number,
   ) {
-    const likes = await this.likesService.getLikes(challengeId, postId);
-    return likes;
+    const [likes, likeCount] = await this.likesService.likesCount(
+      challengeId,
+      postId,
+    );
+
+    return { postId: postId, totalLikes: likeCount };
   }
 
   // 오운완 좋아요 취소 (상우)
@@ -61,5 +65,27 @@ export class LikesController {
     if (unlike) {
       return { message: `${postId}번 오운완 게시글 좋아요를 취소했습니다.` };
     }
+  }
+
+  // 유저가 누른 좋아요 숫자 + 게시글목록 조회
+  // http://localhost:3000/challenge/:challengeId/post/:postId/like/user
+  @Get('/like/user')
+  async usersLikes(@Req() req: any) {
+    const userId = req.user.id;
+    const [userLikes, userLikesCount] = await this.likesService.usersLikes(
+      userId,
+    );
+
+    const likedPosts = userLikes.map((like) => {
+      return {
+        postId: like.postId,
+        description: like.post.description,
+      };
+    });
+
+    return {
+      totalLikes: userLikesCount,
+      likedPosts: likedPosts,
+    };
   }
 }
