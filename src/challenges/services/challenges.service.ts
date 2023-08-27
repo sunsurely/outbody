@@ -342,8 +342,7 @@ export class ChallengesService {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
 
-    const message =
-      '도전에 참가하시겠습니까? (해당 초대는 24시간 동안 유효합니다.)';
+    const message = '도전에 참가하시겠습니까?';
 
     const newInvite: Invitiation = {
       userId,
