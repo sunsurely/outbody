@@ -15,7 +15,7 @@ export class RecordCachingService {
 
   constructor(private readonly recordsRepository: RecordsRepository) {}
 
-  async setCacheReports(body: CreateRecordDto, id: number): Promise<Record> {
+  async setCacheRecords(body: CreateRecordDto, id: number): Promise<Record> {
     const { bmr, weight, muscle, fat, height } = body;
 
     const record = await this.recordsRepository.createRecord(
@@ -51,7 +51,7 @@ export class RecordCachingService {
     return record;
   }
 
-  async getCacheAllUsersReports(id: number): Promise<Record[]> {
+  async getCacheAllUsersRecords(id: number): Promise<Record[]> {
     const cachedRecords: Record[] = recordCache.get(`record:${id}`);
 
     if (cachedRecords && cachedRecords.length > 0) {
@@ -59,9 +59,7 @@ export class RecordCachingService {
       return cachedRecords;
     }
 
-    const records = await this.recordsRepository.find({
-      where: { userId: id },
-    });
+    const records = await this.recordsRepository.getUsersRecords(id);
 
     if (!records || records.length <= 0) {
       this.logger.error('record데이터 GET 실패');
@@ -73,7 +71,7 @@ export class RecordCachingService {
     return records;
   }
 
-  async getCacheDetailReport(recordId, id: number): Promise<Record> {
+  async getCacheDetailRecord(recordId, id: number): Promise<Record> {
     const cachedRecords: Record[] = recordCache.get(`record:${id}`);
 
     if (cachedRecords && cachedRecords.length > 0) {

@@ -24,13 +24,13 @@ export class RecordsController {
     return await this.recordesService.createRecord(body, req.user.id);
   }
 
-  // 현 유저의 모든 기록 불러오기
-  // GET http://localhost:3000/record
+  //누른 page에 해당하는 측정표들 pageSize개씩 조회
+  // GET http://localhost:3000/record/?page=page&pageSize=pageSize
   @Get('/page')
   async getUsersRecords(
     @Req() req: any,
-    @Query() page: number,
-    @Query() pageSize: number,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
   ) {
     return await this.recordesService.getUsersRecords(
       req.user.id,
