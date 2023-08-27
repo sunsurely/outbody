@@ -91,7 +91,7 @@ export class FollowsService {
   //친구 수락여부 결정   data.response 의  yes or no  여부로 수락 or 취소 결정
   // follow 생성과 동시에 캐싱된 수락메세지 삭제
   async acceptFollow(userId: number, followId: number, response) {
-    let results: Request[] = followCache.get(`follow_${followId}`);
+    const results: Request[] = followCache.get(`follow_${followId}`);
 
     if (!results || results.length <= 0) {
       this.logger.error('캐싱 GET 실패');

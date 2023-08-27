@@ -17,8 +17,8 @@ export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}
 
   // 친구 요청
-  // POST http://localhost:3000/follow/request/folowerId
-  @Post('/request/:followId')
+  // POST http://localhost:3000/follow/:id/request
+  @Post('/:followId/request')
   async requestFollow(
     @Param(
       'followId',
@@ -30,34 +30,34 @@ export class FollowsController {
     return await this.followsService.requestFollow(followId, req.user);
   }
 
-  // 친구 요청 메시지 전체 조회
+  // 친구 요청 전체 조회
   // GET http://localhost:3000/follow/request
   @Get('/request')
   async getUsersRequests(@Req() req: any) {
     return await this.followsService.getUsersRequests(req.user.id);
   }
 
-  // 친구 수락여부 결정 data.response의  yes or no 여부로 수락 or 취소 결정
-  // POST http://localhost:3000/follow/userId/accept
-  @Post('/:userId/accept')
+  // 친구 수락 여부 결정
+  // POST http://localhost:3000/follow/:id/accept
+  @Post('/:followerId/accept')
   async acceptFollow(
     @Req() req: any,
     @Body() data: ResponseDto,
     @Param(
-      'userId',
+      'followerId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
-    userId: number,
+    followerId: number,
   ) {
     return await this.followsService.acceptFollow(
-      userId,
+      followerId,
       req.user.id,
       data.response,
     );
   }
 
-  // 친구 취소, follow 삭제
-  // DELETE http://localhost:3000/follow/userId
+  // 친구 취소
+  // DELETE http://localhost:3000/follow/:id
   @Delete('/:userId')
   async deleteFollow(
     @Param(

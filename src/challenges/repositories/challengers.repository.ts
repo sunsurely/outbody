@@ -42,14 +42,6 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challenger;
   }
 
-  // 전체 도전 내 도전자 조회 (재용)
-  async getChallengerByUserId(userId: number): Promise<Challenger> {
-    const challenger = await this.findOne({
-      where: { userId, done: false },
-    });
-    return challenger;
-  }
-
   // 도전자 퇴장 (상우, 재용)
   async deleteChallenger(challengeId: number, userId: number): Promise<void> {
     const challenger = await this.findOne({
