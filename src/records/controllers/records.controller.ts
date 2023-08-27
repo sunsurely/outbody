@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { RecordsService } from '../services/records.service';
@@ -23,11 +24,19 @@ export class RecordsController {
     return await this.recordesService.createRecord(body, req.user.id);
   }
 
-  // 현 유저의 모든 기록 불러오기
-  // GET http://localhost:3000/record
-  @Get('/')
-  async getUsersRecords(@Req() req: any) {
-    return await this.recordesService.getUsersRecords(req.user.id);
+  //누른 page에 해당하는 측정표들 pageSize개씩 조회
+  // GET http://localhost:3000/record/?page=page&pageSize=pageSize
+  @Get('/page')
+  async getUsersRecords(
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.recordesService.getUsersRecords(
+      req.user.id,
+      page,
+      pageSize,
+    );
   }
 
   // 현 유저의 상세 기록 불러오기

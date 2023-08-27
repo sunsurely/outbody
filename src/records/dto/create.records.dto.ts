@@ -20,8 +20,4 @@ export class CreateRecordDto {
   @IsNotEmpty()
   @IsNumber()
   readonly height: number;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly date: string;
 }

@@ -33,9 +33,6 @@ export class Record {
   @Column('int')
   height: number;
 
-  @Column('date')
-  date: Date;
-
   @CreateDateColumn()
   createdAt: Date;
 
