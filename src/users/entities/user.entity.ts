@@ -22,13 +22,16 @@ import { Exclude } from 'class-transformer';
 
 @Entity({ schema: 'outbody', name: 'users' })
 export class User {
+  map(arg0: (user: any) => {}) {
+    throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column('varchar', { length: 30 })
   name: string;
 
-  @Column('date')
+  @Column('date', { nullable: true })
   birthday: Date;
 
   @Column('varchar')

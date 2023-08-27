@@ -1,9 +1,15 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UserUpdateDto {
   @IsString()
-  readonly imgUrl: string;
+  @IsOptional()
+  readonly imgUrl?: string;
 
   @IsString()
-  readonly comment: string;
+  @IsOptional()
+  readonly comment?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly birthday?: string;
 }

@@ -94,9 +94,10 @@ export class AuthService {
 
   // 토큰 제거
   async removeRefreshToken(userId: number) {
-    return this.userRepository.update(userId, {
+    const logout = await this.userRepository.update(userId, {
       refreshToken: null,
     });
+    return logout;
   }
 
   // Refresh 토큰 set, hash처리

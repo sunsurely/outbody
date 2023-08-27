@@ -1,3 +1,4 @@
+import { IsDateString } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import {
@@ -26,7 +27,7 @@ export class UserService {
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
   async createUser(user: UserCreateDto) {
-    const { name, email, password, birthday, gender, status } = user;
+    const { name, email, password, gender, status } = user;
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
@@ -47,32 +48,11 @@ export class UserService {
       name,
       email,
       password,
-      birthday,
       gender,
       status,
     );
 
     return createUserResult;
-  }
-
-  //로그인 한 유저 정보조회
-  async getCurrentUser(user) {
-    const {
-      id,
-      name,
-      birthday,
-      email,
-      gender,
-      imgUrl,
-      comment,
-      point,
-      status,
-      createdAt,
-    } = user;
-
-    const usersFollows = await this.followRepository.getUsersFollow(user.id);
-    console.log(usersFollows);
-    return;
   }
 
   //사용자 정보조회
@@ -85,25 +65,56 @@ export class UserService {
     return getUser;
   }
 
+  // 내정보 + follow정보 조회
+  async getUserInfo(user) {
+    const {
+      password,
+      provider,
+      status,
+      updatedAt,
+      deletedAt,
+      refreshToken,
+      ...rest
+    } = user;
+
+    const follow = await this.followRepository.getUsersFollow(user.id);
+    if (!follow) {
+      throw new NotFoundException('follower가 존재하지 않습니다.');
+    }
+
+    const followersInfo = follow.map((followers) => {
+      return {
+        id: followers.id,
+        name: followers.name,
+        email: followers.email,
+        imgUrl: followers.imgUrl,
+      };
+    });
+
+    return { rest, followersInfo };
+  }
+
   //유저 정보 수정
   async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { imgUrl, comment } = userDto;
+    const { imgUrl, comment, birthday } = userDto;
 
-    const user = await this.usersRepository.getUserById(userId);
-    const refreshToken = this.jwtService.sign({ user });
+    const newRefreshToken = this.jwtService.sign({ userId });
 
     const updateUser = await this.usersRepository.updateUser(
       userId,
       imgUrl,
       comment,
-      refreshToken,
+      newRefreshToken,
+      birthday,
     );
 
+    const { password, updatedAt, deletedAt, provider, refreshToken, ...rest } =
+      updateUser;
     if (!updateUser) {
       throw new NotImplementedException('업데이트에 실패했습니다');
     }
 
-    return { updateUser, refreshToken };
+    return { rest, newRefreshToken };
   }
 
   // 유저 password수정

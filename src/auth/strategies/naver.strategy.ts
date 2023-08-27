@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver';
 import { AuthService } from '../services/auth.service';
@@ -20,7 +20,14 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     const user = {
       email: profile._json.email,
       name: profile.displayName,
+      imgUrl: profile._json.profile_image,
+      gender: profile._json.gender,
     };
+    if (!user.email || !user.name || !user.imgUrl || !user.gender) {
+      throw new BadRequestException(
+        '미기입된 항목이 있습니다. 모두 입력해주세요.',
+      );
+    }
     return user;
   }
 }

@@ -14,16 +14,13 @@ export class UserRepository extends Repository<User> {
     name: string,
     email: string,
     password: string,
-    birthday: string,
     gender: string,
     status: string,
   ): Promise<User> {
-    const birthdayDate = new Date(birthday);
     const newUser = this.create({
       name,
       email,
       password,
-      birthday: birthdayDate,
       gender: gender as Gender,
       status: status as Status,
     });
@@ -66,8 +63,13 @@ export class UserRepository extends Repository<User> {
     imgUrl: string,
     comment: string,
     refreshToken: string,
+    birthday: string,
   ) {
-    await this.update({ id: userId }, { imgUrl, comment, refreshToken });
+    await this.update(
+      { id: userId },
+      { imgUrl, comment, refreshToken, birthday },
+    );
+
     const result = await this.findOne({ where: { id: userId } });
     return result;
   }

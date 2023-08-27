@@ -1,11 +1,9 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class KakaoLoginDto {
   @IsString()
-  readonly birthday: string;
-
-  @IsNumber()
-  readonly height: number;
+  @IsOptional()
+  readonly birthday?: string;
 
   @IsString()
   readonly gender: string;

@@ -45,7 +45,9 @@ export class UserController {
   // GET http://localhost:3000/user/me/profile
   @Get('/me/profile')
   async getCurrentUser(@Req() req: any) {
-    return await this.userService.getCurrentUser(req.user);
+    const MeAndFollowersInfo = await this.userService.getUserInfo(req.user);
+
+    return MeAndFollowersInfo;
   }
 
   // 내 정보 수정
@@ -53,11 +55,8 @@ export class UserController {
   @Patch('/me')
   async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
     const userId = req.user.id;
-    const { updateUser, refreshToken } = await this.userService.updateUser(
-      userId,
-      userDto,
-    );
-    return { updateUser, refreshToken };
+
+    return await this.userService.updateUser(userId, userDto);
   }
 
   // 유저 password수정

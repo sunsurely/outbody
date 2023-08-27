@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { LikesRepository } from '../repositories/likes.repository';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
+import { Like } from '../entities/like.entity';
 
 @Injectable()
 export class LikesService {
@@ -73,5 +74,10 @@ export class LikesService {
       );
     }
     return await this.likesRepository.deleteLike(likeId);
+  }
+
+  // 유저가 누른 좋아요 조회
+  async usersLikes(userId: number): Promise<[Like[], number]> {
+    return this.likesRepository.usersLikes(userId);
   }
 }
