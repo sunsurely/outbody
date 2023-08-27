@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Between, DataSource, LessThanOrEqual } from 'typeorm';
 import { ChallengesRepository } from '../repositories/challenges.repository';
@@ -182,6 +182,9 @@ export class ChallengeScheduler {
         );
       } catch (error) {
         await queryRunner.rollbackTransaction();
+        this.logger.debug(
+          `${challenge.id}번 도전의 점수 배분에 실패하였습니다.`,
+        );
         throw error;
       } finally {
         await queryRunner.release();
@@ -216,7 +219,7 @@ export class ChallengeScheduler {
   }
 
   // 도전 종료 시 성공 여부 확인 및 변환
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_DAY_AT_11PM)
   async goalComplete() {
     const challenges = await this.challengesRepository.find({
       where: {
@@ -233,7 +236,7 @@ export class ChallengeScheduler {
       startDate.setDate(startDate.getDate() - 1);
       const endDate = new Date(challenge.endDate);
 
-      const { weight, fat, muscle, attend } = await this.goalRepository.findOne(
+      const { attend, weight, muscle, fat } = await this.goalRepository.findOne(
         {
           where: { challengeId: challenge.id },
         },
@@ -248,10 +251,9 @@ export class ChallengeScheduler {
           const posts = await this.postRepository.find({
             where: { createdAt: Between(startDate, endDate) },
           });
-          const record = await this.recordRepository.findOne({
-            where: { userId: challenger.userId },
-            order: { createdAt: 'DESC' },
-          });
+          const record = await this.recordRepository.getLatestUserRecord(
+            challenger.userId,
+          );
 
           if (
             posts.length >= attend &&
@@ -265,16 +267,20 @@ export class ChallengeScheduler {
               { done: true },
             );
 
-            this.logger.debug('도전 성공 여부가 갱신되었습니다.');
+            this.logger.debug(
+              `${challenge.id}번 도전의 성공 여부가 갱신되었습니다.`,
+            );
             await queryRunner.commitTransaction();
           }
         }
       } catch (error) {
         await queryRunner.rollbackTransaction();
-        this.logger.error('도전 성공 여부 갱신이 실패했습니다.');
-        throw new NotImplementedException(
-          '도전 성공 여부 갱신이 실패했습니다.',
+        this.logger.debug(
+          `${challenge.id}번 도전의 성공 여부 갱신에 실패하였습니다.`,
         );
+        throw error;
+      } finally {
+        await queryRunner.release();
       }
     }
   }

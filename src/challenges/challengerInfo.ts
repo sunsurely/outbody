@@ -1,7 +1,6 @@
 export enum Position {
   HOST = 'host', // 방장
   GUEST = 'guest', // 참여한 사람
-  INVITED = 'invited', // 초대된 사람
 }
 
 export enum Point {
