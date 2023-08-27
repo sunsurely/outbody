@@ -54,20 +54,27 @@ export class RecordsController {
   }
 
   // 기간별 기록정보 불러오기
-  // GET http://localhost:3000/record/date
-  @Get('/date/period')
-  async getRecordsByDateRange(@Body() date: RangeRecordDto, @Req() req: any) {
+  // GET http://localhost:3000/record/date/period/page/?page=page&pageSize=pageSize
+  @Get('/date/period/page')
+  async getRecordsByDateRange(
+    @Body() date: RangeRecordDto,
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
     return await this.recordesService.getRecordsByDateRange(
       date.start,
       date.end,
       req.user.id,
+      page,
+      pageSize,
     );
   }
 
   //최근 측정표 기반 진단내용 조회
   // GET http://localhost:3000/record/result
-  @Get('/result')
+  @Get('/result/detail')
   async getResultFromRecord(@Req() req: any) {
-    return await this.getResultFromRecord(req.user);
+    return await this.recordesService.getResultFromRecord(req.user);
   }
 }

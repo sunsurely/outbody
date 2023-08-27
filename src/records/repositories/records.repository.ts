@@ -70,8 +70,20 @@ export class RecordsRepository extends Repository<Record> {
     const startDate = new Date(start);
     const endDate = new Date(end);
     startDate.setDate(startDate.getDate() - 1);
+    endDate.setHours(23, 59, 59);
     const records = await this.find({
+      select: [
+        'id',
+        'userId',
+        'bmr',
+        'fat',
+        'height',
+        'muscle',
+        'weight',
+        'createdAt',
+      ],
       where: { createdAt: Between(startDate, endDate), userId: id },
+      order: { createdAt: 'DESC' },
     });
 
     return records;

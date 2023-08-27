@@ -101,6 +101,7 @@ export class RecordCachingService {
 
     const startDate = new Date(start);
     const endDate = new Date(end);
+    endDate.setHours(23, 59, 59);
     if (cachedRecords && cachedRecords.length > 0) {
       this.logger.debug('record 데이터 GET 성공');
 
@@ -113,13 +114,27 @@ export class RecordCachingService {
     }
 
     const records = await this.recordsRepository.getUsersRecords(id);
+
+    if (!records || records.length <= 0) {
+      throw new NotFoundException('데이터가 없습니다.');
+    }
+
     recordCache.set(`record:${id}`, records);
+
+    if (!recordCache) {
+      this.logger.error('Record 캐싱 SET 실패');
+    }
 
     const recordResult = await this.recordsRepository.getRecordsByDateRange(
       start,
       end,
       id,
     );
+
+    if (!recordResult || recordResult.length <= 0) {
+      throw new NotFoundException('기간에 해당하는 Record 데이터가 없습니다.');
+    }
+
     this.logger.error('record 데이터 GET 실패');
 
     return recordResult;
