@@ -31,6 +31,16 @@ export class RecordsRepository extends Repository<Record> {
   //현 유저의 모든 기록 불러오기
   async getUsersRecords(id: number): Promise<Record[]> {
     return this.find({
+      select: [
+        'id',
+        'bmr',
+        'fat',
+        'height',
+        'muscle',
+        'weight',
+        'userId',
+        'createdAt',
+      ],
       where: { userId: id },
       order: {
         createdAt: 'DESC',
