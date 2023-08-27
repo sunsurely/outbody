@@ -16,7 +16,6 @@ export class RecordsRepository extends Repository<Record> {
     muscle: number,
     fat: number,
     height: number,
-    date: Date,
   ): Promise<Record> {
     const newUser = this.create({
       userId,
@@ -25,7 +24,6 @@ export class RecordsRepository extends Repository<Record> {
       muscle,
       fat,
       height,
-      date,
     });
     return await this.save(newUser);
   }
@@ -58,7 +56,7 @@ export class RecordsRepository extends Repository<Record> {
     const endDate = new Date(end);
     startDate.setDate(startDate.getDate() - 1);
     const records = await this.find({
-      where: { date: Between(startDate, endDate), userId: id },
+      where: { createdAt: Between(startDate, endDate), userId: id },
     });
 
     return records;

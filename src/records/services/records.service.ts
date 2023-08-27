@@ -11,9 +11,12 @@ export class RecordsService {
     return await this.recordCachingService.setCacheReports(body, id);
   }
 
-  //현 유저의 모든 기록 메모리에서 불러오기/ 메모리에 없으면 DB에서 검색
-  async getUsersRecords(id: number) {
-    return await this.recordCachingService.getCacheAllUsersReports(id);
+  //누른 page에 해당하는 측정표들 pageSize개씩 조회
+  async getUsersRecords(id: number, page, pageSize) {
+    const usersRecords =
+      await this.recordCachingService.getCacheAllUsersReports(id);
+
+    return;
   }
 
   //현 유저의 상세 기록 메모리에서 불러오기/ 캐싱된 데이터 없을 시 새롭게 세팅
@@ -35,10 +38,12 @@ export class RecordsService {
     const records = await this.recordCachingService.getCacheAllUsersReports(
       user.id,
     );
+
     const sortedRecords = records.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
-    const { weight, muscle, height, fat } = sortedRecords[0];
+    const recentRecord = sortedRecords[0];
+    const { weight, muscle, height, fat } = recentRecord;
     const stdWeight = Math.pow(height / 100, 2) * 22; //적정체중
     const stdMuscle = (weight * 45) / 100; //적정골격근량
     const wetPerHgt = Math.round(weight / height);
@@ -63,5 +68,7 @@ export class RecordsService {
 
     //표준 골격근량 대비 증량 해야 할 수치
     const resMuscle = muscle >= stdMuscle ? 0 : stdMuscle - muscle;
+
+    return { recentRecord, resFat, resWeight, resMuscle };
   }
 }

@@ -16,8 +16,8 @@ export class RecordCachingService {
   constructor(private readonly recordsRepository: RecordsRepository) {}
 
   async setCacheReports(body: CreateRecordDto, id: number): Promise<Record> {
-    const { bmr, weight, muscle, fat, height, date } = body;
-    const newDate = new Date(date);
+    const { bmr, weight, muscle, fat, height } = body;
+
     const record = await this.recordsRepository.createRecord(
       id,
       bmr,
@@ -25,10 +25,8 @@ export class RecordCachingService {
       muscle,
       fat,
       height,
-      newDate,
     );
 
-    this.recordsRepository.save(record);
     if (!record) {
       throw new NotImplementedException('기록 생성에 실패했습니다');
     }
@@ -109,7 +107,7 @@ export class RecordCachingService {
       this.logger.debug('record 데이터 GET 성공');
 
       const result = cachedRecords.filter((record) => {
-        const cachedDate = new Date(record.date);
+        const cachedDate = new Date(record.createdAt);
         return cachedDate >= startDate && cachedDate <= endDate;
       });
 
