@@ -18,13 +18,12 @@ export class LikesRepository extends Repository<Like> {
     return await this.save(newLike);
   }
 
-  // 좋아요 조회
-  async getLikes(postId: number): Promise<Like[]> {
-    const likes = await this.find({
+  // 좋아요수 조회
+  async likesCount(postId: number): Promise<[Like[], number]> {
+    return await this.findAndCount({
       where: { postId },
       order: { createdAt: 'DESC' },
     });
-    return likes;
   }
 
   // 좋아요 취소

@@ -22,8 +22,15 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
       name: profile.displayName,
       imgUrl: profile._json.profile_image,
       gender: profile._json.gender,
+      birthday: profile._json.birthday,
     };
-    if (!user.email || !user.name || !user.imgUrl || !user.gender) {
+    if (
+      !user.email ||
+      !user.name ||
+      !user.imgUrl ||
+      !user.gender ||
+      !user.birthday
+    ) {
       throw new BadRequestException(
         '미기입된 항목이 있습니다. 모두 입력해주세요.',
       );
