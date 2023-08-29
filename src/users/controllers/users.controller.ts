@@ -77,10 +77,9 @@ export class UserController {
   }
 
   // 유저 전체목록 조회(유저 추천)
-  // GET http://localhost:3000/user/recommendation
-  @Get('/recommendation')
+  // GET http://localhost:3000/user/me/recommendation
+  @Get('/me/recommendation')
   async getAllUsers(@Req() req: any): Promise<UserRecommendationDto[]> {
-    console.log(req.user);
     const userId = req.user.id;
     const allUsers = await this.userService.getAllUsers(userId);
 
