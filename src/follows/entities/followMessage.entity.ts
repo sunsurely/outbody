@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ schema: 'outbody', name: 'followMessagies' })
+@Entity({ schema: 'outbody', name: 'followmessagies' })
 export class FollowMessage {
   @PrimaryGeneratedColumn({ type: 'int', name: 'followMessage' })
   id: number;
@@ -22,9 +22,12 @@ export class FollowMessage {
   email: string;
 
   @Column('varchar')
+  name: string;
+
+  @Column('varchar')
   message: string;
 
-  @Column('boolean')
+  @Column('boolean', { default: false })
   done: boolean;
 
   @CreateDateColumn()
