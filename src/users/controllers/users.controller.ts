@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Req,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
@@ -63,10 +64,10 @@ export class UserController {
   }
 
   // 유저 password수정
-  // PATCH http://localhost:3000/user/me/password
+  // PUT http://localhost:3000/user/me/password
   @Patch('/me/password')
   async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
-    return await this.userService.updatePassword(req.user.id, passwordDto);
+    return await this.userService.updatePassword(req.user, passwordDto);
   }
 
   // 회원 탈퇴

@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "proxy": "http://localhost:3000",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

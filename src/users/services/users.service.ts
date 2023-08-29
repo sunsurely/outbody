@@ -126,6 +126,7 @@ export class UserService {
     const { password, newPassword } = passwordDto;
 
     const ComparedPassword = await bcrypt.compare(password, user.password);
+    console.log(ComparedPassword);
 
     if (!ComparedPassword) {
       throw new UnauthorizedException('password가 일치하지 않습니다');
