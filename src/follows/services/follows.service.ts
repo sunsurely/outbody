@@ -8,11 +8,18 @@ import {
 import { FollowsRepository } from '../repositories/follows.repository';
 import { followInitcache as followCache } from '../cache/follow.cache';
 import { Request } from '../followInfo';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FollowMessage } from '../entities/followMessage.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FollowsService {
   private readonly logger = new Logger(FollowsService.name);
-  constructor(private readonly followRepository: FollowsRepository) {}
+  constructor(
+    private readonly followRepository: FollowsRepository,
+    @InjectRepository(FollowMessage)
+    private followMessageRepository: Repository<FollowMessage>,
+  ) {}
 
   //친구요청 기능 - 친구 요청 메세지 캐싱
   async requestFollow(followId: number, user) {
@@ -35,44 +42,12 @@ export class FollowsService {
 
     const message = `${user.name}(${user.email})님이 친구요청을 보냈습니다`;
 
-    let requests: Request[] = followCache.get(`follow_${followId}`);
-    if (requests && requests.length > 0) {
-      requests.push({
-        followId,
-        userId: user.id,
-        message,
-        email: user.email,
-        name: user.name,
-      });
-
-      const cacheResult = followCache.set(`follow_${followId}`, requests);
-      if (cacheResult) {
-        this.logger.debug('Request 캐싱 SET 성공');
-        return cacheResult;
-      }
-      this.logger.error('Request 캐싱 SET 실패');
-      throw new NotImplementedException('해당 작업을 완수하지 못했습니다.');
-    }
-    requests = [
-      {
-        followId,
-        userId: user.id,
-        message,
-        email: user.email,
-        name: user.name,
-      },
-    ];
-
-    const setCache = followCache.set(`follow_${followId}`, requests);
-
-    if (setCache) {
-      this.logger.debug('Request 캐싱 SET 성공');
-      //메세지 전송
-
-      return setCache;
-    }
-    this.logger.error('요청 실패');
-    throw new NotImplementedException('요청에 실패했습니다.');
+    this.followMessageRepository.create({
+      userId: user.id,
+      followId,
+      email: user.email,
+      message,
+    });
   }
 
   //user의 보류중인 초대목록 전체 조회

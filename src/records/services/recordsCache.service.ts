@@ -31,9 +31,7 @@ export class RecordCachingService {
       throw new NotImplementedException('기록 생성에 실패했습니다');
     }
 
-    const userRecords = await this.recordsRepository.find({
-      where: { userId: id },
-    });
+    const userRecords = await this.recordsRepository.getUsersRecords(id);
 
     if (!userRecords || userRecords.length <= 0) {
       throw new NotFoundException('기록을 불러오지 못했습니다.');
@@ -126,8 +124,8 @@ export class RecordCachingService {
     }
 
     const recordResult = await this.recordsRepository.getRecordsByDateRange(
-      start,
-      end,
+      startDate,
+      endDate,
       id,
     );
 
