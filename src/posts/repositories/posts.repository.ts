@@ -42,10 +42,16 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 전체 조회
-  async getAllPost(challengeId: number): Promise<Post[]> {
+  async getAllPost(
+    challengeId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<Post[]> {
     const allPost = await this.find({
       where: { challengeId },
       order: { createdAt: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
     return allPost;
   }

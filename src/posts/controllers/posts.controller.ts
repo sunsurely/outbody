@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto } from '../dto/create-post.dto';
@@ -28,8 +29,12 @@ export class PostsController {
   // 오운완 전체 조회
   // http://localhost:3000/challenge/:challengeId/post
   @Get('/:challengeId/post')
-  async getAllPost(@Param('challengeId') challengeId: number) {
-    return await this.postsService.getAllPost(challengeId);
+  async getAllPost(
+    @Param('challengeId') challengeId: number,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.postsService.getAllPost(challengeId, page, pageSize);
   }
 
   // 오운완 상세 조회
