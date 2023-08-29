@@ -63,14 +63,10 @@ export class RecordsRepository extends Repository<Record> {
 
   //기간별 기록들 불러오기
   async getRecordsByDateRange(
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     id: number,
   ): Promise<Record[]> {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    startDate.setDate(startDate.getDate() - 1);
-    endDate.setHours(23, 59, 59);
     const records = await this.find({
       select: [
         'id',
@@ -82,7 +78,7 @@ export class RecordsRepository extends Repository<Record> {
         'weight',
         'createdAt',
       ],
-      where: { createdAt: Between(startDate, endDate), userId: id },
+      where: { createdAt: Between(start, end), userId: id },
       order: { createdAt: 'DESC' },
     });
 

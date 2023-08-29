@@ -72,7 +72,7 @@ export class RecordsController {
   }
 
   //최근 측정표 기반 진단내용 조회
-  // GET http://localhost:3000/record/result
+  // GET http://localhost:3000/record/result/detail
   @Get('/result/detail')
   async getResultFromRecord(@Req() req: any) {
     return await this.recordesService.getResultFromRecord(req.user);

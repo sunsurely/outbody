@@ -175,4 +175,14 @@ export class UserService {
       imgUrl: user.imgUrl,
     }));
   }
+
+  //유저 Email로 조회
+  async getUserByEmail(email: string) {
+    const result = await this.usersRepository.getUserInfoByEmail(email);
+    if (!result) {
+      throw new NotFoundException('존재하는 유저가 아닙니다.');
+    }
+
+    return result;
+  }
 }
