@@ -102,7 +102,8 @@ export class UserRepository extends Repository<User> {
   // 유저 전체목록
   async getAllUsers(userId: number): Promise<User[]> {
     return this.createQueryBuilder('user')
-      .where('user.id != :userId', { id: userId })
+      .where('user.id != :userId', { userId })
+      .andWhere('user.deletedAt IS NULL')
       .getMany();
   }
 }
