@@ -27,7 +27,7 @@ export class UserRepository extends Repository<User> {
     return await this.save(newUser);
   }
 
-  //유저 이메일 조회
+  //미들검증용 유저정보 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
       .where('user.email = :email', { email })
@@ -116,5 +116,15 @@ export class UserRepository extends Repository<User> {
       .getMany();
 
     return users;
+  }
+
+  //email로 유저 정보조회
+  async getUserInfoByEmail(email: string) {
+    const result = await this.findOne({
+      select: ['id', 'email', 'imgUrl', 'name'],
+      where: { email },
+    });
+
+    return result;
   }
 }
