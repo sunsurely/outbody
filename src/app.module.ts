@@ -23,8 +23,6 @@ import { BlackListModule } from './blacklists/blacklists.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { RankingsModule } from './rankings/rankings.module';
-import { GatewayModule } from './socket/gateway/gateway.module';
-import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -50,8 +48,6 @@ import { SocketModule } from './socket/socket.module';
     LikesModule,
     CommentsModule,
     RankingsModule,
-    GatewayModule,
-    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

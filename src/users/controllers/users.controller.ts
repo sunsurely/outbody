@@ -14,6 +14,9 @@ import { UserCreateDto } from '../dto/users.create.dto';
 import { UserService } from '../services/users.service';
 import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
+import { User } from '../entities/user.entity';
+import { UserRecommendationDto } from '../dto/recommendation.dto';
+import { SignoutDto } from '../dto/user.signout.dto';
 
 @Controller('user')
 export class UserController {
@@ -69,7 +72,18 @@ export class UserController {
   // 회원 탈퇴
   // DELETE http://localhost:3000/user/me
   @Delete('/me')
-  async deleteUser(@Req() req: any) {
-    return await this.userService.deletUser(req.user.id);
+  async deleteUser(@Req() req: any, @Body() signoutDto: SignoutDto) {
+    return await this.userService.deletUser(req.user.id, signoutDto);
+  }
+
+  // 유저 전체목록 조회(유저 추천)
+  // GET http://localhost:3000/user/recommendation
+  @Get('/recommendation')
+  async getAllUsers(@Req() req: any): Promise<UserRecommendationDto[]> {
+    console.log(req.user);
+    const userId = req.user.id;
+    const allUsers = await this.userService.getAllUsers(userId);
+
+    return allUsers;
   }
 }

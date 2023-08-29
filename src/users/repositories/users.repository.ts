@@ -98,4 +98,11 @@ export class UserRepository extends Repository<User> {
 
     return deleteUserResult;
   }
+
+  // 유저 전체목록
+  async getAllUsers(userId: number): Promise<User[]> {
+    return this.createQueryBuilder('user')
+      .where('user.id != :userId', { id: userId })
+      .getMany();
+  }
 }
