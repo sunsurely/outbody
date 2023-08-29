@@ -101,9 +101,20 @@ export class UserRepository extends Repository<User> {
 
   // 유저 전체목록
   async getAllUsers(userId: number): Promise<User[]> {
-    return this.createQueryBuilder('user')
+    const users = await this.createQueryBuilder('user')
       .where('user.id != :userId', { userId })
       .andWhere('user.deletedAt IS NULL')
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.followId')
+          .from('follows', 'follow')
+          .where('follow.userId = :userId')
+          .getQuery();
+        return `user.id NOT IN ${subQuery}`;
+      })
       .getMany();
+
+    return users;
   }
 }
