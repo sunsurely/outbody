@@ -70,13 +70,13 @@ export class UserController {
   }
 
   // 회원 탈퇴
-  // DELETE http://localhost:3000/user/me
-  @Delete('/me')
+  // DELETE http://localhost:3000/user/me/signout
+  @Delete('/me/signout')
   async deleteUser(@Req() req: any, @Body() signoutDto: SignoutDto) {
     return await this.userService.deletUser(req.user.id, signoutDto);
   }
 
-  // 유저 전체목록 조회(유저 추천)
+  // 유저 전체목록 조회(나와 친구관계가 아닌 모든 유저 불러옴)
   // GET http://localhost:3000/user/me/recommendation
   @Get('/me/recommendation')
   async getAllUsers(@Req() req: any): Promise<UserRecommendationDto[]> {
