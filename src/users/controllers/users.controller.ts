@@ -88,8 +88,8 @@ export class UserController {
   }
 
   //email로 user조회
-  //GET  http://localhost:3000/user
-  @Post('/')
+  //GET  http://localhost:3000/user/me/searchEmail
+  @Get('/me/searchEmail')
   async getUserByEmail(@Body() data: GetUserByEmailDto) {
     return await this.userService.getUserByEmail(data.email);
   }
