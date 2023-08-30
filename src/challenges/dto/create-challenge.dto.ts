@@ -20,10 +20,6 @@ export class CreateChallengeDto {
   title: string;
 
   @IsNotEmpty()
-  @IsString()
-  imgUrl: string;
-
-  @IsNotEmpty()
   @IsDate()
   startDate: Date;
 

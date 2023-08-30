@@ -16,10 +16,6 @@ export class CreateChallengeRequestDto {
 
   @IsNotEmpty()
   @IsString()
-  imgUrl: string;
-
-  @IsNotEmpty()
-  @IsString()
   startDate: string;
 
   @IsNotEmpty()
