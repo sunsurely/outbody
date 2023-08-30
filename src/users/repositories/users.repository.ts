@@ -36,7 +36,7 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  //유저 정보조회
+  // 사용자 정보 조회
   async getUserById(userId: number): Promise<User> {
     const user = await this.createQueryBuilder('user')
       .select([
@@ -53,7 +53,6 @@ export class UserRepository extends Repository<User> {
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
-
     return user;
   }
 
@@ -94,7 +93,7 @@ export class UserRepository extends Repository<User> {
 
   //회원 탈퇴와 동시에 팔로우 , 팔로잉, 나의 도전 목록들 삭제
   async deleteUser(userId: number): Promise<any> {
-    const deleteUserResult = await this.delete({ id: userId });
+    const deleteUserResult = await this.softDelete({ id: userId });
 
     return deleteUserResult;
   }

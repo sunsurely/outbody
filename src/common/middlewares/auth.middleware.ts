@@ -24,12 +24,14 @@ export class AuthMiddleware implements NestMiddleware {
     try {
       token = authHeader.split(' ')[1];
       const decodedToken = await this.jwtService.verify(token);
+
       if (!decodedToken || !decodedToken.id) {
         throw new UnauthorizedException(`Invalid JWT: ${decodedToken}`);
       }
       const user = await this.userRepository.findOne({
         where: { id: decodedToken.id },
       });
+
       req.user = user;
 
       next();

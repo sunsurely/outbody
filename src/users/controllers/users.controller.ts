@@ -74,7 +74,6 @@ export class UserController {
   // DELETE http://localhost:3000/user/me/signout
   @Delete('/me/signout')
   async deleteUser(@Req() req: any, @Body() signoutDto: SignoutDto) {
-    console.log('req', req);
     return await this.userService.deletUser(req.user, signoutDto);
   }
 
