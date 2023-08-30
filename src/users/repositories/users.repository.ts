@@ -36,7 +36,7 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  //유저 정보조회
+  // 사용자 정보 조회
   async getUserById(userId: number): Promise<User> {
     const user = await this.createQueryBuilder('user')
       .select([
@@ -53,7 +53,6 @@ export class UserRepository extends Repository<User> {
       ])
       .where('user.id = :id', { id: userId })
       .getOne();
-
     return user;
   }
 
