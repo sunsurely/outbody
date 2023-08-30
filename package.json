@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "proxy": "http://localhost:3000",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -37,6 +38,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.2.1",
     "@socket.io/redis-adapter": "^8.2.1",
+    "axios": "^1.5.0",
     "bcrypt": "^5.1.1",
     "cache": "^3.0.0",
     "cache-manager": "^5.2.3",

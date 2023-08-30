@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Req,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
@@ -63,20 +64,21 @@ export class UserController {
   }
 
   // 유저 password수정
-  // PATCH http://localhost:3000/user/me/password
+  // PUT http://localhost:3000/user/me/password
   @Patch('/me/password')
   async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
-    return await this.userService.updatePassword(req.user.id, passwordDto);
+    return await this.userService.updatePassword(req.user, passwordDto);
   }
 
   // 회원 탈퇴
-  // DELETE http://localhost:3000/user/me
-  @Delete('/me')
+  // DELETE http://localhost:3000/user/me/signout
+  @Delete('/me/signout')
   async deleteUser(@Req() req: any, @Body() signoutDto: SignoutDto) {
-    return await this.userService.deletUser(req.user.id, signoutDto);
+    console.log('req', req);
+    return await this.userService.deletUser(req.user, signoutDto);
   }
 
-  // 유저 전체목록 조회(유저 추천)
+  // 유저 전체목록 조회(나와 친구관계가 아닌 모든 유저 불러옴)
   // GET http://localhost:3000/user/me/recommendation
   @Get('/me/recommendation')
   async getAllUsers(@Req() req: any): Promise<UserRecommendationDto[]> {
@@ -87,9 +89,19 @@ export class UserController {
   }
 
   //email로 user조회
-  //GET  http://localhost:3000/user
-  @Get('/')
+  //GET  http://localhost:3000/user/me/searchEmail
+  @Get('/me/searchEmail')
   async getUserByEmail(@Body() data: GetUserByEmailDto) {
     return await this.userService.getUserByEmail(data.email);
+  }
+
+  // 친구 수 조회
+  //Get http://localhost:3000/user/me/friendCount
+  @Get('/me/friendCount')
+  async getCountFriends(@Req() req: any) {
+    const userId = req.user;
+    const MeAndFollowersInfo = await this.userService.getUserInfo(userId);
+    const friendCount = MeAndFollowersInfo.followersInfo.length;
+    return friendCount;
   }
 }

@@ -71,15 +71,8 @@ export class UserService {
 
   // 내정보 + follow정보 조회
   async getUserInfo(user) {
-    const {
-      password,
-      provider,
-      status,
-      updatedAt,
-      deletedAt,
-      refreshToken,
-      ...rest
-    } = user;
+    const { password, provider, updatedAt, deletedAt, refreshToken, ...rest } =
+      user;
 
     const follow = await this.followRepository.getUsersFollow(user.id);
     if (!follow) {
@@ -126,7 +119,6 @@ export class UserService {
     const { password, newPassword } = passwordDto;
 
     const ComparedPassword = await bcrypt.compare(password, user.password);
-
     if (!ComparedPassword) {
       throw new UnauthorizedException('password가 일치하지 않습니다');
     }
@@ -142,19 +134,24 @@ export class UserService {
   }
 
   //회원탈퇴
-  async deletUser(userId: number, signoutDto: SignoutDto): Promise<any> {
+  async deletUser(user, signoutDto: SignoutDto): Promise<any> {
     const { password } = signoutDto;
-    const user = await this.usersRepository.findOne({
-      where: { id: userId },
-    });
-    const userPassword = user.password;
-
     if (!password) {
       throw new BadRequestException('비밀번호를 입력해 주세요');
-    } else if (password !== userPassword) {
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
-    const result = await this.usersRepository.deleteUser(userId);
+    console.log('password', password);
+
+    const ComparedPassword = await bcrypt.compare(password, user.password);
+    if (!ComparedPassword) {
+      throw new UnauthorizedException('password가 일치하지 않습니다');
+    }
+
+    const deleteuser = await this.usersRepository.findOne({
+      where: { id: user.id },
+    });
+    const id = deleteuser.id;
+
+    const result = await this.usersRepository.deleteUser(id);
 
     if (!result) {
       throw new NotImplementedException('해당 작업을 완료하지 못했습니다');
@@ -182,7 +179,18 @@ export class UserService {
     if (!result) {
       throw new NotFoundException('존재하는 유저가 아닙니다.');
     }
-
     return result;
+  }
+
+  // 친구 수
+  async getCountFriends(userId: number): Promise<number[]> {
+    const followedIds = await this.followRepository
+      .createQueryBuilder('follow')
+      .select('follow.followId')
+      .where('follow.userId = :userId', { userId })
+      .andWhere('follow.deletedAt IS NULL')
+      .getMany();
+
+    return followedIds.map((follow) => follow.followId);
   }
 }
