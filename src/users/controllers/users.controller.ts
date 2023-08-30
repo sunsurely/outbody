@@ -103,4 +103,12 @@ export class UserController {
     const friendCount = MeAndFollowersInfo.followersInfo.length;
     return friendCount;
   }
+
+  //유저 랭크 조회
+  //Get http://localhost:3000/user/me/rank
+  @Get('/me/rank')
+  async getUsersRank(@Req() req: any) {
+    const myRank = await this.userService.getUsersRank(req.user.id);
+    return myRank;
+  }
 }

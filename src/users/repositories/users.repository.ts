@@ -126,4 +126,12 @@ export class UserRepository extends Repository<User> {
 
     return result;
   }
+
+  //유저 포인트 랭크 조회
+  async getUsersRank(id) {
+    const result = await this.find({
+      order: { point: 'DESC' },
+    });
+    return result;
+  }
 }

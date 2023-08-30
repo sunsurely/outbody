@@ -189,4 +189,11 @@ export class UserService {
 
     return followedIds.map((follow) => follow.followId);
   }
+
+  //유저 포인트 랭크 조회
+  async getUsersRank(id) {
+    const findUsers = await this.usersRepository.getUsersRank(id);
+    const myRank = findUsers.findIndex((user) => user.id === id) + 1;
+    return myRank;
+  }
 }
