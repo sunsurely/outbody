@@ -46,14 +46,27 @@ export class PostsRepository extends Repository<Post> {
     challengeId: number,
     page: number,
     pageSize: number,
-  ): Promise<Post[]> {
+  ): Promise<
+    { imgUrl: string; description: string; username: string; comment: string }[]
+  > {
     const allPost = await this.find({
       where: { challengeId },
+      select: ['challengeId', 'id', 'description', 'imgUrl', 'createdAt'],
       order: { createdAt: 'DESC' },
+      relations: ['user'],
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
-    return allPost;
+
+    const allPosts = allPost.map((post) => {
+      return {
+        imgUrl: post.imgUrl,
+        description: post.description,
+        username: post.user.name,
+        comment: post.user.comment,
+      };
+    });
+    return allPosts;
   }
 
   // 오운완 상세 조회

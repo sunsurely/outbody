@@ -3,7 +3,6 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
-  Logger,
 } from '@nestjs/common';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
@@ -14,9 +13,11 @@ import { FollowsRepository } from './../../follows/repositories/follows.reposito
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
-import { Invitiation, Point, Position } from '../challengerInfo';
-import { cache } from '../cache/challenges.cache';
+import { Point, Position } from '../challengerInfo';
 import { User } from 'src/users/entities/user.entity';
+import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InviteChallenge } from '../entities/inviteChallenge.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -27,7 +28,9 @@ export class ChallengesService {
     private readonly userRepository: UserRepository,
     private readonly followsRepository: FollowsRepository,
     private readonly recordsRepository: RecordsRepository,
-    private readonly logger: Logger,
+    @InjectRepository(InviteChallenge)
+    private readonly inviteChallengeRepository: Repository<InviteChallenge>,
+    private dataSource: DataSource,
   ) {}
 
   // 도전 생성 (재용)
@@ -325,60 +328,28 @@ export class ChallengesService {
 
     const message = `${user.name}(${user.email})님이 회원님을 도전에 초대했습니다. 참가하시겠습니까?`;
 
-    const newInvitation: Invitiation = {
-      userId: user.id,
-      invitedUserId: invitedUser.id,
-      challengeId,
-      message,
-    };
-
-    const invitationsFromCache: Invitiation[] = cache.get(
-      `invite_${invitedUser.id}`,
+    const newInvite = new InviteChallenge();
+    newInvite.userId = user.id;
+    newInvite.invitedId = invitedUser.id;
+    newInvite.message = message;
+    newInvite.name = user.name;
+    const newInviteResult = await this.inviteChallengeRepository.save(
+      newInvite,
     );
 
-    // 초대 정보가 있는 경우
-    if (invitationsFromCache) {
-      const newCachedInvitations = invitationsFromCache.push(newInvitation);
-
-      const newCachedInvitation = cache.set(
-        `invite_${invitedUser.id}`,
-        newCachedInvitations,
-      );
-      if (newCachedInvitation) {
-        this.logger.debug('도전 초대 내역 저장(SET) 성공');
-        return newInvitation;
-      }
-
-      this.logger.error('도전 초대 내역 저장(SET) 실패');
-      throw new BadRequestException('회원 초대에 실패하였습니다.');
-    }
-
-    // 초대 정보가 없는 경우
-    const newCachedInvitation = cache.set(`invite_${invitedUser.id}`, [
-      newInvitation,
-    ]);
-
-    if (newCachedInvitation) {
-      this.logger.debug('도전 초대 내역 저장(SET) 성공');
-      return newInvitation;
-    }
-    this.logger.error('도전 초대 내역 저장(SET) 실패');
-    throw new BadRequestException('회원 초대에 실패하였습니다.');
+    return newInviteResult;
   }
 
   // 나에게 온 도전 초대 목록 조회
   async getInvitedChallenges(invitedId) {
-    const invitationsFromCache: Invitiation[] = cache.get(
-      `invite_${invitedId}`,
-    );
-
-    if (!invitationsFromCache || invitationsFromCache.length <= 0) {
-      this.logger.error('도전 초대 내역 조회(GET) 실패');
-      throw new NotFoundException('회원님에게 온 도전 초대문이 없습니다.');
+    const challengeInvities = await this.inviteChallengeRepository.find({
+      where: { invitedId, done: false },
+    });
+    if (!challengeInvities || challengeInvities.length <= 0) {
+      throw new NotFoundException('데이터가 존재하지 않습니다.');
     }
 
-    this.logger.debug('도전 초대 내역 조회(GET) 성공');
-    return invitationsFromCache;
+    return challengeInvities;
   }
 
   // 도전 초대 수락
@@ -387,69 +358,43 @@ export class ChallengesService {
     body: ResponseChallengeDto,
     invitedId: number, // 초대받은 사람 (현재 접속중인 회원)
   ) {
-    if (body.response === 'no') {
-      // 초대 거부
-      const invitationsFromCache: Invitiation[] = cache.get(
-        `invite_${invitedId}`,
-      );
-
-      if (!invitationsFromCache || invitationsFromCache.length <= 0) {
-        this.logger.error('도전 초대 내역 조회(GET) 실패');
-        throw new NotFoundException('초대 내역이 없습니다.');
-      }
-
-      const newCachedInvitations = invitationsFromCache.filter(
-        (invite) => invite.userId !== userId,
-      );
-
-      const newCachedInvitation = cache.set(
-        `invite_${invitedId}`,
-        newCachedInvitations,
-      );
-      if (!newCachedInvitation) {
-        this.logger.debug('도전 초대 내역 최신화(SET) 실패');
-        throw new BadRequestException(
-          '도전 초대 내역 최신화 과정에서 오류가 발생했습니다.',
-        );
-      }
-
-      this.logger.debug('도전 초대 내역 최신화(SET) 성공');
-      return { message: '초대 거부 완료' };
-      // 초대 수락
-    } else if (body.response === 'yes') {
-      const invitationsFromCache: Invitiation[] = cache.get(
-        `invite_${invitedId}`,
-      );
-
-      if (!invitationsFromCache || invitationsFromCache.length <= 0) {
-        this.logger.error('도전 초대 내역 조회(GET) 실패');
-        throw new NotFoundException('새로운 초대가 없습니다.');
-      }
-      const invitation: Invitiation = invitationsFromCache.find(
-        (invitation) => invitation.userId === userId,
-      );
-
-      if (invitation) {
-        this.joinChallenge(invitation.challengeId, invitedId);
-
-        const newCachedInvitations = invitationsFromCache.filter(
-          (invitation) => invitation.userId !== userId,
+    const queryRunner = this.dataSource.createQueryRunner();
+    if (body.response === 'yes') {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const invitedChallenge = await queryRunner.manager.findOne(
+          InviteChallenge,
+          {
+            where: { userId, invitedId },
+          },
         );
 
-        const newCachedInvitation = cache.set(
-          `invite_${invitedId}`,
-          newCachedInvitations,
+        invitedChallenge.done = true;
+
+        const newChallenger = await queryRunner.manager.create(
+          InviteChallenge,
+          {
+            userId,
+            invitedId,
+          },
         );
 
-        if (newCachedInvitation) {
-          this.logger.debug('도전 초대 내역 최신화(SET) 성공');
-          return { message: '도전에 입장했습니다.' };
-        }
-        this.logger.debug('도전 초대 내역 최신화(SET) 실패');
-        throw new BadRequestException(
-          '도전 초대 내역 최신화 과정에서 오류가 발생했습니다.',
-        );
+        await this.inviteChallengeRepository.save(invitedChallenge);
+        await this.challengersRepository.save(newChallenger);
+        await queryRunner.commitTransaction();
+        return;
+      } catch (e) {
+        await queryRunner.rollbackTransaction();
+        throw e;
+      } finally {
+        await queryRunner.release();
       }
     }
+
+    await this.inviteChallengeRepository.update(
+      { userId, invitedId },
+      { done: true },
+    );
   }
 }

@@ -29,6 +29,7 @@ export class FollowsRepository extends Repository<Follow> {
         'user.name as name',
         'user.email as email',
         'user.imgUrl as imgUrl',
+        'user.description as description',
       ])
       .innerJoin(User, 'user', 'user.id = follow.followId') // Inner join with the 'user' relation
       .where('follow.userId = :userId', { userId })
