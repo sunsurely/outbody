@@ -94,7 +94,7 @@ export class UserRepository extends Repository<User> {
 
   //회원 탈퇴와 동시에 팔로우 , 팔로잉, 나의 도전 목록들 삭제
   async deleteUser(userId: number): Promise<any> {
-    const deleteUserResult = await this.delete({ id: userId });
+    const deleteUserResult = await this.softDelete({ id: userId });
 
     return deleteUserResult;
   }
