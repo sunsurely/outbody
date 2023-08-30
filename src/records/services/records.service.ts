@@ -53,24 +53,7 @@ export class RecordsService {
       endIndex,
     );
 
-    if (pageinatedUsersRecords.length === pageSize) {
-      return { pageinatedUsersRecords, totalPages };
-    }
-
-    if (
-      pageinatedUsersRecords.length > 0 &&
-      pageinatedUsersRecords.length < pageSize
-    ) {
-      return {
-        data: pageinatedUsersRecords,
-        message: '마지막 페이지 입니다.',
-        totalPages,
-      };
-    }
-
-    if (pageinatedUsersRecords.length <= 0) {
-      return { message: '더이상 데이터가 없습니다.', totalPages };
-    }
+    return { pageinatedUsersRecords, totalPages };
   }
 
   //최근 측정표 기반 진단내용 조회

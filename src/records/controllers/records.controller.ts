@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { RecordsService } from '../services/records.service';
 import { CreateRecordDto } from '../dto/create.records.dto';
-import { RangeRecordDto } from '../dto/range.records.dto';
 
 @Controller('record')
 export class RecordsController {
@@ -54,17 +53,18 @@ export class RecordsController {
   }
 
   // 기간별 기록정보 불러오기
-  // GET http://localhost:3000/record/date/period/page/?page=page&pageSize=pageSize
+  // GET http://localhost:3000/record/date/period/page/?page=page&pageSize=pageSize&start=start&end=end
   @Get('/date/period/page')
   async getRecordsByDateRange(
-    @Body() date: RangeRecordDto,
     @Req() req: any,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
+    @Query('start') start: string,
+    @Query('end') end: string,
   ) {
     return await this.recordesService.getRecordsByDateRange(
-      date.start,
-      date.end,
+      start,
+      end,
       req.user.id,
       page,
       pageSize,

@@ -58,7 +58,6 @@ export class RecordCachingService {
     }
 
     const records = await this.recordsRepository.getUsersRecords(id);
-
     if (!records || records.length <= 0) {
       this.logger.error('record데이터 GET 실패');
       throw new NotFoundException('등록된 데이터가 없습니다.');
@@ -103,9 +102,14 @@ export class RecordCachingService {
     if (cachedRecords && cachedRecords.length > 0) {
       this.logger.debug('record 데이터 GET 성공');
 
+      const startTimestamp = startDate.getTime();
+      const endTimestamp = endDate.getTime();
+
       const result = cachedRecords.filter((record) => {
-        const cachedDate = new Date(record.createdAt);
-        return cachedDate >= startDate && cachedDate <= endDate;
+        const cachedTimestamp = new Date(record.createdAt).getTime();
+        return (
+          cachedTimestamp >= startTimestamp && cachedTimestamp <= endTimestamp
+        );
       });
 
       return result;
