@@ -134,7 +134,7 @@ export class UserService {
   }
 
   //회원탈퇴
-  async deletUser(user, signoutDto: SignoutDto): Promise<any> {
+  async deletUser(user, signoutDto: SignoutDto) {
     const { password } = signoutDto;
     if (!password) {
       throw new BadRequestException('비밀번호를 입력해 주세요');
