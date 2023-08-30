@@ -15,10 +15,17 @@ import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
+import { InviteChallenge } from './entities/inviteChallenge.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Challenge, Challenger, Follow, User]),
+    TypeOrmModule.forFeature([
+      Challenge,
+      Challenger,
+      Follow,
+      User,
+      InviteChallenge,
+    ]),
     ScheduleModule.forRoot(),
   ],
   controllers: [ChallengesController],
