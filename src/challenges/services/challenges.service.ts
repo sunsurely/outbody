@@ -34,7 +34,6 @@ export class ChallengesService {
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
       title,
-      imgUrl,
       startDate,
       challengeWeek,
       userNumberLimit,
@@ -54,7 +53,7 @@ export class ChallengesService {
     }
 
     const entryPoint =
-      attend * Point.ATTEND +
+      attend * Point.ATTEND * challengeWeek +
       weight * Point.WEIGHT +
       muscle * Point.MUSCLE +
       fat * Point.FAT;
@@ -64,10 +63,13 @@ export class ChallengesService {
 
     endDate.setDate(startDateObject.getDate() + challengeWeek * 7);
 
+    if (endDate.getDate() < startDateObject.getDate()) {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+
     const challenge = await this.challengesRepository.createChallenge({
       userId,
       title,
-      imgUrl,
       startDate: startDateObject,
       challengeWeek,
       endDate,
@@ -97,19 +99,7 @@ export class ChallengesService {
   // 도전 목록 조회 (상우, 재용)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
-    return challenges.map((challenge) => {
-      return {
-        id: challenge.id,
-        title: challenge.title,
-        imgUrl: challenge.imgUrl,
-        startDate: challenge.startDate,
-        endDate: challenge.endDate,
-        userNumberLimit: challenge.userNumberLimit,
-        publicView: challenge.publicView,
-        entryPoint: challenge.entryPoint,
-        isDistribute: challenge.isDistributed,
-      };
-    });
+    return challenges;
   }
 
   // 도전 상세 조회 (상우)
@@ -200,7 +190,7 @@ export class ChallengesService {
     }
 
     const goal = await this.goalsRepository.getGoal(challengeId);
-    if (goal.weight || goal.muscle || goal.fat) {
+    if (goal.weight !== 0 || goal.muscle !== 0 || goal.fat !== 0) {
       const latestUserRecord = await this.recordsRepository.getLatestUserRecord(
         userId,
       );

@@ -6,6 +6,7 @@ import {
   OneToOne,
   OneToMany,
   ManyToOne,
+  RelationId,
 } from 'typeorm';
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
@@ -28,12 +29,6 @@ export class Challenge {
     nullable: false,
   })
   title: string;
-
-  @Column({
-    type: 'text',
-    nullable: false,
-  })
-  imgUrl: string;
 
   @Column({
     type: 'date',
@@ -93,7 +88,6 @@ export class Challenge {
 
   // User => Challenge N:1
   @ManyToOne(() => User, (user) => user.challenges)
-  // @JoinColumn({ name: 'userId' })
   user: User;
 
   // Challenge => Post 1:N
@@ -101,4 +95,8 @@ export class Challenge {
     cascade: true,
   })
   post: Post[];
+
+  // 가상의 열 (조회 시에만 사용)
+  @RelationId((challenge: Challenge) => challenge.challenger)
+  userNumber: number;
 }
