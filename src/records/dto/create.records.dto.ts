@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateRecordDto {
   @IsNotEmpty()
@@ -20,8 +20,4 @@ export class CreateRecordDto {
   @IsNotEmpty()
   @IsNumber()
   readonly height: number;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly date: string;
 }

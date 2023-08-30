@@ -8,6 +8,7 @@ import {
   NotImplementedException,
   UnauthorizedException,
   NotAcceptableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
 import * as bcrypt from 'bcrypt';
@@ -15,6 +16,9 @@ import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
+import { User } from '../entities/user.entity';
+import { UserRecommendationDto } from '../dto/recommendation.dto';
+import { SignoutDto } from '../dto/user.signout.dto';
 
 @Injectable()
 export class UserService {
@@ -67,15 +71,8 @@ export class UserService {
 
   // 내정보 + follow정보 조회
   async getUserInfo(user) {
-    const {
-      password,
-      provider,
-      status,
-      updatedAt,
-      deletedAt,
-      refreshToken,
-      ...rest
-    } = user;
+    const { password, provider, updatedAt, deletedAt, refreshToken, ...rest } =
+      user;
 
     const follow = await this.followRepository.getUsersFollow(user.id);
     if (!follow) {
@@ -122,7 +119,6 @@ export class UserService {
     const { password, newPassword } = passwordDto;
 
     const ComparedPassword = await bcrypt.compare(password, user.password);
-
     if (!ComparedPassword) {
       throw new UnauthorizedException('password가 일치하지 않습니다');
     }
@@ -138,12 +134,63 @@ export class UserService {
   }
 
   //회원탈퇴
-  async deletUser(userId: number): Promise<any> {
-    const result = await this.usersRepository.deleteUser(userId);
+  async deletUser(user, signoutDto: SignoutDto): Promise<any> {
+    const { password } = signoutDto;
+    if (!password) {
+      throw new BadRequestException('비밀번호를 입력해 주세요');
+    }
+    console.log('password', password);
+
+    const ComparedPassword = await bcrypt.compare(password, user.password);
+    if (!ComparedPassword) {
+      throw new UnauthorizedException('password가 일치하지 않습니다');
+    }
+
+    const deleteuser = await this.usersRepository.findOne({
+      where: { id: user.id },
+    });
+    const id = deleteuser.id;
+
+    const result = await this.usersRepository.deleteUser(id);
 
     if (!result) {
       throw new NotImplementedException('해당 작업을 완료하지 못했습니다');
     }
     return result;
+  }
+
+  // 유저 전체목록
+  async getAllUsers(userId: number): Promise<UserRecommendationDto[]> {
+    const users = await this.usersRepository.getAllUsers(userId);
+
+    if (!users) {
+      throw new NotImplementedException('해당 작업을 완료하지 못했습니다');
+    }
+    return users.map((user) => ({
+      name: user.name,
+      email: user.email,
+      imgUrl: user.imgUrl,
+    }));
+  }
+
+  //유저 Email로 조회
+  async getUserByEmail(email: string) {
+    const result = await this.usersRepository.getUserInfoByEmail(email);
+    if (!result) {
+      throw new NotFoundException('존재하는 유저가 아닙니다.');
+    }
+    return result;
+  }
+
+  // 친구 수
+  async getCountFriends(userId: number): Promise<number[]> {
+    const followedIds = await this.followRepository
+      .createQueryBuilder('follow')
+      .select('follow.followId')
+      .where('follow.userId = :userId', { userId })
+      .andWhere('follow.deletedAt IS NULL')
+      .getMany();
+
+    return followedIds.map((follow) => follow.followId);
   }
 }

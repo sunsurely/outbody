@@ -68,7 +68,7 @@ export class LikesController {
   }
 
   // 유저가 누른 좋아요 숫자 + 게시글목록 조회
-  // http://localhost:3000/challenge/:challengeId/post/:postId/like/user
+  // http://localhost:3000/challenge/like/user
   @Get('/like/user')
   async usersLikes(@Req() req: any) {
     const userId = req.user.id;

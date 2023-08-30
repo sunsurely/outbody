@@ -15,9 +15,9 @@ export class RecordCachingService {
 
   constructor(private readonly recordsRepository: RecordsRepository) {}
 
-  async setCacheReports(body: CreateRecordDto, id: number): Promise<Record> {
-    const { bmr, weight, muscle, fat, height, date } = body;
-    const newDate = new Date(date);
+  async setCacheRecords(body: CreateRecordDto, id: number): Promise<Record> {
+    const { bmr, weight, muscle, fat, height } = body;
+
     const record = await this.recordsRepository.createRecord(
       id,
       bmr,
@@ -25,17 +25,13 @@ export class RecordCachingService {
       muscle,
       fat,
       height,
-      newDate,
     );
 
-    this.recordsRepository.save(record);
     if (!record) {
       throw new NotImplementedException('기록 생성에 실패했습니다');
     }
 
-    const userRecords = await this.recordsRepository.find({
-      where: { userId: id },
-    });
+    const userRecords = await this.recordsRepository.getUsersRecords(id);
 
     if (!userRecords || userRecords.length <= 0) {
       throw new NotFoundException('기록을 불러오지 못했습니다.');
@@ -53,7 +49,7 @@ export class RecordCachingService {
     return record;
   }
 
-  async getCacheAllUsersReports(id: number): Promise<Record[]> {
+  async getCacheAllUsersRecords(id: number): Promise<Record[]> {
     const cachedRecords: Record[] = recordCache.get(`record:${id}`);
 
     if (cachedRecords && cachedRecords.length > 0) {
@@ -61,10 +57,7 @@ export class RecordCachingService {
       return cachedRecords;
     }
 
-    const records = await this.recordsRepository.find({
-      where: { userId: id },
-    });
-
+    const records = await this.recordsRepository.getUsersRecords(id);
     if (!records || records.length <= 0) {
       this.logger.error('record데이터 GET 실패');
       throw new NotFoundException('등록된 데이터가 없습니다.');
@@ -75,7 +68,7 @@ export class RecordCachingService {
     return records;
   }
 
-  async getCacheDetailReport(recordId, id: number): Promise<Record> {
+  async getCacheDetailRecord(recordId, id: number): Promise<Record> {
     const cachedRecords: Record[] = recordCache.get(`record:${id}`);
 
     if (cachedRecords && cachedRecords.length > 0) {
@@ -105,25 +98,45 @@ export class RecordCachingService {
 
     const startDate = new Date(start);
     const endDate = new Date(end);
+    endDate.setHours(23, 59, 59);
     if (cachedRecords && cachedRecords.length > 0) {
       this.logger.debug('record 데이터 GET 성공');
 
+      const startTimestamp = startDate.getTime();
+      const endTimestamp = endDate.getTime();
+
       const result = cachedRecords.filter((record) => {
-        const cachedDate = new Date(record.date);
-        return cachedDate >= startDate && cachedDate <= endDate;
+        const cachedTimestamp = new Date(record.createdAt).getTime();
+        return (
+          cachedTimestamp >= startTimestamp && cachedTimestamp <= endTimestamp
+        );
       });
 
       return result;
     }
 
     const records = await this.recordsRepository.getUsersRecords(id);
+
+    if (!records || records.length <= 0) {
+      throw new NotFoundException('데이터가 없습니다.');
+    }
+
     recordCache.set(`record:${id}`, records);
 
+    if (!recordCache) {
+      this.logger.error('Record 캐싱 SET 실패');
+    }
+
     const recordResult = await this.recordsRepository.getRecordsByDateRange(
-      start,
-      end,
+      startDate,
+      endDate,
       id,
     );
+
+    if (!recordResult || recordResult.length <= 0) {
+      throw new NotFoundException('기간에 해당하는 Record 데이터가 없습니다.');
+    }
+
     this.logger.error('record 데이터 GET 실패');
 
     return recordResult;

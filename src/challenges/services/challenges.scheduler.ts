@@ -257,9 +257,9 @@ export class ChallengeScheduler {
 
           if (
             posts.length >= attend &&
-            (record.fat <= fat || fat === null) &&
-            (record.muscle >= muscle || muscle === null) &&
-            (record.weight <= weight || weight === null)
+            (record.fat <= fat || fat === 0) &&
+            (record.muscle >= muscle || muscle === 0) &&
+            (record.weight <= weight || weight === 0)
           ) {
             await queryRunner.manager.update(
               Challenger,

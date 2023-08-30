@@ -27,7 +27,7 @@ export class UserRepository extends Repository<User> {
     return await this.save(newUser);
   }
 
-  //유저 이메일 조회
+  //미들검증용 유저정보 이메일 조회
   async getUserByEmail(email: string): Promise<User | null> {
     const user = await this.createQueryBuilder('user')
       .where('user.email = :email', { email })
@@ -96,5 +96,34 @@ export class UserRepository extends Repository<User> {
     const deleteUserResult = await this.delete({ id: userId });
 
     return deleteUserResult;
+  }
+
+  // 유저 전체목록
+  async getAllUsers(userId: number): Promise<User[]> {
+    const users = await this.createQueryBuilder('user')
+      .where('user.id != :userId', { userId })
+      .andWhere('user.deletedAt IS NULL')
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.followId')
+          .from('follows', 'follow')
+          .where('follow.userId = :userId')
+          .getQuery();
+        return `user.id NOT IN ${subQuery}`;
+      })
+      .getMany();
+
+    return users;
+  }
+
+  //email로 유저 정보조회
+  async getUserInfoByEmail(email: string) {
+    const result = await this.findOne({
+      select: ['id', 'email', 'imgUrl', 'name'],
+      where: { email },
+    });
+
+    return result;
   }
 }

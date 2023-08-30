@@ -16,7 +16,6 @@ export class RecordsRepository extends Repository<Record> {
     muscle: number,
     fat: number,
     height: number,
-    date: Date,
   ): Promise<Record> {
     const newUser = this.create({
       userId,
@@ -25,14 +24,28 @@ export class RecordsRepository extends Repository<Record> {
       muscle,
       fat,
       height,
-      date,
     });
     return await this.save(newUser);
   }
 
   //현 유저의 모든 기록 불러오기
   async getUsersRecords(id: number): Promise<Record[]> {
-    return this.find({ where: { userId: id } });
+    return this.find({
+      select: [
+        'id',
+        'bmr',
+        'fat',
+        'height',
+        'muscle',
+        'weight',
+        'userId',
+        'createdAt',
+      ],
+      where: { userId: id },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 
   //현 유저의 상세 기록 불러오기
@@ -50,15 +63,23 @@ export class RecordsRepository extends Repository<Record> {
 
   //기간별 기록들 불러오기
   async getRecordsByDateRange(
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     id: number,
   ): Promise<Record[]> {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    startDate.setDate(startDate.getDate() - 1);
     const records = await this.find({
-      where: { date: Between(startDate, endDate), userId: id },
+      select: [
+        'id',
+        'userId',
+        'bmr',
+        'fat',
+        'height',
+        'muscle',
+        'weight',
+        'createdAt',
+      ],
+      where: { createdAt: Between(start, end), userId: id },
+      order: { createdAt: 'DESC' },
     });
 
     return records;

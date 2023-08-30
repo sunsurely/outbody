@@ -34,8 +34,8 @@ export class PostsService {
   }
 
   // 오운완 전체 조회
-  async getAllPost(challengeId: number) {
-    return await this.postsRepository.getAllPost(challengeId);
+  async getAllPost(challengeId: number, page: number, pageSize: number) {
+    return await this.postsRepository.getAllPost(challengeId, page, pageSize);
   }
 
   // 오운완 상세 조회
