@@ -6,12 +6,19 @@ export class RankingsService {
   constructor(private readonly rankingsRepository: RankingsRepository) {}
 
   // 전체 순위 조회
-  async getTotalRank() {
-    return await this.rankingsRepository.getTotalRank();
+  async getTotalRank(page: number, pageSize: number) {
+    const totalRanks = await this.rankingsRepository.getTotalRank();
+
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(totalRanks.length / pageSize);
+    const paginationTotalRanks = totalRanks.slice(startIndex, endIndex);
+
+    return { totalPages, paginationTotalRanks };
   }
 
   // 친구 순위 조회
-  async getFollowingRank(userId: number) {
+  async getFollowingRank(userId: number, page: number, pageSize: number) {
     // 사용자의 친구들(followId)을 가져오기 위한 조회
     const followUserId = await this.rankingsRepository.followUserId(userId);
 
@@ -21,10 +28,15 @@ export class RankingsService {
     }
 
     // followUserId 함수로 가져온 유저들 Id로 유저 조회를 해서 name과 point만 가져옴
-    const allFollowingUser = await this.rankingsRepository.getFollowingRank(
+    const followerRanks = await this.rankingsRepository.getFollowingRank(
       followUserId,
     );
 
-    return allFollowingUser;
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(followerRanks.length / pageSize);
+    const paginationFollowerRanks = followerRanks.slice(startIndex, endIndex);
+
+    return { totalPages, paginationFollowerRanks };
   }
 }
