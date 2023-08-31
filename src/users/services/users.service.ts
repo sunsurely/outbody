@@ -95,7 +95,7 @@ export class UserService {
         ranking: ranking,
       };
     });
-    console.log(followersInfo);
+
     return { rest, followersInfo };
   }
 
