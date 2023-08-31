@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
@@ -17,7 +18,6 @@ import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
-import { GetUserByEmailDto } from '../dto/email.get.dto';
 
 @Controller('user')
 export class UserController {
@@ -90,8 +90,8 @@ export class UserController {
   //email로 user조회
   //GET  http://localhost:3000/user/me/searchEmail
   @Get('/me/searchEmail')
-  async getUserByEmail(@Body() data: GetUserByEmailDto) {
-    return await this.userService.getUserByEmail(data.email);
+  async getUserByEmail(@Query('email') email: string) {
+    return await this.userService.getUserByEmail(email);
   }
 
   // 친구 수 조회
