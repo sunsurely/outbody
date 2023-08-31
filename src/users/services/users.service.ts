@@ -79,15 +79,23 @@ export class UserService {
       throw new NotFoundException('follower가 존재하지 않습니다.');
     }
 
-    const followersInfo = follow.map((followers) => {
+    const allUsersRanked = await this.usersRepository.getAllUsersForRank();
+
+    const followersInfo = follow.map((follower) => {
+      const ranking =
+        allUsersRanked.findIndex(
+          (rankedUser) => rankedUser.id === follower.id,
+        ) + 1;
+
       return {
-        id: followers.id,
-        name: followers.name,
-        email: followers.email,
-        imgUrl: followers.imgUrl,
+        id: follower.id,
+        name: follower.name,
+        email: follower.email,
+        imgUrl: follower.imgUrl,
+        ranking: ranking,
       };
     });
-
+    console.log(followersInfo);
     return { rest, followersInfo };
   }
 
@@ -192,7 +200,7 @@ export class UserService {
 
   //유저 포인트 랭크 조회
   async getUsersRank(id) {
-    const findUsers = await this.usersRepository.getUsersRank(id);
+    const findUsers = await this.usersRepository.getAllUsersForRank();
     const myRank = findUsers.findIndex((user) => user.id === id) + 1;
     return myRank;
   }
