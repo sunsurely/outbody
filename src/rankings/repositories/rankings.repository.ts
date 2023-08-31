@@ -12,7 +12,7 @@ export class RankingsRepository extends Repository<User> {
   async getTotalRank(): Promise<{ name: string; point: number }[]> {
     const totalRank = await this.find({
       order: { point: 'DESC' },
-      select: ['name', 'point'],
+      select: ['name', 'point', 'createdAt'],
     });
 
     return totalRank;
@@ -44,7 +44,7 @@ export class RankingsRepository extends Repository<User> {
     const getFollowingRank = await this.find({
       where: { id: In(followUserId) },
       order: { point: 'DESC' },
-      select: ['name', 'point'],
+      select: ['name', 'point', 'createdAt'],
     });
 
     return getFollowingRank;

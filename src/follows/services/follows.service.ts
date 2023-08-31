@@ -33,6 +33,9 @@ export class FollowsService {
     const existFollowUser = await this.followRepository.findOne({
       where: { userId: followId, followId: user.id },
     });
+    console.log('followId', followId);
+    console.log('existFollow', existFollow);
+    console.log('existFollowUser', existFollowUser);
 
     if (existFollow || existFollowUser) {
       throw new NotAcceptableException('수행할 수 없는 요청입니다');

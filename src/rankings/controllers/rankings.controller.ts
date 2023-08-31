@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Req, Query } from '@nestjs/common';
 import { RankingsService } from '../services/rankings.service';
 
 @Controller('rank')
@@ -8,14 +8,26 @@ export class RankingsController {
   // 전체 순위 조회
   // GET http://localhost:3000/rank/total
   @Get('/total')
-  async getTotalRank() {
-    return await this.rankingsService.getTotalRank();
+  async getTotalRank(
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.rankingsService.getTotalRank(req.user.id, page, pageSize);
   }
 
   // 친구 순위 조회
   // GET http://localhost:3000/rank/followings
   @Get('/followings')
-  async getFollowingRank(@Req() req: any) {
-    return await this.rankingsService.getFollowingRank(req.user.id);
+  async getFollowingRank(
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.rankingsService.getFollowingRank(
+      req.user.id,
+      page,
+      pageSize,
+    );
   }
 }
