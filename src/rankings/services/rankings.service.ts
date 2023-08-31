@@ -6,7 +6,7 @@ export class RankingsService {
   constructor(private readonly rankingsRepository: RankingsRepository) {}
 
   // 전체 순위 조회
-  async getTotalRank(page: number, pageSize: number) {
+  async getTotalRank(userId: number, page: number, pageSize: number) {
     const totalRanks = await this.rankingsRepository.getTotalRank();
 
     const startIndex = (page - 1) * pageSize;

@@ -9,10 +9,11 @@ export class RankingsController {
   // GET http://localhost:3000/rank/total
   @Get('/total')
   async getTotalRank(
+    @Req() req: any,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
   ) {
-    return await this.rankingsService.getTotalRank(page, pageSize);
+    return await this.rankingsService.getTotalRank(req.user.id, page, pageSize);
   }
 
   // 친구 순위 조회
