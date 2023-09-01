@@ -6,7 +6,6 @@ import {
   OneToOne,
   OneToMany,
   ManyToOne,
-  RelationId,
 } from 'typeorm';
 import { Goal } from './goal.entity';
 import { Challenger } from './challenger.entity';
@@ -37,16 +36,16 @@ export class Challenge {
   startDate: Date;
 
   @Column({
-    type: 'int',
-    nullable: false,
-  })
-  challengeWeek: number;
-
-  @Column({
     type: 'date',
     nullable: false,
   })
   endDate: Date;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  challengeWeek: number;
 
   @Column({
     type: 'int',

@@ -22,7 +22,7 @@ export class ChallengesRepository extends Repository<Challenge> {
   async getChallenges(): Promise<Challenge[]> {
     const challenges = await this.createQueryBuilder('challenge')
       .leftJoin(Goal, 'goal', 'goal.challengeId = challenge.id')
-      .leftJoin(User, 'user', 'user.id = challenge.userId')
+      .leftJoin(User, 'user', 'user.id = challenge.userId') // 사용자가 탈퇴하는 경우 innerJoin을 사용해야 문제가 없음
       .leftJoin(
         Challenger,
         'challenger',
@@ -46,7 +46,7 @@ export class ChallengesRepository extends Repository<Challenge> {
         'user.name AS hostName',
         'COUNT(challenge.id) AS userNumber',
       ])
-      .groupBy('challenge.id')
+      .groupBy('challenge.id') // groupBy 사용 지양할것, count 함수는 별도로 처리할 것
       .getRawMany();
     return challenges;
   }

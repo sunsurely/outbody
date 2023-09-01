@@ -19,6 +19,10 @@ export class CreateChallengeRequestDto {
   startDate: string;
 
   @IsNotEmpty()
+  @IsString()
+  endDate: string;
+
+  @IsNotEmpty()
   @IsNumber()
   @Min(0)
   challengeWeek: number;

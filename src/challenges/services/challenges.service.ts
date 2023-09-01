@@ -32,11 +32,12 @@ export class ChallengesService {
     private dataSource: DataSource,
   ) {}
 
-  // 도전 생성 (재용)
+  // 도전 생성
   async createChallenge(body: CreateChallengeRequestDto, userId: number) {
     const {
       title,
       startDate,
+      endDate,
       challengeWeek,
       userNumberLimit,
       publicView,
@@ -60,19 +61,10 @@ export class ChallengesService {
       muscle * Point.MUSCLE +
       fat * Point.FAT;
 
-    const startDateObject = new Date(startDate);
-    const endDate = new Date(startDateObject);
-
-    endDate.setDate(startDateObject.getDate() + challengeWeek * 7);
-
-    while (endDate.getDate() > startDateObject.getDate()) {
-      endDate.setMonth(endDate.getMonth() + 1);
-    }
-
     const challenge = await this.challengesRepository.createChallenge({
       userId,
       title,
-      startDate: startDateObject,
+      startDate,
       challengeWeek,
       endDate,
       userNumberLimit,
@@ -98,11 +90,14 @@ export class ChallengesService {
     await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 
-  // 도전 목록 조회
+  // 도전 목록 조회 (전체)
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges;
   }
+
+  // 도전 목록 조회 (현재 참여 가능)
+  // 도전 시작일 전, 도전 참가 점수 충족, 도전 참가 인원 충족, 전체 공개
 
   // 도전자 목록 조회
   async getChallengers(challengeId: number) {
@@ -410,7 +405,7 @@ export class ChallengesService {
     );
   }
 
-  // 사용자가 생성한 도전의 수, 도전 목록 조회
+  // 현재까지 참여한 도전 수 + 목록 조회
   async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
     return this.challengesRepository.getUserChallenges(userId);
   }

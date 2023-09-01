@@ -120,7 +120,7 @@ export class ChallengesController {
     return await this.challengesService.acceptChallenge(userId, body, req.user);
   }
 
-  // 유저 도전목록수 + 도전목록조회
+  // 현재까지 참여한 도전 수 + 목록 조회
   // http://localhost:3000/challenge/user/list
   @Get('/user/list')
   async getUserChallenges(@Req() req: any) {
