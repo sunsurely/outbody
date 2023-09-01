@@ -33,9 +33,6 @@ export class FollowsService {
     const existFollowUser = await this.followRepository.findOne({
       where: { userId: followId, followId: user.id },
     });
-    console.log('followId', followId);
-    console.log('existFollow', existFollow);
-    console.log('existFollowUser', existFollowUser);
 
     if (existFollow || existFollowUser) {
       throw new NotAcceptableException('수행할 수 없는 요청입니다');
@@ -46,19 +43,20 @@ export class FollowsService {
     const newMessage = new FollowMessage();
     newMessage.userId = user.id;
     newMessage.followId = followId;
-    newMessage.message = message;
     newMessage.email = user.email;
     newMessage.name = user.name;
+    newMessage.imgUrl = user.imgUrl;
     const createItemResult = await this.followMessageRepository.save(
       newMessage,
     );
+
     return createItemResult;
   }
 
   //user의 보류중인 초대목록 전체 조회
   async getUsersRequests(userId: number) {
     const messagies = await this.followMessageRepository.find({
-      where: { followId: userId, done: false },
+      where: { followId: userId },
     });
 
     if (!messagies || messagies.length <= 0) {
@@ -75,18 +73,16 @@ export class FollowsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        const followMessage = await queryRunner.manager.findOne(FollowMessage, {
-          where: { userId, followId },
+        const followMessage = await queryRunner.manager.delete(FollowMessage, {
+          userId,
+          followId,
         });
-
-        followMessage.done = true;
 
         const newFollow = await queryRunner.manager.create(Follow, {
           userId,
           followId,
         });
 
-        await this.followMessageRepository.save(followMessage);
         await this.followRepository.save(newFollow);
         await queryRunner.commitTransaction();
         return;
@@ -98,10 +94,7 @@ export class FollowsService {
       }
     }
 
-    await this.followMessageRepository.update(
-      { userId, followId },
-      { done: true },
-    );
+    await this.followMessageRepository.delete({ userId, followId });
   }
 
   //친구 취소 ,  follow삭제
