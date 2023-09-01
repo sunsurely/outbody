@@ -95,8 +95,4 @@ export class Challenge {
     cascade: true,
   })
   post: Post[];
-
-  // 가상의 열 (조회 시에만 사용)
-  @RelationId((challenge: Challenge) => challenge.challenger)
-  userNumber: number;
 }
