@@ -22,7 +22,7 @@ export class PostsService {
       throw new ConflictException('하루에 한 번만 게시글을 올릴 수 있습니다.');
     }
     if (!post.description) {
-      throw new BadRequestException('내용을 모두 입력해주세요.');
+      throw new BadRequestException('내용을 입력해주세요.');
     }
 
     await this.postsRepository.createPost(

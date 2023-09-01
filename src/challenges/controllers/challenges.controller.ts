@@ -29,7 +29,7 @@ export class ChallengesController {
     return await this.challengesService.createChallenge(body, req.user.id);
   }
 
-  // 도전 목록조회
+  // 도전 목록 조회
   // GET http://localhost:3000/challenge
   @Get()
   async getChallenges() {
@@ -37,12 +37,22 @@ export class ChallengesController {
     return challenges;
   }
 
-  // 도전 상세조회
+  // 도전 상세 조회
   // GET http://localhost:3000/challenge/:id
   @Get('/:challengeId')
   async getChallenge(@Param('challengeId') challengeId: number) {
     const challenge = await this.challengesService.getChallenge(challengeId);
     return challenge;
+  }
+
+  // 도전자 목록 조회
+  // GET http://localhost:3000/challenge/:id/challengers
+  @Get('/:challengeId/challengers')
+  async getChallengers(@Param('challengeId') challengeId: number) {
+    const challengers = await this.challengesService.getChallengers(
+      challengeId,
+    );
+    return challengers;
   }
 
   // 도전 삭제
@@ -63,7 +73,8 @@ export class ChallengesController {
     @Body() type: Position,
     @Req() req: any,
   ) {
-    return await this.challengesService.joinChallenge(challengeId, req.user.id);
+    console.log(req.user);
+    return await this.challengesService.joinChallenge(challengeId, req.user);
   }
 
   // 도전 방 퇴장
@@ -73,10 +84,7 @@ export class ChallengesController {
     @Param('challengeId') challengeId: number,
     @Req() req: any,
   ) {
-    return await this.challengesService.leaveChallenge(
-      challengeId,
-      req.user.id,
-    );
+    return await this.challengesService.leaveChallenge(challengeId, req.user);
   }
 
   // 도전 친구 초대
@@ -94,11 +102,11 @@ export class ChallengesController {
     );
   }
 
-  // 도전 친구 초대 전체조회
+  // 나에게 온 도전 초대 목록 조회
   // GET http://localhost:3000/challenge/invite/list
   @Get('/invite/list')
   async getInvitedChallengies(@Req() req: any) {
-    return await this.challengesService.getInvitedChallenges(req.user.id);
+    return await this.challengesService.getInvitedChallenges(req.user);
   }
 
   // 도전 초대 수락
@@ -109,10 +117,18 @@ export class ChallengesController {
     @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {
-    return await this.challengesService.acceptChallenge(
+    return await this.challengesService.acceptChallenge(userId, body, req.user);
+  }
+
+  // 유저 도전목록수 + 도전목록조회
+  // http://localhost:3000/challenge/user/list
+  @Get('/user/list')
+  async getUserChallenges(@Req() req: any) {
+    const userId = req.user.id;
+    const userChallenges = await this.challengesService.getUserChallenges(
       userId,
-      body,
-      req.user.id,
     );
+
+    return userChallenges;
   }
 }

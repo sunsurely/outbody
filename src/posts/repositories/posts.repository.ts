@@ -51,7 +51,14 @@ export class PostsRepository extends Repository<Post> {
   > {
     const allPost = await this.find({
       where: { challengeId },
-      select: ['challengeId', 'id', 'description', 'imgUrl', 'createdAt'],
+      select: [
+        'challengeId',
+        'userId',
+        'id',
+        'description',
+        'imgUrl',
+        'createdAt',
+      ],
       order: { createdAt: 'DESC' },
       relations: ['user'],
       skip: (page - 1) * pageSize,
@@ -60,6 +67,8 @@ export class PostsRepository extends Repository<Post> {
 
     const allPosts = allPost.map((post) => {
       return {
+        id: post.id,
+        userId: post.userId,
         imgUrl: post.imgUrl,
         description: post.description,
         username: post.user.name,
@@ -70,10 +79,28 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 상세 조회
-  async getOnePost(postId: number): Promise<Post> {
-    const onePost = await this.findOne({
+  async getOnePost(postId: number): Promise<{
+    challengeId: number;
+    postId: number;
+    userId: number;
+    description: string;
+    imgUrl: string;
+    comment: string;
+  }> {
+    const getOnePost = await this.findOne({
       where: { id: postId },
+      relations: ['user'],
     });
+
+    const onePost = {
+      challengeId: getOnePost.challengeId,
+      postId: getOnePost.id,
+      userId: getOnePost.userId,
+      description: getOnePost.description,
+      imgUrl: getOnePost.imgUrl,
+      username: getOnePost.user.name,
+      comment: getOnePost.user.comment,
+    };
     return onePost;
   }
 

@@ -18,14 +18,22 @@ export class ChallengesRepository extends Repository<Challenge> {
     return await this.save(newChallenge);
   }
 
-  // 도전 목록조회 (전체)
+  // 도전 목록 조회 (전체)
   async getChallenges(): Promise<Challenge[]> {
     const challenges = await this.createQueryBuilder('challenge')
+      .leftJoin(Goal, 'goal', 'goal.challengeId = challenge.id')
+      .leftJoin(User, 'user', 'user.id = challenge.userId')
+      .leftJoin(
+        Challenger,
+        'challenger',
+        'challenger.challengeId = challenge.id',
+      )
       .select([
         'challenge.id AS id',
         'challenge.title AS title',
         'challenge.description AS description',
         'challenge.startDate AS startDate',
+        'challenge.challengeWeek AS challengeWeek',
         'challenge.endDate AS endDate',
         'challenge.createdAt AS createdAt',
         'challenge.entryPoint AS entryPoint',
@@ -36,30 +44,21 @@ export class ChallengesRepository extends Repository<Challenge> {
         'goal.muscle AS muscle',
         'goal.fat AS fat',
         'user.name AS hostName',
-        'COUNT(challenger.id) AS userNumber',
+        'COUNT(challenge.id) AS userNumber',
       ])
-      .innerJoin(Goal, 'goal', 'goal.challengeId = challenge.id')
-      .leftJoinAndSelect(
-        Challenger,
-        'challenger',
-        'challenger.challengeId = challenge.id',
-      )
-      .leftJoinAndSelect(User, 'user', 'user.id = challenger.userId')
-      .where('challenger.type = :type', { type: 'host' })
       .groupBy('challenge.id')
       .getRawMany();
     return challenges;
   }
 
-  // 도전 상세조회
+  // 도전 상세 조회
   async getChallenge(challengeId: number): Promise<Challenge> {
     const challenge = await this.createQueryBuilder('challenge')
-      .leftJoinAndSelect('challenge.goal', 'goal')
+      .leftJoin('challenge.goal', 'goal')
       .leftJoin('challenge.user', 'user')
-      .leftJoin('challenge.challenger', 'challenger')
-      .addSelect('COUNT(challenger.id)')
       .select([
         'challenge.id',
+        'challenge.userId',
         'challenge.title',
         'challenge.description',
         'challenge.startDate',
@@ -72,12 +71,9 @@ export class ChallengesRepository extends Repository<Challenge> {
         'goal.fat',
         'user.name',
         'user.point',
-        'COUNT(challenger.id) AS userNumber',
       ])
       .where('challenge.id = :id', { id: challengeId })
-      .groupBy('challenge.id')
       .getOne();
-    console.log(challenge);
     return challenge;
   }
 
@@ -85,5 +81,13 @@ export class ChallengesRepository extends Repository<Challenge> {
   async deleteChallenge(challengeId: number): Promise<any> {
     const result = await this.delete(challengeId);
     return result;
+  }
+
+  // 유저가 생성한 도전 수+목록조회
+  async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
+    return await this.findAndCount({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
   }
 }
