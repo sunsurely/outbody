@@ -17,6 +17,7 @@ import { Point, Position } from '../challengerInfo';
 import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
+import { Challenge } from '../entities/challenge.entity';
 
 @Injectable()
 export class ChallengesService {
