@@ -18,6 +18,7 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InviteChallenge } from '../entities/inviteChallenge.entity';
+import { Challenge } from '../entities/challenge.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -396,5 +397,10 @@ export class ChallengesService {
       { userId, invitedId },
       { done: true },
     );
+  }
+
+  // 유저 도전목록수 + 도전목록조회
+  async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
+    return this.challengesRepository.getUserChallenges(userId);
   }
 }

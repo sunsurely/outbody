@@ -86,4 +86,12 @@ export class ChallengesRepository extends Repository<Challenge> {
     const result = await this.delete(challengeId);
     return result;
   }
+
+  // 유저가 생성한 도전 수+목록조회
+  async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
+    return await this.findAndCount({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
