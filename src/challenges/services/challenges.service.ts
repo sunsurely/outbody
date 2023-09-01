@@ -432,6 +432,7 @@ export class ChallengesService {
         'challenge.challengeWeek',
         'challenge.description',
       ])
+      .orderBy('challenge.createdAt', 'DESC')
       .getMany();
 
     return userChallenges;
