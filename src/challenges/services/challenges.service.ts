@@ -17,6 +17,7 @@ import { Point, Position } from '../challengerInfo';
 import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
+import { Challenge } from '../entities/challenge.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -409,7 +410,7 @@ export class ChallengesService {
     );
   }
 
-  // 유저 도전목록수 + 도전목록조회
+  // 사용자가 생성한 도전의 수, 도전 목록 조회
   async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
     return this.challengesRepository.getUserChallenges(userId);
   }

@@ -83,7 +83,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return result;
   }
 
-  // 유저가 생성한 도전 수+목록조회
+  // 사용자가 생성한 도전의 수, 도전 목록 조회
   async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
     return await this.findAndCount({
       where: { userId },
