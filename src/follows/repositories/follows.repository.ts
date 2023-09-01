@@ -29,15 +29,18 @@ export class FollowsRepository extends Repository<Follow> {
         'user.name as name',
         'user.email as email',
         'user.imgUrl as imgUrl',
-        'user.description as description',
       ])
-      .innerJoin(User, 'user', 'user.id = follow.followId') // Inner join with the 'user' relation
-      .where('follow.userId = :userId', { userId })
+      .innerJoin(
+        User,
+        'user',
+        '(user.id = follow.followId OR user.id = follow.userId) AND user.id != :userId',
+        { userId },
+      )
+      .where('follow.userId = :userId OR follow.followId = :userId', { userId })
       .getRawMany();
 
     return followers;
   }
-
   //친구삭제
   async deleteFollower(userId: number, followId: number) {
     const deleted = await this.delete({ followId, userId });

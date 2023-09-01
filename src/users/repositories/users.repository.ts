@@ -128,7 +128,7 @@ export class UserRepository extends Repository<User> {
   }
 
   //유저 포인트 랭크 조회
-  async getUsersRank(id) {
+  async getAllUsersForRank() {
     const result = await this.find({
       order: { point: 'DESC' },
     });
