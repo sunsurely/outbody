@@ -73,6 +73,7 @@ export class PostsRepository extends Repository<Post> {
         description: post.description,
         username: post.user.name,
         comment: post.user.comment,
+        userImg: post.user.imgUrl,
       };
     });
     return allPosts;
@@ -100,6 +101,7 @@ export class PostsRepository extends Repository<Post> {
       imgUrl: getOnePost.imgUrl,
       username: getOnePost.user.name,
       comment: getOnePost.user.comment,
+      userImg: getOnePost.user.imgUrl,
     };
     return onePost;
   }
