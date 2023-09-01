@@ -79,12 +79,20 @@ export class UserService {
       throw new NotFoundException('follower가 존재하지 않습니다.');
     }
 
-    const followersInfo = follow.map((followers) => {
+    const allUsersRanked = await this.usersRepository.getAllUsersForRank();
+
+    const followersInfo = follow.map((follower) => {
+      const ranking =
+        allUsersRanked.findIndex(
+          (rankedUser) => rankedUser.id === follower.id,
+        ) + 1;
+
       return {
-        id: followers.id,
-        name: followers.name,
-        email: followers.email,
-        imgUrl: followers.imgUrl,
+        id: follower.id,
+        name: follower.name,
+        email: follower.email,
+        imgUrl: follower.imgUrl,
+        ranking: ranking,
       };
     });
 
@@ -134,24 +142,20 @@ export class UserService {
   }
 
   //회원탈퇴
-  async deletUser(user, signoutDto: SignoutDto): Promise<any> {
+  async deletUser(user, signoutDto: SignoutDto) {
     const { password } = signoutDto;
+
     if (!password) {
       throw new BadRequestException('비밀번호를 입력해 주세요');
     }
-    console.log('password', password);
 
     const ComparedPassword = await bcrypt.compare(password, user.password);
+
     if (!ComparedPassword) {
       throw new UnauthorizedException('password가 일치하지 않습니다');
     }
 
-    const deleteuser = await this.usersRepository.findOne({
-      where: { id: user.id },
-    });
-    const id = deleteuser.id;
-
-    const result = await this.usersRepository.deleteUser(id);
+    const result = await this.usersRepository.deleteUser(user.id);
 
     if (!result) {
       throw new NotImplementedException('해당 작업을 완료하지 못했습니다');
@@ -192,5 +196,12 @@ export class UserService {
       .getMany();
 
     return followedIds.map((follow) => follow.followId);
+  }
+
+  //유저 포인트 랭크 조회
+  async getUsersRank(id) {
+    const findUsers = await this.usersRepository.getAllUsersForRank();
+    const myRank = findUsers.findIndex((user) => user.id === id) + 1;
+    return myRank;
   }
 }

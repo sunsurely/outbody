@@ -102,11 +102,11 @@ export class ChallengesController {
     );
   }
 
-  // 도전 친구 초대 전체조회
+  // 나에게 온 도전 초대 목록 조회
   // GET http://localhost:3000/challenge/invite/list
   @Get('/invite/list')
   async getInvitedChallengies(@Req() req: any) {
-    return await this.challengesService.getInvitedChallenges(req.user.id);
+    return await this.challengesService.getInvitedChallenges(req.user);
   }
 
   // 도전 초대 수락

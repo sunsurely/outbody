@@ -35,6 +35,13 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challenger;
   }
 
+  async getChallengerWithUserId(userId) {
+    const challenger = await this.findOne({
+      where: { userId, done: false },
+    });
+    return challenger;
+  }
+
   // 특정 도전 내 도전자 전체 조회
   async getChallengers(challengeId: number): Promise<Challenger[]> {
     const challengers = await this.createQueryBuilder('challenger')
@@ -45,7 +52,7 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challengers;
   }
 
-  // 도전자 퇴장
+  // 도전자 삭제
   async deleteChallenger(challengeId: number, userId: number): Promise<void> {
     const challenger = await this.findOne({
       where: { challengeId, userId, done: false },
