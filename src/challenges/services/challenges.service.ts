@@ -59,11 +59,11 @@ export class ChallengesService {
       fat * Point.FAT;
 
     const startDateObject = new Date(startDate);
-    const endDate = new Date();
+    const endDate = new Date(startDateObject);
 
     endDate.setDate(startDateObject.getDate() + challengeWeek * 7);
 
-    if (endDate.getDate() < startDateObject.getDate()) {
+    while (endDate.getDate() > startDateObject.getDate()) {
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
@@ -96,22 +96,52 @@ export class ChallengesService {
     await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 
-  // 도전 목록 조회 (상우, 재용)
+  // 도전 목록 조회
   async getChallenges() {
     const challenges = await this.challengesRepository.getChallenges();
     return challenges;
   }
 
-  // 도전 상세 조회 (상우)
+  // 도전자 목록 조회
+  async getChallengers(challengeId: number) {
+    const challengers = await this.challengersRepository.getChallengers(
+      challengeId,
+    );
+    return challengers;
+  }
+
+  // 도전 상세 조회
   async getChallenge(challengeId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
-    return challenge;
+
+    const userNumber = await this.challengersRepository.getChallengerCount(
+      challengeId,
+    );
+
+    const challengeObject = {
+      id: challenge.id,
+      userId: challenge.userId,
+      title: challenge.title,
+      startDate: challenge.startDate,
+      endDate: challenge.endDate,
+      userNumber: userNumber,
+      userNumberLimit: challenge.userNumberLimit,
+      description: challenge.description,
+      entryPoint: challenge.entryPoint,
+      goalAttend: challenge.goal.attend,
+      goalWeight: challenge.goal.weight,
+      goalMuscle: challenge.goal.muscle,
+      goalFat: challenge.goal.fat,
+      userName: challenge.user.name,
+      userPoint: challenge.user.point,
+    };
+    return challengeObject;
   }
 
-  // 도전 삭제 (상우, 재용)
+  // 도전 삭제
   async deleteChallenge(challengeId: number, userId: number) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
@@ -129,11 +159,14 @@ export class ChallengesService {
     );
     if (challengerCount >= 2) {
       throw new BadRequestException('도전에 참여한 회원이 이미 존재합니다.');
-    } else if (challenge.startDate <= new Date() && challengerCount >= 2) {
+    } else if (
+      new Date(challenge.startDate) <= new Date() &&
+      challengerCount >= 2
+    ) {
       throw new BadRequestException(
         '도전에 참여한 회원이 이미 존재하며, 도전 시작일이 경과되었습니다.',
       );
-    } else if (challenge.endDate <= new Date()) {
+    } else if (new Date(challenge.endDate) <= new Date()) {
       throw new BadRequestException('이미 종료된 도전은 삭제할 수 없습니다.');
     }
 
@@ -143,7 +176,7 @@ export class ChallengesService {
 
   // 도전 방 입장 (재용)
   // 단순히 입장하는 개념이 아니라, 회원이 처음 입장하는 경우
-  async joinChallenge(challengeId: number, userId: number) {
+  async joinChallenge(challengeId: number, currentUser: User) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
@@ -157,7 +190,7 @@ export class ChallengesService {
 
     const isExistingChallenger = await this.challengersRepository.getChallenger(
       challengeId,
-      userId,
+      currentUser.id,
     );
     if (isExistingChallenger) {
       throw new BadRequestException('현재 참여 중인 도전입니다.');
@@ -172,14 +205,14 @@ export class ChallengesService {
       );
     }
 
-    const user = await this.userRepository.getUserById(userId);
+    const user = await this.userRepository.getUserById(currentUser.id);
     if (user.isInChallenge === true) {
       throw new BadRequestException(
         '동시에 2개 이상의 도전을 진행할 수 없습니다.',
       );
     }
 
-    if (new Date() > challenge.startDate) {
+    if (new Date() >= new Date(challenge.startDate)) {
       throw new BadRequestException('이미 시작된 도전에는 참가할 수 없습니다.');
     }
 
@@ -192,7 +225,7 @@ export class ChallengesService {
     const goal = await this.goalsRepository.getGoal(challengeId);
     if (goal.weight !== 0 || goal.muscle !== 0 || goal.fat !== 0) {
       const latestUserRecord = await this.recordsRepository.getLatestUserRecord(
-        userId,
+        currentUser.id,
       );
 
       if (!latestUserRecord) {
@@ -213,48 +246,56 @@ export class ChallengesService {
     }
 
     await this.challengersRepository.createChallenger({
-      userId,
+      userId: currentUser.id,
       challengeId: challenge.id,
       type: Position.GUEST,
       done: false,
     });
-    await this.userRepository.updateUserIsInChallenge(userId, true);
+    await this.userRepository.updateUserIsInChallenge(currentUser.id, true);
   }
 
-  // 도전 방 퇴장 (상우, 재용)
-  async leaveChallenge(challengeId: number, userId: number) {
+  // 도전 방 퇴장
+  async leaveChallenge(challengeId: number, currentUser: User) {
     const challenge = await this.challengesRepository.getChallenge(challengeId);
-
     if (!challenge) {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
     const challenger = await this.challengersRepository.getChallenger(
       challengeId,
-      userId,
+      currentUser.id,
     );
-
+    if (!challenger) {
+      throw new BadRequestException('현재 참여 중인 도전이 아닙니다.');
+    }
     if (challenger.type === Position.HOST) {
       throw new BadRequestException(
         '본인이 생성한 도전은 퇴장이 불가능합니다.',
       );
     }
 
-    if (challenge.endDate <= new Date()) {
+    if (new Date(challenge.endDate) <= new Date()) {
       throw new BadRequestException('이미 종료된 도전은 퇴장이 불가능합니다.');
     }
 
-    const user = await this.userRepository.getUserById(userId);
+    const user = await this.userRepository.getUserById(currentUser.id);
 
     // 도전 시작일이 경과한 이후에 방에서 퇴장하는 경우, 점수 차감
-    if (challenge.startDate <= new Date()) {
+    if (new Date(challenge.startDate) <= new Date()) {
       user.point = user.point - challenge.entryPoint;
       const updateUserPoint = user.point;
-      await this.userRepository.updateUserPoint(userId, updateUserPoint);
+
+      await this.userRepository.updateUserPoint(
+        currentUser.id,
+        updateUserPoint,
+      );
     }
 
-    await this.challengersRepository.deleteChallenger(challenge.id, userId);
-    await this.userRepository.updateUserIsInChallenge(userId, false);
+    await this.challengersRepository.deleteChallenger(
+      challenge.id,
+      currentUser.id,
+    );
+    await this.userRepository.updateUserIsInChallenge(currentUser.id, false);
   }
 
   // 도전 친구 초대
@@ -268,7 +309,7 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
-    if (new Date() > challenge.startDate) {
+    if (new Date() > new Date(challenge.startDate)) {
       throw new BadRequestException('이미 시작된 도전에는 초대할 수 없습니다.');
     }
 
@@ -385,12 +426,12 @@ export class ChallengesService {
   async acceptChallenge(
     userId: number, // 초대한 사람
     body: ResponseChallengeDto,
-    invitedId: number, // 초대받은 사람 (현재 접속중인 회원)
+    invitedUser: User, // 초대받은 사람 (현재 접속중인 회원)
   ) {
     if (body.response === 'no') {
       // 초대 거부
       const invitationsFromCache: Invitiation[] = cache.get(
-        `invite_${invitedId}`,
+        `invite_${invitedUser.id}`,
       );
 
       if (!invitationsFromCache || invitationsFromCache.length <= 0) {
@@ -403,7 +444,7 @@ export class ChallengesService {
       );
 
       const newCachedInvitation = cache.set(
-        `invite_${invitedId}`,
+        `invite_${invitedUser.id}`,
         newCachedInvitations,
       );
       if (!newCachedInvitation) {
@@ -418,7 +459,7 @@ export class ChallengesService {
       // 초대 수락
     } else if (body.response === 'yes') {
       const invitationsFromCache: Invitiation[] = cache.get(
-        `invite_${invitedId}`,
+        `invite_${invitedUser.id}`,
       );
 
       if (!invitationsFromCache || invitationsFromCache.length <= 0) {
@@ -430,14 +471,14 @@ export class ChallengesService {
       );
 
       if (invitation) {
-        this.joinChallenge(invitation.challengeId, invitedId);
+        this.joinChallenge(invitation.challengeId, invitedUser);
 
         const newCachedInvitations = invitationsFromCache.filter(
           (invitation) => invitation.userId !== userId,
         );
 
         const newCachedInvitation = cache.set(
-          `invite_${invitedId}`,
+          `invite_${invitedUser.id}`,
           newCachedInvitations,
         );
 
