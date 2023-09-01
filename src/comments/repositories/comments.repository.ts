@@ -42,6 +42,7 @@ export class CommentsRepository extends Repository<Comment> {
       return {
         comment: comment.comment,
         username: comment.user.name,
+        userImg: comment.user.imgUrl,
       };
     });
 
