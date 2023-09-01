@@ -18,6 +18,7 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
 import { Challenge } from '../entities/challenge.entity';
+import { Challenger } from '../entities/challenger.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -405,8 +406,30 @@ export class ChallengesService {
     );
   }
 
-  // 현재까지 참여한 도전 수 + 목록 조회
-  async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
-    return this.challengesRepository.getUserChallenges(userId);
+  // 유저 도전목록수 + 도전목록조회
+  async getUserChallenges(userId: number): Promise<Challenge[]> {
+    const userChallengerIds = await this.challengersRepository.find({
+      select: ['challengeId'],
+      where: { userId },
+    });
+
+    const userChallengeIds = userChallengerIds.map(
+      (challenger) => challenger.challengeId,
+    );
+
+    const userChallenges = await this.challengesRepository
+      .createQueryBuilder('challenge')
+      .whereInIds(userChallengeIds)
+      .select([
+        'challenge.title',
+        'challenge.startDate',
+        'challenge.endDate',
+        'challenge.challengeWeek',
+        'challenge.description',
+      ])
+      .orderBy('challenge.createdAt', 'DESC')
+      .getMany();
+
+    return userChallenges;
   }
 }

@@ -125,23 +125,10 @@ export class ChallengesController {
   @Get('/user/list')
   async getUserChallenges(@Req() req: any) {
     const userId = req.user.id;
-    const [posts, userChallengeCount] =
-      await this.challengesService.getUserChallenges(userId);
+    const userChallenges = await this.challengesService.getUserChallenges(
+      userId,
+    );
 
-    const usersChallenges = posts.map((challenge) => {
-      return {
-        postId: challenge.id,
-        title: challenge.title,
-        startDate: challenge.startDate,
-        endDate: challenge.endDate,
-        challengeWeek: challenge.challengeWeek,
-        description: challenge.description,
-      };
-    });
-
-    return {
-      totalChallenges: userChallengeCount,
-      usersChallenges: usersChallenges,
-    };
+    return userChallenges;
   }
 }
