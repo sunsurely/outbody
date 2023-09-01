@@ -408,4 +408,9 @@ export class ChallengesService {
       invitedUser.id,
     );
   }
+
+  // 유저 도전목록수 + 도전목록조회
+  async getUserChallenges(userId: number): Promise<[Challenge[], number]> {
+    return this.challengesRepository.getUserChallenges(userId);
+  }
 }

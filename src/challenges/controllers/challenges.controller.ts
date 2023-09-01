@@ -119,4 +119,29 @@ export class ChallengesController {
   ) {
     return await this.challengesService.acceptChallenge(userId, body, req.user);
   }
+
+  // 유저 도전목록수 + 도전목록조회
+  // http://localhost:3000/challenge/user/list
+  @Get('/user/list')
+  async getUserChallenges(@Req() req: any) {
+    const userId = req.user.id;
+    const [posts, userChallengeCount] =
+      await this.challengesService.getUserChallenges(userId);
+
+    const usersChallenges = posts.map((challenge) => {
+      return {
+        postId: challenge.id,
+        title: challenge.title,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        challengeWeek: challenge.challengeWeek,
+        description: challenge.description,
+      };
+    });
+
+    return {
+      totalChallenges: userChallengeCount,
+      usersChallenges: usersChallenges,
+    };
+  }
 }
