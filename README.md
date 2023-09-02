@@ -43,14 +43,13 @@ Out Body는 체성분 측정기록 기반 SNS 웹어플리케이션으로써, �
 ## 🖋️Tech Stack
 
 |   components   |       Tech Stack        |
-| :------------: | :---------------------: | ------------------ | --- |
+| :------------: | :---------------------: | 
 |    Language    | Javascript (Typescript) |
 |   FrameWork    |         Nest.js         |
 |    DataBase    |     MySQL / typeORM     |
 |    Protocol    |          HTTPS          |
 |     Server     |    AWS - EC2/RDS/S3     |
 |     Socket     |        Socket.io        |
-|      <!--      |         Caching         | REDIS (NODE-CACHE) | --> |
 | Authentication |        Passport         |
 |    CI / CD     |     GITHUB, SWAGGER     |
 
