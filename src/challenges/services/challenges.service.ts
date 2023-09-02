@@ -18,7 +18,6 @@ import { User } from 'src/users/entities/user.entity';
 import { DataSource } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
 import { Challenge } from '../entities/challenge.entity';
-import { Challenger } from '../entities/challenger.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -91,14 +90,69 @@ export class ChallengesService {
     await this.userRepository.updateUserIsInChallenge(userId, true);
   }
 
-  // 도전 목록 조회 (전체)
-  async getChallenges() {
-    const challenges = await this.challengesRepository.getChallenges();
-    return challenges;
+  // 도전 목록 조회
+  async getChallenges(filteredWith, user: User) {
+    // condition: nothing
+    if (filteredWith === 'all') {
+      const challenges = await this.challengesRepository.getAllChallenges();
+
+      const result = await this.mapChallenges(challenges);
+      return result;
+      // condition: startDate, publicView, entrypoint, userNumberLimit
+    } else if (filteredWith === 'possible') {
+      const currentUser = await this.userRepository.getUserById(user.id);
+
+      const challenges = await this.challengesRepository.getPossibleChallenges(
+        currentUser.point,
+      );
+
+      const filteredChallenges = challenges.filter(async (challenge) => {
+        const userNumber = await this.challengersRepository.getChallengerCount(
+          challenge.id,
+        );
+        return challenge.userNumberLimit > userNumber;
+      });
+
+      const result = await this.mapChallenges(filteredChallenges);
+      return result;
+    } else if (filteredWith === 'my') {
+      const challenges = await this.challengesRepository.getMyChallenges(
+        user.id,
+      );
+      const result = await this.mapChallenges(challenges);
+      return result;
+    }
   }
 
-  // 도전 목록 조회 (현재 참여 가능)
-  // 도전 시작일 전, 도전 참가 점수 충족, 도전 참가 인원 충족, 전체 공개
+  // 도전 목록 가공 함수
+  async mapChallenges(challenges) {
+    const result = challenges.map(async (challenge) => {
+      const goal = await this.goalsRepository.getGoal(challenge.id);
+      const user = await this.userRepository.getUserById(challenge.userId);
+      const userNumber = await this.challengersRepository.getChallengerCount(
+        challenge.id,
+      );
+
+      const challengeObject = {
+        id: challenge.id,
+        title: challenge.title,
+        startDate: challenge.startDate,
+        endDate: challenge.endDate,
+        challengeWeek: challenge.challengeWeek,
+        userNumber: userNumber,
+        userNumberLimit: challenge.userNumberLimit,
+        publicView: challenge.publicView,
+        entryPoint: challenge.entryPoint,
+        goalAttend: goal.attend,
+        goalWeight: goal.weight,
+        goalMuscle: goal.muscle,
+        goalFat: goal.fat,
+        hostName: user.name,
+      };
+      return challengeObject;
+    });
+    return Promise.all(result);
+  }
 
   // 도전자 목록 조회
   async getChallengers(challengeId: number) {
@@ -115,26 +169,27 @@ export class ChallengesService {
       throw new NotFoundException('해당 도전이 조회되지 않습니다.');
     }
 
+    const goal = await this.goalsRepository.getGoal(challenge.id);
+    const user = await this.userRepository.getUserById(challenge.userId);
     const userNumber = await this.challengersRepository.getChallengerCount(
       challengeId,
     );
 
     const challengeObject = {
       id: challenge.id,
-      userId: challenge.userId,
       title: challenge.title,
+      description: challenge.description,
       startDate: challenge.startDate,
       endDate: challenge.endDate,
       userNumber: userNumber,
       userNumberLimit: challenge.userNumberLimit,
-      description: challenge.description,
       entryPoint: challenge.entryPoint,
-      goalAttend: challenge.goal.attend,
-      goalWeight: challenge.goal.weight,
-      goalMuscle: challenge.goal.muscle,
-      goalFat: challenge.goal.fat,
-      userName: challenge.user.name,
-      userPoint: challenge.user.point,
+      goalAttend: goal.attend,
+      goalWeight: goal.weight,
+      goalMuscle: goal.muscle,
+      goalFat: goal.fat,
+      userName: user.name,
+      userPoint: user.point,
     };
     return challengeObject;
   }

@@ -7,11 +7,11 @@ import {
   Delete,
   Param,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
 import { InviteChallengeDto } from '../dto/invite-challenge.dto';
-import { Position } from '../challengerInfo';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 
 @Controller('challenge')
@@ -32,8 +32,11 @@ export class ChallengesController {
   // 도전 목록 조회
   // GET http://localhost:3000/challenge
   @Get()
-  async getChallenges() {
-    const challenges = await this.challengesService.getChallenges();
+  async getChallenges(@Query('filter') filter: string, @Req() req: any) {
+    const challenges = await this.challengesService.getChallenges(
+      filter,
+      req.user,
+    );
     return challenges;
   }
 
@@ -70,7 +73,6 @@ export class ChallengesController {
   @Post('/:challengeId/enter')
   async joinChallenge(
     @Param('challengeId') challengeId: number,
-    @Body() type: Position,
     @Req() req: any,
   ) {
     console.log(req.user);
@@ -118,17 +120,5 @@ export class ChallengesController {
     @Req() req: any,
   ) {
     return await this.challengesService.acceptChallenge(userId, body, req.user);
-  }
-
-  // 현재까지 참여한 도전 수 + 목록 조회
-  // http://localhost:3000/challenge/user/list
-  @Get('/user/list')
-  async getUserChallenges(@Req() req: any) {
-    const userId = req.user.id;
-    const userChallenges = await this.challengesService.getUserChallenges(
-      userId,
-    );
-
-    return userChallenges;
   }
 }

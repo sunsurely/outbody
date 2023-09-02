@@ -9,13 +9,13 @@ export class GoalsRepository extends Repository<Goal> {
     super(Goal, dataSource.createEntityManager());
   }
 
-  // 목표 생성 (재용)
+  // 목표 생성
   async createGoal(Goal: CreateGoalDto): Promise<Goal> {
     const newGoal = await this.create(Goal);
     return await this.save(newGoal);
   }
 
-  // 목표 조회 (재용)
+  // 목표 조회
   async getGoal(challengeId: number): Promise<Goal> {
     const goal = await this.findOne({ where: { challengeId } });
     return goal;

@@ -2,9 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Challenge } from '../entities/challenge.entity';
 import { CreateChallengeDto } from '../dto/create-challenge.dto';
-import { Goal } from '../entities/goal.entity';
-import { Challenger } from '../entities/challenger.entity';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ChallengesRepository extends Repository<Challenge> {
@@ -18,62 +15,41 @@ export class ChallengesRepository extends Repository<Challenge> {
     return await this.save(newChallenge);
   }
 
-  // 도전 목록 조회 (전체)
-  async getChallenges(): Promise<Challenge[]> {
+  // 전체 도전 목록 조회
+  async getAllChallenges(): Promise<Challenge[]> {
     const challenges = await this.createQueryBuilder('challenge')
-      .leftJoin(Goal, 'goal', 'goal.challengeId = challenge.id')
-      .leftJoin(User, 'user', 'user.id = challenge.userId') // 사용자가 탈퇴하는 경우 innerJoin을 사용해야 문제가 없음
-      .leftJoin(
-        Challenger,
-        'challenger',
-        'challenger.challengeId = challenge.id',
-      )
-      .select([
-        'challenge.id AS id',
-        'challenge.title AS title',
-        'challenge.description AS description',
-        'challenge.startDate AS startDate',
-        'challenge.challengeWeek AS challengeWeek',
-        'challenge.endDate AS endDate',
-        'challenge.createdAt AS createdAt',
-        'challenge.entryPoint AS entryPoint',
-        'challenge.userNumberLimit AS userNumberLimit',
-        'challenge.publicView As publicView',
-        'goal.attend AS attend',
-        'goal.weight AS weight',
-        'goal.muscle AS muscle',
-        'goal.fat AS fat',
-        'user.name AS hostName',
-        'COUNT(challenge.id) AS userNumber',
-      ])
-      .groupBy('challenge.id') // groupBy 사용 지양할것, count 함수는 별도로 처리할 것
-      .getRawMany();
+      .innerJoin('challenge.user', 'user')
+      .where('challenge.userId = user.id')
+      .andWhere('user.deletedAt IS NULL')
+      .getMany();
+    return challenges;
+  }
+
+  // 참여 가능한 도전 목록 조회
+  async getPossibleChallenges(userPoint): Promise<Challenge[]> {
+    const challenges = await this.createQueryBuilder('challenge')
+      .innerJoin('challenge.user', 'user')
+      .where('challenge.userId = user.id')
+      .andWhere('user.deletedAt IS NULL')
+      .where('challenge.startDate > :today', { today: new Date() })
+      .where('challenge.publicView = true')
+      .where('challenge.entryPoint <= :userPoint', { userPoint })
+      .getMany();
+    return challenges;
+  }
+
+  // 내 도전 목록 조회
+  async getMyChallenges(userId: number): Promise<Challenge[]> {
+    const challenges = await this.createQueryBuilder('challenge')
+      .innerJoin('challenge.challenger', 'challenger')
+      .where('challenger.userId = :userId', { userId })
+      .getMany();
     return challenges;
   }
 
   // 도전 상세 조회
   async getChallenge(challengeId: number): Promise<Challenge> {
-    const challenge = await this.createQueryBuilder('challenge')
-      .leftJoin('challenge.goal', 'goal')
-      .leftJoin('challenge.user', 'user')
-      .select([
-        'challenge.id',
-        'challenge.userId',
-        'challenge.title',
-        'challenge.description',
-        'challenge.startDate',
-        'challenge.endDate',
-        'challenge.entryPoint',
-        'challenge.userNumberLimit',
-        'goal.attend',
-        'goal.weight',
-        'goal.muscle',
-        'goal.fat',
-        'user.name',
-        'user.point',
-      ])
-      .where('challenge.id = :id', { id: challengeId })
-      .getOne();
+    const challenge = await this.findOne({ where: { id: challengeId } });
     return challenge;
   }
 
