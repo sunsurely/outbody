@@ -14,6 +14,9 @@ export class RankingsService {
     const totalPages = Math.ceil(totalRanks.length / pageSize);
     const paginationTotalRanks = totalRanks.slice(startIndex, endIndex);
 
+    console.log('totalPages', totalPages);
+    console.log('paginationTotalRanks', paginationTotalRanks);
+
     return { totalPages, paginationTotalRanks };
   }
 
