@@ -26,7 +26,13 @@ export class FollowsService {
     if (followId === user.id) {
       throw new NotAcceptableException('수행할 수 없는 요청입니다.');
     }
+    const existFollowMessage = await this.followMessageRepository.findOne({
+      where: { userId: user.id },
+    });
 
+    if (existFollowMessage) {
+      throw new NotAcceptableException('이미 요청 내역이 존재합니다');
+    }
     const existFollow = await this.followRepository.findOne({
       where: { userId: user.id, followId },
     });
