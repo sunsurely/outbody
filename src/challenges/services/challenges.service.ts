@@ -376,10 +376,10 @@ export class ChallengesService {
     }
 
     const challenger = await this.challengersRepository.getChallenger(
-      challengeId,
+      challenge.id,
       user.id,
     );
-    if (challenger.type !== Position.HOST) {
+    if (!challenger || challenger.type !== Position.HOST) {
       throw new UnauthorizedException('방장만 다른 회원을 초대할 수 있습니다.');
     }
 
@@ -391,7 +391,7 @@ export class ChallengesService {
     }
 
     const invitedUser = await this.userRepository.getUserByEmail(email);
-    if (!invitedUser || invitedUser == undefined) {
+    if (!invitedUser) {
       throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
