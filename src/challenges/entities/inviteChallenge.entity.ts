@@ -27,9 +27,6 @@ export class InviteChallenge {
   @Column('varchar')
   message: string;
 
-  @Column('boolean', { default: false })
-  done: boolean;
-
   @CreateDateColumn()
   createdAt: Date;
 

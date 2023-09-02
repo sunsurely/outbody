@@ -18,7 +18,7 @@ export class InviteChallengesRepository extends Repository<InviteChallenge> {
 
   async getInvitations(invitedId: number): Promise<InviteChallenge[]> {
     const challengeInvitations = await this.find({
-      where: { invitedId, done: false },
+      where: { invitedId },
     });
     return challengeInvitations;
   }
