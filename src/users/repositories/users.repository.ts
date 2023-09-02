@@ -60,13 +60,13 @@ export class UserRepository extends Repository<User> {
   async updateUser(
     userId: number,
     imgUrl: string,
-    comment: string,
     refreshToken: string,
     birthday: string,
+    description: string,
   ) {
     await this.update(
       { id: userId },
-      { imgUrl, comment, refreshToken, birthday },
+      { imgUrl, refreshToken, birthday, description },
     );
 
     const result = await this.findOne({ where: { id: userId } });
@@ -132,6 +132,16 @@ export class UserRepository extends Repository<User> {
     const result = await this.find({
       order: { point: 'DESC' },
     });
+    return result;
+  }
+
+  //동일 성별, 나이대의 모든 유저 조회
+  async getUsersForAverage(years: number, gender: string) {
+    const result = await this.createQueryBuilder('user')
+      .where('YEAR(user.birthday) = :years', { years })
+      .andWhere('user.gender = :gender', { gender })
+      .getMany();
+
     return result;
   }
 }

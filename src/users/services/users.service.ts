@@ -1,4 +1,3 @@
-import { IsDateString } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import {
@@ -16,7 +15,6 @@ import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
-import { User } from '../entities/user.entity';
 import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
 
@@ -100,16 +98,16 @@ export class UserService {
 
   //유저 정보 수정
   async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { imgUrl, comment, birthday } = userDto;
+    const { imgUrl, birthday, description } = userDto;
 
     const newRefreshToken = this.jwtService.sign({ userId });
 
     const updateUser = await this.usersRepository.updateUser(
       userId,
       imgUrl,
-      comment,
       newRefreshToken,
       birthday,
+      description,
     );
 
     const { password, updatedAt, deletedAt, provider, refreshToken, ...rest } =

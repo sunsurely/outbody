@@ -2,10 +2,14 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { RecordsRepository } from '../repositories/records.repository';
 import { Record } from '../entities/records.entity';
+import { UserRepository } from 'src/users/repositories/users.repository';
 
 @Injectable()
 export class RecordsService {
-  constructor(private readonly recordsRepository: RecordsRepository) {}
+  constructor(
+    private readonly recordsRepository: RecordsRepository,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   //측정기록 생성
   async createRecord(body, id): Promise<Record> {
@@ -72,9 +76,45 @@ export class RecordsService {
 
   //최근 측정표 기반 진단내용 조회
   async getResultFromRecord(user: User) {
-    const records = await this.recordsRepository.getLatestUserRecord(user.id);
+    const recentRecords = await this.recordsRepository.getLatestUserRecord(
+      user.id,
+    );
 
-    const { weight, muscle, height, fat } = records;
+    const years = new Date(user.birthday).getFullYear();
+    const sameUsers = await this.userRepository.getUsersForAverage(
+      years,
+      user.gender,
+    );
+
+    const ids = sameUsers.map((y) => y.id);
+    const records = await this.recordsRepository.getRecordForAverage(ids);
+
+    const avgRecords = [];
+    let currentUser = null;
+    for (const record of records) {
+      if (record.userId !== currentUser) {
+        avgRecords.push(record);
+        currentUser = record.userId;
+      }
+    }
+
+    const totalNum = avgRecords.length;
+    let totalWgt: number = 0;
+    let totalFat: number = 0;
+    let totalMus: number = 0;
+
+    for (const rec of avgRecords) {
+      totalWgt += rec.weight;
+      totalFat += rec.fat;
+      totalMus += rec.muscle;
+    }
+
+    const avgWgt = (totalWgt / totalNum).toFixed(1);
+    const avgFat = (totalFat / totalNum).toFixed(1);
+    const avgMus = (totalMus / totalNum).toFixed(1);
+    const avgDatas = { avgWgt, avgFat, avgMus };
+
+    const { weight, muscle, height, fat } = recentRecords;
     const stdWeight = Math.round(Math.pow(height / 100, 2) * 22); //적정체중
     const stdMuscle = (weight * 45) / 100; //적정골격근량
     const wetPerHgt = weight / height;
@@ -95,7 +135,8 @@ export class RecordsService {
     const resMuscle = muscle >= stdMuscle ? 0 : stdMuscle - muscle;
 
     return {
-      records,
+      recentRecords,
+      avgDatas,
       resFat,
       resWeight,
       resMuscle,

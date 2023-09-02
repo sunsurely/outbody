@@ -7,9 +7,9 @@ export class UserUpdateDto {
 
   @IsString()
   @IsOptional()
-  readonly comment?: string;
+  readonly birthday?: string;
 
   @IsString()
   @IsOptional()
-  readonly birthday?: string;
+  readonly description?: string;
 }
