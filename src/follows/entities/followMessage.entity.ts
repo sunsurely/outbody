@@ -25,10 +25,7 @@ export class FollowMessage {
   name: string;
 
   @Column('varchar')
-  message: string;
-
-  @Column('boolean', { default: false })
-  done: boolean;
+  imgUrl: string;
 
   @CreateDateColumn()
   createdAt: Date;

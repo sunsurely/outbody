@@ -34,12 +34,13 @@ export class CommentsRepository extends Repository<Comment> {
     const allComment = await this.find({
       where: { challengeId, postId },
       order: { createdAt: 'DESC' },
-      select: ['comment'],
+      select: ['id', 'comment'],
       relations: ['user'],
     });
 
     const allComments = allComment.map((comment) => {
       return {
+        commentId: comment.id,
         comment: comment.comment,
         username: comment.user.name,
         userImg: comment.user.imgUrl,
