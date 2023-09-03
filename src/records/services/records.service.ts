@@ -1,4 +1,8 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { RecordsRepository } from '../repositories/records.repository';
 import { Record } from '../entities/records.entity';
@@ -35,6 +39,10 @@ export class RecordsService {
   async getUsersRecords(id: number, page, pageSize) {
     const usersRecords = await this.recordsRepository.getUsersRecords(id);
 
+    if (!usersRecords || usersRecords.length <= 0) {
+      throw new NotFoundException('데이터가 존지하지 않습니다.');
+    }
+
     const startIndex = (page - 1) * pageSize;
     const endIndex = page * pageSize;
     const totalPages = Math.ceil(usersRecords.length / pageSize);
@@ -60,6 +68,7 @@ export class RecordsService {
     const startDate = new Date(start);
     const endDate = new Date(end);
     endDate.setHours(23, 59, 59);
+
     const usersRecords = await this.recordsRepository.getRecordsByDateRange(
       startDate,
       endDate,
@@ -79,40 +88,41 @@ export class RecordsService {
     const recentRecords = await this.recordsRepository.getLatestUserRecord(
       user.id,
     );
-
     const years = new Date(user.birthday).getFullYear();
     const sameUsers = await this.userRepository.getUsersForAverage(
       years,
       user.gender,
     );
+    const avgDatas = {};
+    if (sameUsers.length > 0) {
+      const ids = sameUsers.map((y) => y.id);
+      const records = await this.recordsRepository.getRecordForAverage(ids);
 
-    const ids = sameUsers.map((y) => y.id);
-    const records = await this.recordsRepository.getRecordForAverage(ids);
-
-    const avgRecords = [];
-    let currentUser = null;
-    for (const record of records) {
-      if (record.userId !== currentUser) {
-        avgRecords.push(record);
-        currentUser = record.userId;
+      const avgRecords = [];
+      let currentUser = null;
+      for (const record of records) {
+        if (record.userId !== currentUser) {
+          avgRecords.push(record);
+          currentUser = record.userId;
+        }
       }
+
+      const totalNum = avgRecords.length;
+      let totalWgt: number = 0;
+      let totalFat: number = 0;
+      let totalMus: number = 0;
+
+      for (const rec of avgRecords) {
+        totalWgt += rec.weight;
+        totalFat += rec.fat;
+        totalMus += rec.muscle;
+      }
+
+      const avgWgt = (totalWgt / totalNum).toFixed(1);
+      const avgFat = (totalFat / totalNum).toFixed(1);
+      const avgMus = (totalMus / totalNum).toFixed(1);
+      const avgDatas = { avgWgt, avgFat, avgMus };
     }
-
-    const totalNum = avgRecords.length;
-    let totalWgt: number = 0;
-    let totalFat: number = 0;
-    let totalMus: number = 0;
-
-    for (const rec of avgRecords) {
-      totalWgt += rec.weight;
-      totalFat += rec.fat;
-      totalMus += rec.muscle;
-    }
-
-    const avgWgt = (totalWgt / totalNum).toFixed(1);
-    const avgFat = (totalFat / totalNum).toFixed(1);
-    const avgMus = (totalMus / totalNum).toFixed(1);
-    const avgDatas = { avgWgt, avgFat, avgMus };
 
     const { weight, muscle, height, fat } = recentRecords;
     const stdWeight = Math.round(Math.pow(height / 100, 2) * 22); //적정체중
