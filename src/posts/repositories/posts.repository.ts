@@ -75,7 +75,7 @@ export class PostsRepository extends Repository<Post> {
       description: getOnePost.description,
       imgUrl: getOnePost.imgUrl,
       username: getOnePost.user.name,
-      comment: getOnePost.user.comment,
+      comment: getOnePost.user.description,
       userImg: getOnePost.user.imgUrl,
     };
     return onePost;

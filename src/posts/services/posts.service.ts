@@ -8,6 +8,7 @@ import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
 import { AwsService } from '../../aws.service';
 import { Post } from '../entities/post.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -75,14 +76,17 @@ export class PostsService {
   }
 
   // 오운완 삭제 (상우)
-  async deletePost(postId: number, userId: number) {
+  async deletePost(postId: number, user: User) {
     const post = await this.postsRepository.getOnePost(postId);
 
-    if (post.userId !== userId) {
+    if (post.userId !== user.id) {
       throw new NotAcceptableException(
         '본인이 만든 오운완 게시글만 삭제 가능합니다.',
       );
     }
+
+    await this.awsService.deleteImage(post.imgUrl);
+
     return await this.postsRepository.deletePost(postId);
   }
 

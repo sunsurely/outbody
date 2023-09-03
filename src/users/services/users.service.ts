@@ -102,11 +102,17 @@ export class UserService {
   async updateUser(user: User, body: UserUpdateDto, file: Express.Multer.File) {
     const { birthday, description } = body;
 
-    const imageObject = await this.awsService.uploadImage('outbody_user', file);
+    const imageUrl = file
+      ? (await this.awsService.uploadImage('outbody_user', file)).key
+      : user.imgUrl;
+
+    if (imageUrl) {
+      await this.awsService.deleteImage(user.imgUrl);
+    }
 
     const result = await this.usersRepository.updateUser(
       user.id,
-      imageObject.key || user.imgUrl,
+      imageUrl,
       birthday || user.birthday,
       description || user.description,
     );

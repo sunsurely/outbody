@@ -47,7 +47,11 @@ export class ChallengersRepository extends Repository<Challenger> {
     const challengers = await this.createQueryBuilder('challenger')
       .leftJoin(User, 'user', 'user.id = challenger.userId')
       .where('challenger.challengeId = :id', { id: challengeId })
-      .select(['user.name AS userName', 'user.point AS userPoint'])
+      .select([
+        'user.name AS userName',
+        'user.point AS userPoint',
+        'user.imgUrl AS userImageUrl',
+      ])
       .getRawMany();
     return challengers;
   }
