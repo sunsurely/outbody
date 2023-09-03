@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FollowMessage } from '../entities/followMessage.entity';
-import { DataSource, DeleteResult, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Follow } from '../entities/follow.entity';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class FollowsService {
       throw new NotAcceptableException('수행할 수 없는 요청입니다.');
     }
     const existFollowMessage = await this.followMessageRepository.findOne({
-      where: { userId: user.id },
+      where: { userId: user.id, followId },
     });
 
     if (existFollowMessage) {
