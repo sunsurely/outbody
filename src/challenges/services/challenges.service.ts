@@ -148,6 +148,7 @@ export class ChallengesService {
         goalMuscle: goal.muscle,
         goalFat: goal.fat,
         hostName: user.name,
+        hostImageUrl: user.imgUrl,
       };
       return challengeObject;
     });
@@ -190,6 +191,7 @@ export class ChallengesService {
       goalFat: goal.fat,
       userName: user.name,
       userPoint: user.point,
+      userImageUrl: user.imgUrl,
     };
     return challengeObject;
   }

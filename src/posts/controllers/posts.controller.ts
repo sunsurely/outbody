@@ -58,7 +58,7 @@ export class PostsController {
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Delete('/:challengeId/post/:postId')
   async deletePost(@Param('postId') postId: number, @Req() req: any) {
-    return await this.postsService.deletePost(postId, req.user.id);
+    return await this.postsService.deletePost(postId, req.user);
   }
 
   // 유저가 생성한 오운완수 + 오운완목록조회
