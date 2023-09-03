@@ -25,6 +25,18 @@ export class ChallengesRepository extends Repository<Challenge> {
     return challenges;
   }
 
+  //선택 페이지에 해당하는 도전리스트
+  async getPageChallenges(page): Promise<Challenge[]> {
+    const challenges = await this.createQueryBuilder('challenge')
+      .innerJoin('challenge.user', 'user')
+      .where('challenge.userId = user.id')
+      .andWhere('user.deletedAt IS NULL')
+      .skip((page - 1) * 10)
+      .take(10)
+      .getMany();
+    return challenges;
+  }
+
   // 참여 가능한 도전 목록 조회
   async getPossibleChallenges(userPoint): Promise<Challenge[]> {
     const challenges = await this.createQueryBuilder('challenge')
@@ -34,6 +46,7 @@ export class ChallengesRepository extends Repository<Challenge> {
       .where('challenge.startDate > :today', { today: new Date() })
       .where('challenge.publicView = true')
       .where('challenge.entryPoint <= :userPoint', { userPoint })
+      .orderBy('createdAt', 'DESC')
       .getMany();
     return challenges;
   }

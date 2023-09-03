@@ -91,13 +91,18 @@ export class ChallengesService {
   }
 
   // 도전 목록 조회
-  async getChallenges(filteredWith, user: User) {
+  async getChallenges(filteredWith, user: User, page) {
     // condition: nothing
     if (filteredWith === 'all') {
-      const challenges = await this.challengesRepository.getAllChallenges();
+      const allChallenges = await this.challengesRepository.getAllChallenges();
+      const pageChallenges = await this.challengesRepository.getPageChallenges(
+        page,
+      );
 
-      const result = await this.mapChallenges(challenges);
-      return result;
+      const totalPages = Math.ceil(allChallenges.length / 10);
+      const challenges = await this.mapChallenges(pageChallenges);
+
+      return { totalPages, challenges };
       // condition: startDate, publicView, entrypoint, userNumberLimit
     } else if (filteredWith === 'possible') {
       const currentUser = await this.userRepository.getUserById(user.id);

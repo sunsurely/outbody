@@ -44,7 +44,7 @@ export class UserRepository extends Repository<User> {
         'user.birthday',
         'user.gender',
         'user.imgUrl',
-        'user.comment',
+        'user.description',
         'user.point',
         'user.isInChallenge',
         'user.latestChallengeDate',

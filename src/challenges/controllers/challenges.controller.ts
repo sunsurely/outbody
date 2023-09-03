@@ -32,10 +32,15 @@ export class ChallengesController {
   // 도전 목록 조회
   // GET http://localhost:3000/challenge
   @Get()
-  async getChallenges(@Query('filter') filter: string, @Req() req: any) {
+  async getChallenges(
+    @Query('filter') filter: string,
+    @Req() req: any,
+    @Query('page') page: number,
+  ) {
     const challenges = await this.challengesService.getChallenges(
       filter,
       req.user,
+      page,
     );
     return challenges;
   }
