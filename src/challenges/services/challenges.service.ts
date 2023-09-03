@@ -423,7 +423,7 @@ export class ChallengesService {
       await this.inviteChallengesRepository.createInvitation({
         userId: user.id,
         invitedId: invitedUser.id,
-        email,
+        email: user.email,
         message,
         name: user.name,
       });

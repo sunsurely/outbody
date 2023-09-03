@@ -61,7 +61,7 @@ export class PostsRepository extends Repository<Post> {
     userId: number;
     description: string;
     imgUrl: string;
-    comment: string;
+    comments: Comment[];
   }> {
     const getOnePost = await this.findOne({
       where: { id: postId },
