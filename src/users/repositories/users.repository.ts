@@ -130,4 +130,14 @@ export class UserRepository extends Repository<User> {
     });
     return result;
   }
+
+  //동일 성별, 나이대의 모든 유저 조회
+  async getUsersForAverage(years: number, gender: string) {
+    const result = await this.createQueryBuilder('user')
+      .where('YEAR(user.birthday) = :years', { years })
+      .andWhere('user.gender = :gender', { gender })
+      .getMany();
+
+    return result;
+  }
 }

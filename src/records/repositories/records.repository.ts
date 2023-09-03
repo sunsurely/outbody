@@ -84,4 +84,25 @@ export class RecordsRepository extends Repository<Record> {
 
     return records;
   }
+
+  //같은 나이 & 성별에 해당하는 레코드 모두 조회
+  async getRecordForAverage(ids: number[]) {
+    const records = await this.createQueryBuilder('record')
+      .select([
+        'record.id',
+        'record.userId',
+        'record.bmr',
+        'record.fat',
+        'record.height',
+        'record.muscle',
+        'record.weight',
+        'record.createdAt',
+      ])
+      .where('record.userId IN (:...ids)', { ids })
+      .orderBy('record.userId')
+      .addOrderBy('record.createdAt', 'DESC')
+      .getMany();
+
+    return records;
+  }
 }

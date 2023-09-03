@@ -1,3 +1,4 @@
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -5,27 +6,23 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   UpdateDateColumn,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
-@Entity({ schema: 'outbody', name: 'followmessagies' })
-export class FollowMessage {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'followMessage' })
+@Entity({ schema: 'outbody', name: 'blacklists' })
+export class BlackList {
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('int')
   userId: number;
 
-  @Column('int')
-  followId: number;
-
   @Column('varchar')
   email: string;
 
   @Column('varchar')
-  name: string;
-
-  @Column('varchar', { nullable: true })
-  imgUrl: string;
+  description: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -35,4 +32,8 @@ export class FollowMessage {
 
   @DeleteDateColumn()
   deletedAt: Date | null;
+
+  @ManyToOne(() => User, (user) => user.blacklists)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 }

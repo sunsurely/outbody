@@ -49,7 +49,7 @@ export class RecordsController {
     recordId: number,
     @Req() req: any,
   ) {
-    return await this.recordesService.getRecordDtail(recordId, req.user.id);
+    return await this.recordesService.getRecordDtail(recordId);
   }
 
   // 기간별 기록정보 불러오기

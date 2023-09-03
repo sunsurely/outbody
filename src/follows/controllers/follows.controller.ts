@@ -27,7 +27,6 @@ export class FollowsController {
     followId: number,
     @Req() req: any,
   ) {
-    console.log(followId);
     return await this.followsService.requestFollow(followId, req.user);
   }
 
