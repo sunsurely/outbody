@@ -32,7 +32,7 @@ export class UserService {
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
   async createUser(user: UserCreateDto) {
-    const { name, email, password, gender, status } = user;
+    const { name, email, password, gender } = user;
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
@@ -54,7 +54,6 @@ export class UserService {
       email,
       password,
       gender,
-      status,
     );
 
     return createUserResult;
