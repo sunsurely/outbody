@@ -65,7 +65,6 @@ export class UserController {
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(body.birthday, body.description);
     return await this.userService.updateUser(req.user, body, file);
   }
 

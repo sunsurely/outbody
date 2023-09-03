@@ -61,11 +61,13 @@ export class PostsRepository extends Repository<Post> {
     userId: number;
     description: string;
     imgUrl: string;
-    comment: string;
+    username: string;
+    comments: Comment[];
+    userImg: string;
   }> {
     const getOnePost = await this.findOne({
       where: { id: postId },
-      relations: ['user'],
+      relations: ['comments', 'user'],
     });
 
     const onePost = {
@@ -75,10 +77,10 @@ export class PostsRepository extends Repository<Post> {
       description: getOnePost.description,
       imgUrl: getOnePost.imgUrl,
       username: getOnePost.user.name,
-      comment: getOnePost.user.description,
+      comments: getOnePost.comments,
       userImg: getOnePost.user.imgUrl,
     };
-    return onePost;
+    return onePost as any;
   }
 
   // 오운완 삭제
