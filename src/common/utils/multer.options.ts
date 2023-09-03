@@ -41,6 +41,13 @@ const storage = (folder: string): multer.StorageEngine => {
 export const multerOptions = (folder: string) => {
   const result: MulterOptions = {
     storage: storage(folder),
+    fileFilter: function (req, file, cb) {
+      if (!file) {
+        cb(null, false);
+      } else {
+        cb(null, true);
+      }
+    },
   };
   return result;
 };
