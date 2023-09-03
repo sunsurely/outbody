@@ -193,6 +193,7 @@ export class ChallengeScheduler {
   }
 
   // 2주일 동안 어떠한 도전에도 참여하지 않을 시 자동으로 점수 차감 (하루에 20점)
+  // latestChallengeDate가 null인 경우 예외처리 해야함
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async automaticPointDeduction() {
     const usersNotinChallenge = await this.userRepository.find({
