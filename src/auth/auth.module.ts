@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
@@ -15,6 +15,8 @@ import { UserService } from 'src/users/services/users.service';
 import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 import { JwtRefreshStrategy } from './strategies/refreshToken.strategy';
+import { UsersModule } from 'src/users/users.module';
+import { AwsService } from 'src/aws.service';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { JwtRefreshStrategy } from './strategies/refreshToken.strategy';
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
+    forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
   providers: [
@@ -37,6 +40,7 @@ import { JwtRefreshStrategy } from './strategies/refreshToken.strategy';
     UserService,
     BlackListRepository,
     FollowsRepository,
+    AwsService,
   ],
   exports: [AuthService, JwtModule],
 })

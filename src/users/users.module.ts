@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UserController } from './controllers/users.controller';
 import { UserService } from './services/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +13,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtConfigService } from 'src/config/jwt.config.service';
 import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
+import { MulterModule } from '@nestjs/platform-express';
+import * as multer from 'multer';
+import { AwsService } from 'src/aws.service';
+import { AuthsModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
+    MulterModule.register({
+      storage: multer.memoryStorage(),
+    }),
+    forwardRef(() => AuthsModule),
   ],
   controllers: [UserController],
   providers: [
@@ -32,6 +40,7 @@ import { AuthMiddleware } from 'src/common/middlewares/auth.middleware';
     BlackListRepository,
     AuthService,
     AuthMiddleware,
+    AwsService,
   ],
 })
 export class UsersModule {}

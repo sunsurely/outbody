@@ -56,18 +56,14 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  //유저 정보 수정
+  // 내 정보 수정
   async updateUser(
     userId: number,
     imgUrl: string,
-    comment: string,
-    refreshToken: string,
-    birthday: string,
+    birthday: string | Date,
+    description: string,
   ) {
-    await this.update(
-      { id: userId },
-      { imgUrl, comment, refreshToken, birthday },
-    );
+    await this.update({ id: userId }, { imgUrl, birthday, description });
 
     const result = await this.findOne({ where: { id: userId } });
     return result;

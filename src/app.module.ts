@@ -23,6 +23,7 @@ import { BlackListModule } from './blacklists/blacklists.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { RankingsModule } from './rankings/rankings.module';
+import { AwsService } from './aws.service';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import { RankingsModule } from './rankings/rankings.module';
     RankingsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AwsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

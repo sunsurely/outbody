@@ -1,4 +1,3 @@
-import { IsDateString } from 'class-validator';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import {
@@ -16,13 +15,15 @@ import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { BlackListRepository } from 'src/blacklists/repository/blacklist.repository';
 import { FollowsRepository } from 'src/follows/repositories/follows.repository';
-import { User } from '../entities/user.entity';
 import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
+import { AwsService } from '../../aws.service';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
+    private readonly awsService: AwsService,
     private readonly usersRepository: UserRepository,
     private readonly blacklistRepository: BlackListRepository,
     private readonly followRepository: FollowsRepository,
@@ -35,7 +36,7 @@ export class UserService {
     const existUser = await this.usersRepository.getUserByEmail(email);
 
     if (existUser) {
-      throw new ConflictException('이미 존재하는 유저입니다.');
+      throw new ConflictException('이미 존재하는 계정입니다.');
     }
 
     const existBlackList = await this.blacklistRepository.getBlacklistByEmail(
@@ -44,7 +45,7 @@ export class UserService {
 
     if (existBlackList) {
       throw new NotAcceptableException(
-        '영구삭제된 계정입니다. 해당 이메일은 아이디로 사용할 수 없습니다.',
+        '영구삭제된 계정입니다. 해당 계정(e-mail)은 사용할 수 없습니다.',
       );
     }
 
@@ -70,7 +71,7 @@ export class UserService {
   }
 
   // 내정보 + follow정보 조회
-  async getUserInfo(user) {
+  async getUserInfo(user: User) {
     const { password, provider, updatedAt, deletedAt, refreshToken, ...rest } =
       user;
 
@@ -98,27 +99,19 @@ export class UserService {
     return { rest, followersInfo };
   }
 
-  //유저 정보 수정
-  async updateUser(userId: number, userDto: UserUpdateDto) {
-    const { imgUrl, comment, birthday } = userDto;
+  // 내 정보 수정 (재용 수정)
+  async updateUser(user: User, body: UserUpdateDto, file: Express.Multer.File) {
+    const { birthday, description } = body;
 
-    const newRefreshToken = this.jwtService.sign({ userId });
+    const imageObject = await this.awsService.uploadImage('outbody_user', file);
 
-    const updateUser = await this.usersRepository.updateUser(
-      userId,
-      imgUrl,
-      comment,
-      newRefreshToken,
-      birthday,
+    const result = await this.usersRepository.updateUser(
+      user.id,
+      imageObject.key || user.imgUrl,
+      birthday || user.birthday,
+      description || user.description,
     );
-
-    const { password, updatedAt, deletedAt, provider, refreshToken, ...rest } =
-      updateUser;
-    if (!updateUser) {
-      throw new NotImplementedException('업데이트에 실패했습니다');
-    }
-
-    return { rest, newRefreshToken };
+    return result;
   }
 
   // 유저 password수정

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
 import { Post } from '../entities/post.entity';
+import { CreatePostDto } from '../dto/create-post.dto';
 
 @Injectable()
 export class PostsRepository extends Repository<Post> {
@@ -9,21 +10,9 @@ export class PostsRepository extends Repository<Post> {
   }
 
   // 오운완 인증 게시글 생성
-  async createPost(
-    description: string,
-    imgUrl: string,
-    challengeId: number,
-    userId: number,
-  ): Promise<Post> {
-    const newPost = await this.create({
-      description,
-      imgUrl,
-      challengeId,
-      userId,
-    });
-    await this.save(newPost);
-
-    return newPost;
+  async createPost(Post: CreatePostDto): Promise<Post> {
+    const newPost = await this.create(Post);
+    return await this.save(newPost);
   }
 
   // 오늘 게시글을 올렸는지 확인
@@ -41,40 +30,26 @@ export class PostsRepository extends Repository<Post> {
     return count > 0;
   }
 
-  // 오운완 전체 조회
+  // 오운완 전체 조회 (재용 수정)
   async getAllPost(
     challengeId: number,
     page: number,
     pageSize: number,
-  ): Promise<
-    { imgUrl: string; description: string; username: string; comment: string }[]
-  > {
-    const allPost = await this.find({
+  ): Promise<Post[]> {
+    const allPosts = await this.find({
       where: { challengeId },
       select: [
+        'id',
         'challengeId',
         'userId',
-        'id',
-        'description',
         'imgUrl',
+        'description',
         'createdAt',
       ],
       order: { createdAt: 'DESC' },
       relations: ['user'],
       skip: (page - 1) * pageSize,
       take: pageSize,
-    });
-
-    const allPosts = allPost.map((post) => {
-      return {
-        id: post.id,
-        userId: post.userId,
-        imgUrl: post.imgUrl,
-        description: post.description,
-        username: post.user.name,
-        comment: post.user.comment,
-        userImg: post.user.imgUrl,
-      };
     });
     return allPosts;
   }
@@ -113,7 +88,7 @@ export class PostsRepository extends Repository<Post> {
     return deletePost;
   }
 
-  // 유저가 생성한 오운완 수+목록조회
+  // 유저가 생성한 오운완 수 + 목록조회
   async getUserPosts(userId: number): Promise<[Post[], number]> {
     return await this.findAndCount({
       where: { userId },

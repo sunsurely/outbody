@@ -4,38 +4,69 @@ import {
   Injectable,
   NotAcceptableException,
 } from '@nestjs/common';
-import { CreatePostDto } from '../dto/create-post.dto';
+import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
+import { AwsService } from '../../aws.service';
 import { Post } from '../entities/post.entity';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly postsRepository: PostsRepository) {}
+  constructor(
+    private readonly awsService: AwsService,
+    private readonly postsRepository: PostsRepository,
+  ) {}
 
   // 오운완 인증 게시글 생성
-  async createPost(post: CreatePostDto, challengeId: number, userId: number) {
-    const { description, imgUrl } = post;
+  async createPost(
+    challengeId: number,
+    post: CreatePostRequestDto,
+    userId: number,
+    file: Express.Multer.File,
+  ) {
+    const { description } = post;
     // 오늘 게시글을 올렸는지 확인
     const existTodayPost = await this.postsRepository.existTodayPost(userId);
 
     if (existTodayPost) {
-      throw new ConflictException('하루에 한 번만 게시글을 올릴 수 있습니다.');
+      throw new ConflictException(
+        '오운완 인증 게시글은 하루에 한 번만 올릴 수 있습니다.',
+      );
     }
-    if (!post.description) {
+    if (!description) {
       throw new BadRequestException('내용을 입력해주세요.');
     }
 
-    await this.postsRepository.createPost(
-      description,
-      imgUrl,
+    const imageObject = await this.awsService.uploadImage('outbody_post', file);
+
+    await this.postsRepository.createPost({
       challengeId,
       userId,
-    );
+      imgUrl: imageObject.key,
+      description,
+    });
   }
 
   // 오운완 전체 조회
   async getAllPost(challengeId: number, page: number, pageSize: number) {
-    return await this.postsRepository.getAllPost(challengeId, page, pageSize);
+    const posts = await this.postsRepository.getAllPost(
+      challengeId,
+      page,
+      pageSize,
+    );
+
+    const result = posts.map((post) => {
+      const postObject = {
+        id: post.id,
+        userId: post.userId,
+        imgUrl: post.imgUrl,
+        description: post.description,
+        userName: post.user.name,
+        userImageUrl: post.user.imgUrl,
+      };
+      console.log(postObject);
+      return postObject;
+    });
+    return result;
   }
 
   // 오운완 상세 조회
