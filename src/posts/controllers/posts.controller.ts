@@ -7,9 +7,12 @@ import {
   Delete,
   Req,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
-import { CreatePostDto } from '../dto/create-post.dto';
+import { CreatePostRequestDto } from '../dto/create-post.request.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('challenge')
 export class PostsController {
@@ -18,12 +21,19 @@ export class PostsController {
   // 오운완 인증 게시글 생성
   // http://localhost:3000/challenge/:challengeId/post
   @Post('/:challengeId/post')
+  @UseInterceptors(FileInterceptor('image'))
   async createPost(
-    @Body() post: CreatePostDto,
     @Param('challengeId') challengeId: number,
+    @Body() body: CreatePostRequestDto,
     @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.postsService.createPost(post, challengeId, req.user.id);
+    return await this.postsService.createPost(
+      challengeId,
+      body,
+      req.user.id,
+      file,
+    );
   }
 
   // 오운완 전체 조회

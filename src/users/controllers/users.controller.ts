@@ -8,9 +8,10 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
   Query,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
 import { UserService } from '../services/users.service';
@@ -18,6 +19,7 @@ import { UserUpdateDto } from '../dto/users.update.dto';
 import { UserPasswordDto } from '../dto/password.update.dto';
 import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -57,10 +59,14 @@ export class UserController {
   // 내 정보 수정
   // PATCH http://localhost:3000/user/me
   @Patch('/me')
-  async updateUser(@Body() userDto: UserUpdateDto, @Req() req: any) {
-    const userId = req.user.id;
-
-    return await this.userService.updateUser(userId, userDto);
+  @UseInterceptors(FileInterceptor('image'))
+  async updateUser(
+    @Body() body: UserUpdateDto,
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(body.birthday, body.description);
+    return await this.userService.updateUser(req.user, body, file);
   }
 
   // 유저 password수정
