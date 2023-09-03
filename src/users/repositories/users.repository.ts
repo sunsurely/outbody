@@ -15,14 +15,12 @@ export class UserRepository extends Repository<User> {
     email: string,
     password: string,
     gender: string,
-    status: string,
   ): Promise<User> {
     const newUser = this.create({
       name,
       email,
       password,
       gender: gender as Gender,
-      status: status as Status,
     });
     return await this.save(newUser);
   }
