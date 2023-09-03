@@ -71,8 +71,7 @@ export class UserService {
 
   // 내정보 + follow정보 조회
   async getUserInfo(user: User) {
-    const { password, provider, updatedAt, deletedAt, refreshToken, ...rest } =
-      user;
+    const { ...rest } = user;
 
     const follow = await this.followRepository.getUsersFollow(user.id);
     if (!follow) {
