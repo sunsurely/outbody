@@ -105,7 +105,7 @@ export class UserService {
       ? (await this.awsService.uploadImage('outbody_user', file)).key
       : user.imgUrl;
 
-    if (imageUrl) {
+    if (imageUrl && user.imgUrl !== null) {
       await this.awsService.deleteImage(user.imgUrl);
     }
 
