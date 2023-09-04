@@ -5,9 +5,9 @@ import { RankingsService } from '../services/rankings.service';
 export class RankingsController {
   constructor(private readonly rankingsService: RankingsService) {}
 
-  // 전체 순위 조회
-  // GET http://localhost:3000/rank/total
-  @Get('/total')
+  // 전체 순위 조회 pageSize개씩 조회
+  // GET http://localhost:3000/rank/total/?page=page&pageSize=pageSize
+  @Get('/total/page')
   async getTotalRank(
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
@@ -15,9 +15,9 @@ export class RankingsController {
     return await this.rankingsService.getTotalRank(page, pageSize);
   }
 
-  // 친구 순위 조회
-  // GET http://localhost:3000/rank/followings
-  @Get('/followings')
+  // 친구 순위 조회 pageSize개씩 조회
+  // GET http://localhost:3000/rank/followings/?page=page&pageSize=pageSize
+  @Get('/followings/page')
   async getFollowingRank(
     @Req() req: any,
     @Query('page') page: number,

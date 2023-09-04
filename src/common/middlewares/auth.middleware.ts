@@ -17,7 +17,7 @@ export class AuthMiddleware implements NestMiddleware {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      throw new UnauthorizedException('JWT not found');
+      throw new UnauthorizedException('로그인이 필요한 기능입니다.');
     }
 
     let token: string;
@@ -26,7 +26,7 @@ export class AuthMiddleware implements NestMiddleware {
       const decodedToken = await this.jwtService.verify(token);
 
       if (!decodedToken || !decodedToken.id) {
-        throw new UnauthorizedException(`Invalid JWT: ${decodedToken}`);
+        throw new UnauthorizedException('로그인이 필요한 기능입니다.');
       }
       const user = await this.userRepository.findOne({
         where: { id: decodedToken.id },
@@ -36,7 +36,7 @@ export class AuthMiddleware implements NestMiddleware {
 
       next();
     } catch (err) {
-      throw new UnauthorizedException(`Invalid JWT: ${token}`);
+      throw new UnauthorizedException('로그인이 필요한 기능입니다.');
     }
   }
 }
