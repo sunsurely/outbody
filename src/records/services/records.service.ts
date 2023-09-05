@@ -93,7 +93,12 @@ export class RecordsService {
       years,
       user.gender,
     );
-    const avgDatas = {};
+    const avgDatas: { avgWgt: number; avgFat: number; avgMus: number } = {
+      avgWgt: 0,
+      avgFat: 0,
+      avgMus: 0,
+    };
+
     if (sameUsers.length > 0) {
       const ids = sameUsers.map((y) => y.id);
       const records = await this.recordsRepository.getRecordForAverage(ids);
@@ -118,10 +123,12 @@ export class RecordsService {
         totalMus += rec.muscle;
       }
 
-      const avgWgt = (totalWgt / totalNum).toFixed(1);
-      const avgFat = (totalFat / totalNum).toFixed(1);
-      const avgMus = (totalMus / totalNum).toFixed(1);
-      const avgDatas = { avgWgt, avgFat, avgMus };
+      const avgWgt = parseInt((totalWgt / totalNum).toFixed(1));
+      const avgFat = parseInt((totalFat / totalNum).toFixed(1));
+      const avgMus = parseInt((totalMus / totalNum).toFixed(1));
+      avgDatas.avgWgt = avgWgt;
+      avgDatas.avgFat = avgFat;
+      avgDatas.avgMus = avgMus;
     }
 
     const { weight, muscle, height, fat } = recentRecords;
