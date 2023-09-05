@@ -9,12 +9,14 @@ import { PostsRepository } from '../repositories/posts.repository';
 import { AwsService } from '../../aws.service';
 import { Post } from '../entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
+import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly awsService: AwsService,
     private readonly postsRepository: PostsRepository,
+    private readonly challengersRepository: ChallengersRepository,
   ) {}
 
   // 오운완 인증 게시글 생성
@@ -25,6 +27,17 @@ export class PostsService {
     file: Express.Multer.File,
   ) {
     const { description } = post;
+
+    const isInThisChallenge = await this.challengersRepository.getChallenger(
+      challengeId,
+      userId,
+    );
+    if (!isInThisChallenge) {
+      throw new BadRequestException(
+        '도전에 참가한 회원만 오운완 인증 게시글을 작성할 수 있습니다.',
+      );
+    }
+
     // 오늘 게시글을 올렸는지 확인
     const existTodayPost = await this.postsRepository.existTodayPost(userId);
 
@@ -63,6 +76,7 @@ export class PostsService {
         description: post.description,
         userName: post.user.name,
         userImageUrl: post.user.imgUrl,
+        userPoint: post.user.point,
       };
       console.log(postObject);
       return postObject;

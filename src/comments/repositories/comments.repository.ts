@@ -57,11 +57,12 @@ export class CommentsRepository extends Repository<Comment> {
     commentId: number,
     comment: string,
   ): Promise<Comment> {
-    const updateComment = await this.update(
+    const updatedComment = await this.update(
       { challengeId, postId, id: commentId },
       { comment },
     );
-    return updateComment.raw[0];
+    console.log(updatedComment.raw[0]);
+    return updatedComment.raw[0];
   }
 
   // 댓글 유무 조회
