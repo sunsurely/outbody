@@ -26,7 +26,7 @@ Out Body는 체성분 측정기록 기반 SNS 웹어플리케이션으로써, �
 - Admin과 User를 분리, 관리자(Admin)권한 유저 블랙리스트 추가 및 조회기능
 - 유저의 프로필 페이지에서 프로필 및 유저의 친구 목록, 도전 목록 확인
 - 카카오 소셜 로그인 기능
-<br>
+  <br>
 
 ## 😊팀원 소개
 
@@ -34,10 +34,10 @@ Out Body는 체성분 측정기록 기반 SNS 웹어플리케이션으로써, �
 
   - 팀명 : 와일드 바디 (Wild Body)
   - 김필선(팀장)([https://github.com/sunsurely](https://github.com/sunsurely))
-  - 김재용(부팀장)([https://github.com/kme-developer](https://github.com/kme-developer))
+  - 김재용(부팀장)([https://github.com/mr-olympia-jay](https://github.com/mr-olympia-jay))
   - 이상우([https://github.com/sangwoorhie](https://github.com/sangwoorhie))
   - 이연오([https://github.com/yeonoh0101](https://github.com/yeonoh0101))
-<br>
+    <br>
 
 ## ⚒️Project Architecture
 
@@ -49,7 +49,7 @@ Out Body는 체성분 측정기록 기반 SNS 웹어플리케이션으로써, �
 ## 🖋️Tech Stack
 
 |   components   |       Tech Stack        |
-| :------------: | :---------------------: | 
+| :------------: | :---------------------: |
 |    Language    | Javascript (Typescript) |
 |   FrameWork    |         Nest.js         |
 |    DataBase    |     MySQL / typeORM     |
@@ -75,7 +75,7 @@ Out Body는 체성분 측정기록 기반 SNS 웹어플리케이션으로써, �
 - API : [https://outbody.gitbook.io/api/](https://outbody.gitbook.io/api/)
 
 - 와이어프레임 초안: [https://www.figma.com/file/qAE9NkLOg2pumVLtpecMgw/Untitled?type=design&node-id=0-1&mode=design&t=wFHCpcB3j7KMbisg-0](https://www.figma.com/file/qAE9NkLOg2pumVLtpecMgw/Untitled?type=design&node-id=0-1&mode=design&t=wFHCpcB3j7KMbisg-0)
-<br>
+  <br>
 
 ## ✍️GITHUB
 

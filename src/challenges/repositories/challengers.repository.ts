@@ -35,6 +35,7 @@ export class ChallengersRepository extends Repository<Challenger> {
     return challenger;
   }
 
+  // 전체 도전 내 도전자 상세 조회
   async getChallengerWithUserId(userId) {
     const challenger = await this.findOne({
       where: { userId, done: false },

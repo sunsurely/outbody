@@ -1,20 +1,24 @@
+import { ChallengesRepository } from './../../challenges/repositories/challenges.repository';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
 import { AwsService } from '../../aws.service';
 import { Post } from '../entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
+import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly awsService: AwsService,
     private readonly postsRepository: PostsRepository,
+    private readonly challengersRepository: ChallengersRepository,
   ) {}
 
   // 오운완 인증 게시글 생성
@@ -25,6 +29,17 @@ export class PostsService {
     file: Express.Multer.File,
   ) {
     const { description } = post;
+
+    const isInThisChallenge = await this.challengersRepository.getChallenger(
+      challengeId,
+      userId,
+    );
+    if (!isInThisChallenge) {
+      throw new BadRequestException(
+        '도전에 참가한 회원만 오운완 인증 게시글을 작성할 수 있습니다.',
+      );
+    }
+
     // 오늘 게시글을 올렸는지 확인
     const existTodayPost = await this.postsRepository.existTodayPost(userId);
 
@@ -63,6 +78,7 @@ export class PostsService {
         description: post.description,
         userName: post.user.name,
         userImageUrl: post.user.imgUrl,
+        userPoint: post.user.point,
       };
       console.log(postObject);
       return postObject;
@@ -93,5 +109,18 @@ export class PostsService {
   // 유저가 생성한 오운완수 + 오운완목록조회
   async getUserPosts(userId: number): Promise<[Post[], number]> {
     return this.postsRepository.getUserPosts(userId);
+  }
+
+  // 모든 도전의 모든 오운완 불러오기 (비공개도전 제외)
+  async getPublicPosts(userId: number, page, pageSize) {
+    const allPosts = await this.postsRepository.getPublicPosts();
+
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(allPosts.length / pageSize);
+
+    const pageinatedTotalPosts = allPosts.slice(startIndex, endIndex);
+
+    return { totalPages, pageinatedTotalPosts };
   }
 }
