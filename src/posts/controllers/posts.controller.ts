@@ -82,4 +82,11 @@ export class PostsController {
       usersPosts: usersPosts,
     };
   }
+
+  // 모든 도전의 모든 오운완 조회 (비공개도전 제외)
+  // http://localhost:3000/challenge/post/allpost
+  @Get('/post/allpost')
+  async getPublicPosts() {
+    return await this.postsService.getPublicPosts();
+  }
 }

@@ -1,8 +1,10 @@
+import { ChallengesRepository } from './../../challenges/repositories/challenges.repository';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
@@ -15,6 +17,7 @@ export class PostsService {
   constructor(
     private readonly awsService: AwsService,
     private readonly postsRepository: PostsRepository,
+    private readonly challengesRepository: ChallengesRepository,
   ) {}
 
   // 오운완 인증 게시글 생성
@@ -93,5 +96,10 @@ export class PostsService {
   // 유저가 생성한 오운완수 + 오운완목록조회
   async getUserPosts(userId: number): Promise<[Post[], number]> {
     return this.postsRepository.getUserPosts(userId);
+  }
+
+  // 모든 도전의 모든 오운완 불러오기 (비공개도전 제외)
+  async getPublicPosts() {
+    return this.postsRepository.getPublicPosts();
   }
 }
