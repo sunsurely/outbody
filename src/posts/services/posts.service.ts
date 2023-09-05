@@ -112,7 +112,15 @@ export class PostsService {
   }
 
   // 모든 도전의 모든 오운완 불러오기 (비공개도전 제외)
-  async getPublicPosts() {
-    return this.postsRepository.getPublicPosts();
+  async getPublicPosts(userId: number, page, pageSize) {
+    const allPosts = await this.postsRepository.getPublicPosts();
+
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(allPosts.length / pageSize);
+
+    const pageinatedTotalPosts = allPosts.slice(startIndex, endIndex);
+
+    return { totalPages, pageinatedTotalPosts };
   }
 }
