@@ -85,8 +85,8 @@ export class PostsController {
 
   // 모든 도전의 모든 오운완 조회 (비공개도전 제외)
   // http://localhost:3000/challenge/post/allpost
-  // http://localhost:3000/challenge/post/?page=page&pageSize=pageSize
-  @Get('/post/allpost')
+  // http://localhost:3000/challenge/post/page/?page=page&pageSize=pageSize
+  @Get('/post/page')
   async getPublicPosts(
     @Req() req: any,
     @Query('page') page: number,
