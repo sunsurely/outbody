@@ -148,10 +148,10 @@ export class ChallengesService {
         userNumberLimit: challenge.userNumberLimit,
         publicView: challenge.publicView,
         entryPoint: challenge.entryPoint,
-        goalAttend: goal.attend,
-        goalWeight: goal.weight,
-        goalMuscle: goal.muscle,
-        goalFat: goal.fat,
+        // goalAttend: goal.attend,
+        // goalWeight: goal.weight,
+        // goalMuscle: goal.muscle,
+        // goalFat: goal.fat,
         hostName: user.name,
         hostImageUrl: user.imgUrl,
       };
@@ -190,10 +190,10 @@ export class ChallengesService {
       userNumber: userNumber,
       userNumberLimit: challenge.userNumberLimit,
       entryPoint: challenge.entryPoint,
-      // goalAttend: goal.attend,
-      // goalWeight: goal.weight,
-      // goalMuscle: goal.muscle,
-      // goalFat: goal.fat,
+      goalAttend: goal.attend,
+      goalWeight: goal.weight,
+      goalMuscle: goal.muscle,
+      goalFat: goal.fat,
       userName: user.name,
       userPoint: user.point,
       userImageUrl: user.imgUrl,
@@ -433,6 +433,7 @@ export class ChallengesService {
         email: user.email,
         message,
         name: user.name,
+        challengeId,
       });
     return newInvitation;
   }

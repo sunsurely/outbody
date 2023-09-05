@@ -8,6 +8,8 @@ import {
   Param,
   Req,
   Query,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -98,7 +100,11 @@ export class ChallengesController {
   // POST http://localhost:3000/challenge/:id/invite
   @Post('/:challengeId/invite')
   async inviteChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Body() body: InviteChallengeDto,
     @Req() req: any,
   ) {
@@ -120,7 +126,11 @@ export class ChallengesController {
   // POST http://localhost:3000/challenge/:id/accept
   @Post('/:userId/accept')
   async acceptChallenge(
-    @Param('userId') userId: number,
+    @Param(
+      'userId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    userId: number,
     @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {

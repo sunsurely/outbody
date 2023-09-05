@@ -9,9 +9,7 @@ export class InviteChallengesRepository extends Repository<InviteChallenge> {
     super(InviteChallenge, dataSource.createEntityManager());
   }
 
-  async createInvitation(
-    NewInvitation: CreateInviteChallengeDto,
-  ): Promise<InviteChallenge> {
+  async createInvitation(NewInvitation): Promise<any> {
     const newInvitation = await this.create(NewInvitation);
     return await this.save(newInvitation);
   }

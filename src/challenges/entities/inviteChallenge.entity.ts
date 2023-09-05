@@ -9,7 +9,7 @@ import {
 
 @Entity({ schema: 'outbody', name: 'invitechallengies' })
 export class InviteChallenge {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'inviteChallenge' })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('int')
@@ -26,6 +26,9 @@ export class InviteChallenge {
 
   @Column('varchar')
   message: string;
+
+  @Column('int')
+  challengeId: number;
 
   @CreateDateColumn()
   createdAt: Date;
