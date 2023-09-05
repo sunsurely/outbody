@@ -17,6 +17,7 @@ import { FollowsRepository } from 'src/follows/repositories/follows.repository';
 import { JwtRefreshStrategy } from './strategies/refreshToken.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { AwsService } from 'src/aws.service';
+import { ChallengesModule } from 'src/challenges/challenges.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AwsService } from 'src/aws.service';
       inject: [ConfigService],
     }),
     forwardRef(() => UsersModule),
+    ChallengesModule,
   ],
   controllers: [AuthController],
   providers: [

@@ -19,6 +19,7 @@ import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
 import { AwsService } from '../../aws.service';
 import { User } from '../entities/user.entity';
+import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,7 @@ export class UserService {
     private readonly blacklistRepository: BlackListRepository,
     private readonly followRepository: FollowsRepository,
     private readonly jwtService: JwtService,
+    private readonly challengerRepository: ChallengersRepository,
   ) {}
 
   //회원가입  , 블랙리스트에 있을 시 가입불가
@@ -71,7 +73,15 @@ export class UserService {
 
   // 내정보 + follow정보 조회
   async getUserInfo(user: User) {
-    const { ...rest } = user;
+    const {
+      deletedAt,
+      password,
+      provider,
+      refreshToken,
+      updatedAt,
+      status,
+      ...rest
+    } = user;
 
     const follow = await this.followRepository.getUsersFollow(user.id);
     if (!follow) {
@@ -79,6 +89,9 @@ export class UserService {
     }
 
     const allUsersRanked = await this.usersRepository.getAllUsersForRank();
+    const challenger = await this.challengerRepository.getChallengerWithUserId(
+      user.id,
+    );
 
     const followersInfo = follow.map((follower) => {
       const ranking =
@@ -94,7 +107,7 @@ export class UserService {
         ranking: ranking,
       };
     });
-    return { rest, followersInfo };
+    return { rest, followersInfo, challengeId: challenger.challengeId };
   }
 
   // 내 정보 수정 (재용 수정)
