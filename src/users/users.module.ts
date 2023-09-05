@@ -17,6 +17,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { AwsService } from 'src/aws.service';
 import { AuthsModule } from 'src/auth/auth.module';
+import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AuthsModule } from 'src/auth/auth.module';
     AuthService,
     AuthMiddleware,
     AwsService,
+    ChallengersRepository,
   ],
 })
 export class UsersModule {}

@@ -11,7 +11,7 @@ export class RankingsService {
     if (!totalRanks || totalRanks.length <= 0) {
       throw new NotFoundException('데이터가 존재하지 않습니다.');
     }
-    console.log('totalRanks', totalRanks);
+
     const startIndex = (page - 1) * pageSize;
     const endIndex = page * pageSize;
     const totalPages = Math.ceil(totalRanks.length / pageSize);

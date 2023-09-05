@@ -1,8 +1,10 @@
+import { ChallengesRepository } from './../../challenges/repositories/challenges.repository';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
@@ -107,5 +109,18 @@ export class PostsService {
   // 유저가 생성한 오운완수 + 오운완목록조회
   async getUserPosts(userId: number): Promise<[Post[], number]> {
     return this.postsRepository.getUserPosts(userId);
+  }
+
+  // 모든 도전의 모든 오운완 불러오기 (비공개도전 제외)
+  async getPublicPosts(userId: number, page, pageSize) {
+    const allPosts = await this.postsRepository.getPublicPosts();
+
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(allPosts.length / pageSize);
+
+    const pageinatedTotalPosts = allPosts.slice(startIndex, endIndex);
+
+    return { totalPages, pageinatedTotalPosts };
   }
 }
