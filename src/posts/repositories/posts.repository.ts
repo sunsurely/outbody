@@ -102,6 +102,7 @@ export class PostsRepository extends Repository<Post> {
   async getPublicPosts(): Promise<Post[]> {
     return await this.createQueryBuilder('post')
       .innerJoin('post.challenges', 'challenge')
+      .innerJoin('post.user', 'user')
       .where('challenge.publicView = :publicView', { publicView: true })
       .orderBy('post.createdAt', 'DESC')
       .select([
@@ -110,6 +111,9 @@ export class PostsRepository extends Repository<Post> {
         'post.description',
         'post.createdAt',
         'post.userId',
+        'user.name',
+        'user.point',
+        'challenge.id',
       ])
       .getMany();
   }
