@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Req,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { CommentsService } from '../services/comments.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -21,8 +23,16 @@ export class CommentsController {
   @Post('/:challengeId/post/:postId/comment')
   async createComment(
     @Body() createCmt: CreateCommentDto,
-    @Param('challengeId') challengeId: number,
-    @Param('postId') postId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
     @Req() req: any,
   ) {
     return await this.commentsService.createComment(
@@ -37,8 +47,16 @@ export class CommentsController {
   // http://localhost:3000/challenge/:challengeId/post/:postId/comment
   @Get('/:challengeId/post/:postId/comment')
   async getComment(
-    @Param('challengeId') challengeId: number,
-    @Param('postId') postId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
   ) {
     return await this.commentsService.getComment(challengeId, postId);
   }
@@ -47,9 +65,21 @@ export class CommentsController {
   // http://localhost:3000/challenge/:challengeId/post/:postId/comment/:commentId
   @Patch('/:challengeId/post/:postId/comment/:commentId')
   async updateComment(
-    @Param('challengeId') challengeId: number,
-    @Param('postId') postId: number,
-    @Param('commentId') commentId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
+    @Param(
+      'commentId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    commentId: number,
     @Req() req: any,
     @Body() updateCmt: UpdateCommentDto,
   ) {
@@ -66,9 +96,21 @@ export class CommentsController {
   // http://localhost:3000/challenge/:challengeId/post/:postId/comment/:commentId
   @Delete('/:challengeId/post/:postId/comment/:commentId')
   async deleteComment(
-    @Param('challengeId') challengeId: number,
-    @Param('postId') postId: number,
-    @Param('commentId') commentId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
+    @Param(
+      'commentId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    commentId: number,
     @Req() req: any,
   ) {
     return await this.commentsService.deleteComment(
