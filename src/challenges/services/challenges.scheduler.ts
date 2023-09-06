@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Between, DataSource, LessThanOrEqual } from 'typeorm';
+import { Between, DataSource, LessThanOrEqual, Repository } from 'typeorm';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
@@ -10,6 +10,8 @@ import { User } from 'src/users/entities/user.entity';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Notification } from '../entities/notification.entity';
 
 @Injectable()
 export class ChallengeScheduler {
@@ -22,7 +24,41 @@ export class ChallengeScheduler {
     private readonly goalRepository: GoalsRepository,
     private readonly recordRepository: RecordsRepository,
     private readonly postRepository: PostsRepository,
+    @InjectRepository(Notification)
+    private notificationRepository: Repository<Notification>,
   ) {}
+
+  //도전시작 로그 생성
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async createStartLog() {
+    const challengesStarted = await this.challengesRepository.find({
+      where: {
+        startDate: LessThanOrEqual(new Date()),
+        isDistributed: false,
+      },
+    });
+
+    for (const challenge of challengesStarted) {
+      const challengerCount =
+        await this.challengersRepository.getChallengerCount(challenge.id);
+
+      if (challengerCount > 1) {
+        const challengers = await this.challengersRepository.getChallengers(
+          challenge.id,
+        );
+
+        const message = '도전이 시작되었습니다.';
+
+        for (const challenger of challengers) {
+          const newNotification = await this.notificationRepository.create({
+            userId: challenger.userId,
+            message,
+          });
+          await this.notificationRepository.save(newNotification);
+        }
+      }
+    }
+  }
 
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -39,6 +75,21 @@ export class ChallengeScheduler {
         await this.challengersRepository.getChallengerCount(challenge.id);
 
       if (challengerCount === 1) {
+        const challengers = await this.challengersRepository.getChallengers(
+          challenge.id,
+        );
+
+        const message =
+          '도전 시작일이 경과되었으나 참가자가 없어서, 회원님의 도전이 삭제되었습니다.';
+
+        for (const challenger of challengers) {
+          const newNotification = await this.notificationRepository.create({
+            userId: challenger.userId,
+            message,
+          });
+          await this.notificationRepository.save(newNotification);
+        }
+
         const host = await this.challengersRepository.getHost(challenge.id);
 
         // isInChallenge: true => false
@@ -126,6 +177,14 @@ export class ChallengeScheduler {
           await this.transaction(user, challenge, afterUserPoint);
         }
       }
+      const message = '도전이 종료되어 포인트가 분배되었습니다.';
+      for (const challenger of challengers) {
+        const newNotification = await this.notificationRepository.create({
+          userId: challenger.userId,
+          message,
+        });
+        await this.notificationRepository.save(newNotification);
+      }
     }
   }
 
@@ -188,6 +247,15 @@ export class ChallengeScheduler {
         const afterPoint = user.point - 20;
         await this.userRepository.updateUserPoint(user.id, afterPoint);
 
+        const message =
+          '2주일 동안 도전에 참여하지 않아 20포인트가 차감됩니다.';
+        const newNotification = await this.notificationRepository.create({
+          userId: user.id,
+          message,
+        });
+
+        await this.notificationRepository.save(newNotification);
+
         this.logger.debug(
           `${user.id}번 회원은 2주일 동안 어떠한 도전에도 참여하지 않아, 점수가 20점 차감되었습니다.`,
         );
@@ -243,12 +311,26 @@ export class ChallengeScheduler {
               { userId: challenger.userId },
               { done: true },
             );
+            const message = '도전에 성공하였습니다.';
+            const newNotification = await this.notificationRepository.create({
+              userId: challenger.userId,
+              message,
+            });
+
+            await this.notificationRepository.save(newNotification);
 
             this.logger.debug(
               `${challenge.id}번 도전의 성공 여부가 갱신되었습니다.`,
             );
             await queryRunner.commitTransaction();
           }
+
+          const message = '도전에 실패하였습니다.';
+          const newNotification = await this.notificationRepository.create({
+            userId: challenger.userId,
+            message,
+          });
+          await this.notificationRepository.save(newNotification);
         }
       } catch (error) {
         await queryRunner.rollbackTransaction();

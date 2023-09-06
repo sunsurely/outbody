@@ -160,4 +160,11 @@ export class ChallengesController {
   ) {
     return await this.challengesService.acceptChallenge(userId, body, req.user);
   }
+
+  // 도전 로그 조회
+  // GET http://localhost:3000/challenge/message/log
+  @Get('/message/log')
+  async getChallengeLogs(@Req() req: any) {
+    return await this.challengesService.getChallengeLogs(req.user.id);
+  }
 }

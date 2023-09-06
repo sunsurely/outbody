@@ -93,6 +93,7 @@ export class RecordsService {
       throw new NotFoundException('등록된 데이터가 없습니다.');
     }
     const years = new Date(user.birthday).getFullYear();
+
     const sameUsers = await this.userRepository.getUsersForAverage(
       years,
       user.gender,
