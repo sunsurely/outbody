@@ -15,9 +15,11 @@ import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 import { Point, Position } from '../challengerInfo';
 import { User } from 'src/users/entities/user.entity';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
 import { Challenge } from '../entities/challenge.entity';
+import { Notification } from '../entities/notification.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ChallengesService {
@@ -29,6 +31,8 @@ export class ChallengesService {
     private readonly followsRepository: FollowsRepository,
     private readonly recordsRepository: RecordsRepository,
     private readonly inviteChallengesRepository: InviteChallengesRepository,
+    @InjectRepository(Notification)
+    private notificationRepository: Repository<Notification>,
     private dataSource: DataSource,
   ) {}
 
@@ -509,5 +513,14 @@ export class ChallengesService {
       .getMany();
 
     return userChallenges;
+  }
+
+  async getChallengeLogs(userId: number) {
+    const logs = await this.notificationRepository.find({ where: { userId } });
+    if (!logs || logs.length <= 0) {
+      throw new NotFoundException('챌린지 로그가 존재하지 않습니다.');
+    }
+
+    return logs;
   }
 }

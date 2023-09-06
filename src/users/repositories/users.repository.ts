@@ -135,7 +135,6 @@ export class UserRepository extends Repository<User> {
       .where('YEAR(user.birthday) = :years', { years })
       .andWhere('user.gender = :gender', { gender })
       .getMany();
-
     return result;
   }
 }
