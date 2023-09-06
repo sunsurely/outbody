@@ -14,6 +14,7 @@ import { Like } from 'src/likes/entities/like.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { FollowMessage } from 'src/follows/entities/followMessage.entity';
 import { InviteChallenge } from 'src/challenges/entities/inviteChallenge.entity';
+import { Notification } from 'src/challenges/entities/notification.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -41,6 +42,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         Comment,
         FollowMessage,
         InviteChallenge,
+        Notification,
       ],
       synchronize: true,
       // logging: true,
