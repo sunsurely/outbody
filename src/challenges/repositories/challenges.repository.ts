@@ -16,18 +16,18 @@ export class ChallengesRepository extends Repository<Challenge> {
   }
 
   // 전체 도전 목록 조회
-  async getAllChallenges(): Promise<Challenge[]> {
-    const challenges = await this.createQueryBuilder('challenge')
+  async getAllChallengesCount(): Promise<number> {
+    const allChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
       .where('challenge.userId = user.id')
       .andWhere('user.deletedAt IS NULL')
-      .getMany();
-    return challenges;
+      .getCount();
+    return allChallengesCount;
   }
 
   // 전체 도전 목록 조회 (pagenation)
-  async getPageChallenges(page): Promise<Challenge[]> {
-    const challenges = await this.createQueryBuilder('challenge')
+  async getAllChallenges(page: number): Promise<Challenge[]> {
+    const allChallenges = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
       .where('challenge.userId = user.id')
       .andWhere('user.deletedAt IS NULL')
@@ -35,29 +35,60 @@ export class ChallengesRepository extends Repository<Challenge> {
       .skip((page - 1) * 10)
       .take(10)
       .getMany();
-    return challenges;
+    return allChallenges;
   }
 
   // 참여 가능한 도전 목록 조회
-  async getPossibleChallenges(userPoint): Promise<Challenge[]> {
-    const challenges = await this.createQueryBuilder('challenge')
+  async getPossibleChallengesCount(userPoint: number): Promise<number> {
+    const possibleChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
       .where('challenge.userId = user.id')
       .andWhere('user.deletedAt IS NULL')
-      .where('challenge.startDate > :today', { today: new Date() })
-      .where('challenge.publicView = true')
-      .where('challenge.entryPoint <= :userPoint', { userPoint })
+      .andWhere('challenge.startDate > :today', { today: new Date() })
+      .andWhere('challenge.publicView = true')
+      .andWhere('challenge.entryPoint <= :userPoint', { userPoint })
+      .getCount();
+    return possibleChallengesCount;
+  }
+
+  // 참여 가능한 도전 목록 조회 (pagenation)
+  async getPossibleChallenges(
+    page: number,
+    userPoint: number,
+  ): Promise<Challenge[]> {
+    const possibleChallenges = await this.createQueryBuilder('challenge')
+      .innerJoin('challenge.user', 'user')
+      .where('challenge.userId = user.id')
+      .andWhere('user.deletedAt IS NULL')
+      .andWhere('challenge.startDate > :today', { today: new Date() })
+      .andWhere('challenge.publicView = true')
+      .andWhere('challenge.entryPoint <= :userPoint', { userPoint })
+      .orderBy('challenge.createdAt', 'DESC')
+      .skip((page - 1) * 10)
+      .take(10)
       .getMany();
-    return challenges;
+    return possibleChallenges;
   }
 
   // 내 도전 목록 조회
-  async getMyChallenges(userId: number): Promise<Challenge[]> {
-    const challenges = await this.createQueryBuilder('challenge')
+  async getMyChallengesCount(userId: number): Promise<number> {
+    const myChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.challenger', 'challenger')
       .where('challenger.userId = :userId', { userId })
+      .getCount();
+    return myChallengesCount;
+  }
+
+  // 내 도전 목록 조회 (pagenation)
+  async getMyChallenges(page: number, userId: number): Promise<Challenge[]> {
+    const myChallenges = await this.createQueryBuilder('challenge')
+      .innerJoin('challenge.challenger', 'challenger')
+      .where('challenger.userId = :userId', { userId })
+      .orderBy('challenge.createdAt', 'DESC')
+      .skip((page - 1) * 10)
+      .take(10)
       .getMany();
-    return challenges;
+    return myChallenges;
   }
 
   // 도전 상세 조회

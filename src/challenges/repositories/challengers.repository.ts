@@ -46,14 +46,20 @@ export class ChallengersRepository extends Repository<Challenger> {
   // 특정 도전 내 도전자 전체 조회
   async getChallengers(challengeId: number): Promise<Challenger[]> {
     const challengers = await this.createQueryBuilder('challenger')
-      .leftJoin(User, 'user', 'user.id = challenger.userId')
+      .innerJoin('challenger.user', 'user', 'user.id = challenger.userId')
       .where('challenger.challengeId = :id', { id: challengeId })
       .select([
-        'user.name AS userName',
-        'user.point AS userPoint',
-        'user.imgUrl AS userImageUrl',
+        'challenger.id',
+        'challenger.challengeId',
+        'challenger.userId',
+        'challenger.type',
+        'challenger.done',
+        'user.id',
+        'user.name',
+        'user.point',
+        'user.imgUrl',
       ])
-      .getRawMany();
+      .getMany();
     return challengers;
   }
 

@@ -91,41 +91,56 @@ export class ChallengesService {
   }
 
   // 도전 목록 조회
-  async getChallenges(filteredWith, user: User, page) {
-    // condition: nothing
+  async getChallenges(filteredWith: string, user: User, page: number) {
+    // case 1 //
     if (filteredWith === 'all') {
-      const allChallenges = await this.challengesRepository.getAllChallenges();
-      const pageChallenges = await this.challengesRepository.getPageChallenges(
-        page,
-      );
+      const totalCount: number =
+        await this.challengesRepository.getAllChallengesCount();
+      const allChallenges: Challenge[] =
+        await this.challengesRepository.getAllChallenges(page);
 
-      const totalPages = Math.ceil(allChallenges.length / 10);
-      const challenges = await this.mapChallenges(pageChallenges);
+      const totalPages: number = Math.ceil(totalCount / 10);
+      const challenges = await this.mapChallenges(allChallenges);
 
       return { totalPages, challenges };
+      // case 2 //
       // condition: startDate, publicView, entrypoint, userNumberLimit
     } else if (filteredWith === 'possible') {
       const currentUser = await this.userRepository.getUserById(user.id);
 
-      const challenges = await this.challengesRepository.getPossibleChallenges(
-        currentUser.point,
-      );
-
-      const filteredChallenges = challenges.filter(async (challenge) => {
-        const userNumber = await this.challengersRepository.getChallengerCount(
-          challenge.id,
+      const totalCount: number =
+        await this.challengesRepository.getPossibleChallengesCount(
+          currentUser.point,
         );
-        return challenge.userNumberLimit > userNumber;
-      });
+      const possibleChallenges: Challenge[] =
+        await this.challengesRepository.getPossibleChallenges(
+          page,
+          currentUser.point,
+        );
 
-      const result = await this.mapChallenges(filteredChallenges);
-      return result;
-    } else if (filteredWith === 'my') {
-      const challenges = await this.challengesRepository.getMyChallenges(
-        user.id,
+      const filteredChallenges: Challenge[] = possibleChallenges.filter(
+        async (challenge) => {
+          const userNumber: number =
+            await this.challengersRepository.getChallengerCount(challenge.id);
+          return challenge.userNumberLimit > userNumber;
+        },
       );
-      const result = await this.mapChallenges(challenges);
-      return result;
+
+      const totalPages: number = Math.ceil(totalCount / 10);
+      const challenges = await this.mapChallenges(filteredChallenges);
+
+      return { totalPages, challenges };
+      // case 3 //
+    } else if (filteredWith === 'my') {
+      const totalCount: number =
+        await this.challengesRepository.getMyChallengesCount(user.id);
+      const myChallenges: Challenge[] =
+        await this.challengesRepository.getMyChallenges(page, user.id);
+
+      const totalPages: number = Math.ceil(totalCount / 10);
+      const challenges = await this.mapChallenges(myChallenges);
+
+      return { totalPages, challenges };
     }
   }
 

@@ -64,136 +64,111 @@ export class ChallengeScheduler {
     });
 
     for (const challenge of challengesToDistribute) {
-      const entryPoint = challenge.entryPoint;
+      const entryPoint: number = challenge.entryPoint;
 
-      const users = await this.challengersRepository.getChallengers(
-        challenge.id,
+      const challengers: Challenger[] =
+        await this.challengersRepository.getChallengers(challenge.id);
+
+      const succeedChallengers: Challenger[] = challengers.filter(
+        (challengers) => challengers.done === true,
+      );
+      const failedChallengers: Challenger[] = challengers.filter(
+        (challengers) => challengers.done === false,
       );
 
-      const succeedUsers: Challenger[] = users.filter(
-        (user) => user.done === true,
-      );
-      const failedUsers: Challenger[] = users.filter(
-        (user) => user.done === false,
-      );
-
-      const challengerCount =
+      const challengerCount: number =
         await this.challengersRepository.getChallengerCount(challenge.id);
-      const totalPoint = challenge.entryPoint * challengerCount;
+      const totalPoint: number = challenge.entryPoint * challengerCount;
 
-      const challengers = await this.challengersRepository.getChallengers(
-        challenge.id,
-      );
+      // 모두 성공한 경우
+      if (challengers.length === succeedChallengers.length) {
+        for (const challenger of challengers) {
+          const user: User = await this.userRepository.getUserById(
+            challenger.userId,
+          );
+          const beforeUserPoint: number = user.point;
+          let afterUserPoint: number;
 
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
+          const succeedChallengerIds: number[] = succeedChallengers.map(
+            (succeedChallenger) => succeedChallenger.id,
+          );
 
-      try {
-        await queryRunner.startTransaction();
-        // 모두 성공한 경우
-        if (users.length === succeedUsers.length) {
-          for (const challenger of challengers) {
-            const user = await this.userRepository.getUserById(
-              challenger.userId,
-            );
-
-            const beforeUserPoint: number = user.point;
-            let afterUserPoint: number;
-
-            const succeedUserIds = succeedUsers.map(
-              (succeedUser) => succeedUser.id,
-            );
-
-            if (succeedUserIds.includes(challenger.id)) {
-              afterUserPoint = beforeUserPoint + entryPoint;
-            }
-
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { point: afterUserPoint },
-            );
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { isInChallenge: false },
-            );
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { latestChallengeDate: challenge.endDate },
-            );
-            await queryRunner.manager.update(
-              Challenge,
-              { id: challenge.id },
-              { isDistributed: true },
-            );
+          if (succeedChallengerIds.includes(challenger.id)) {
+            afterUserPoint = beforeUserPoint + entryPoint;
           }
-          // 일부만 성공한 경우
-        } else {
-          for (const challenger of challengers) {
-            const user = await this.userRepository.getUserById(
-              challenger.userId,
-            );
 
-            const beforeUserPoint: number = user.point;
-            let afterUserPoint: number;
-
-            const succeedUserIds = succeedUsers.map(
-              (succeedUser) => succeedUser.id,
-            );
-            const failedUserIds = failedUsers.map(
-              (failedUser) => failedUser.id,
-            );
-
-            if (succeedUserIds.includes(challenger.id)) {
-              afterUserPoint =
-                beforeUserPoint + Math.floor(totalPoint / succeedUsers.length);
-            } else if (failedUserIds.includes(challenger.id)) {
-              afterUserPoint = beforeUserPoint - entryPoint;
-            }
-
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { point: afterUserPoint },
-            );
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { isInChallenge: false },
-            );
-            await queryRunner.manager.update(
-              User,
-              { id: user.id },
-              { latestChallengeDate: challenge.endDate },
-            );
-            await queryRunner.manager.update(
-              Challenge,
-              { id: challenge.id },
-              { isDistributed: true },
-            );
-          }
+          await this.transaction(user, challenge, afterUserPoint);
         }
-        await queryRunner.commitTransaction();
+        // 일부만 성공한 경우
+      } else {
+        for (const challenger of challengers) {
+          const user: User = await this.userRepository.getUserById(
+            challenger.userId,
+          );
+          const beforeUserPoint: number = user.point;
+          let afterUserPoint: number;
 
-        this.logger.debug(
-          `${challenge.id}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
-        );
-      } catch (error) {
-        await queryRunner.rollbackTransaction();
-        this.logger.debug(
-          `${challenge.id}번 도전의 점수 배분에 실패하였습니다.`,
-        );
-        throw error;
-      } finally {
-        await queryRunner.release();
+          const succeedChallengerIds: number[] = succeedChallengers.map(
+            (succeedChallenger) => succeedChallenger.id,
+          );
+          const failedChallengersIds: number[] = failedChallengers.map(
+            (failedChallenger) => failedChallenger.id,
+          );
+
+          if (succeedChallengerIds.includes(challenger.id)) {
+            afterUserPoint =
+              beforeUserPoint +
+              Math.floor(totalPoint / succeedChallengers.length);
+          } else if (failedChallengersIds.includes(challenger.id)) {
+            afterUserPoint = beforeUserPoint - entryPoint;
+          }
+
+          await this.transaction(user, challenge, afterUserPoint);
+        }
       }
     }
   }
 
+  async transaction(user: User, challenge: Challenge, afterUserPoint: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+
+    try {
+      await queryRunner.startTransaction();
+      await queryRunner.manager.update(
+        User,
+        { id: user.id },
+        { point: afterUserPoint },
+      );
+      await queryRunner.manager.update(
+        User,
+        { id: user.id },
+        { isInChallenge: false },
+      );
+      await queryRunner.manager.update(
+        User,
+        { id: user.id },
+        { latestChallengeDate: challenge.endDate },
+      );
+      await queryRunner.manager.update(
+        Challenge,
+        { id: challenge.id },
+        { isDistributed: true },
+      );
+      await queryRunner.commitTransaction();
+      this.logger.debug(
+        `${challenge.id}번 도전이 종료되어, 점수가 정상적으로 배분되었습니다.`,
+      );
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.debug(`${challenge.id}번 도전의 점수 배분에 실패하였습니다.`);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   // 2주일 동안 어떠한 도전에도 참여하지 않을 시 자동으로 점수 차감 (하루에 20점)
-  // latestChallengeDate가 null인 경우 예외처리 해야함
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async automaticPointDeduction() {
     const usersNotinChallenge = await this.userRepository.find({
@@ -201,7 +176,9 @@ export class ChallengeScheduler {
     });
 
     for (const user of usersNotinChallenge) {
-      const latestChallengeDate = new Date(user.latestChallengeDate);
+      const latestChallengeDate = user.latestChallengeDate
+        ? new Date(user.latestChallengeDate)
+        : user.createdAt; // 아직 어떠한 도전에도 참가하지 않은 경우
 
       const timeDifference =
         new Date().getTime() - latestChallengeDate.getTime();
@@ -209,7 +186,6 @@ export class ChallengeScheduler {
 
       if (dayDifference > 14) {
         const afterPoint = user.point - 20;
-
         await this.userRepository.updateUserPoint(user.id, afterPoint);
 
         this.logger.debug(
