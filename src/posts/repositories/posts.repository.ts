@@ -104,7 +104,13 @@ export class PostsRepository extends Repository<Post> {
       .innerJoin('post.challenges', 'challenge')
       .where('challenge.publicView = :publicView', { publicView: true })
       .orderBy('post.createdAt', 'DESC')
-      .select(['post.id', 'post.imgUrl', 'post.description', 'post.createdAt'])
+      .select([
+        'post.id',
+        'post.imgUrl',
+        'post.description',
+        'post.createdAt',
+        'post.userId',
+      ])
       .getMany();
   }
 }
