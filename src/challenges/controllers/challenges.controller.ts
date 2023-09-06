@@ -8,6 +8,8 @@ import {
   Param,
   Req,
   Query,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChallengesService } from '../services/challenges.service';
 import { CreateChallengeRequestDto } from '../dto/create-challenge.request.dto';
@@ -48,7 +50,13 @@ export class ChallengesController {
   // 도전 상세 조회
   // GET http://localhost:3000/challenge/:id
   @Get('/:challengeId')
-  async getChallenge(@Param('challengeId') challengeId: number) {
+  async getChallenge(
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+  ) {
     const challenge = await this.challengesService.getChallenge(challengeId);
     return challenge;
   }
@@ -56,7 +64,13 @@ export class ChallengesController {
   // 도전자 목록 조회
   // GET http://localhost:3000/challenge/:id/challengers
   @Get('/:challengeId/challengers')
-  async getChallengers(@Param('challengeId') challengeId: number) {
+  async getChallengers(
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+  ) {
     const challengers = await this.challengesService.getChallengers(
       challengeId,
     );
@@ -67,7 +81,11 @@ export class ChallengesController {
   // DELETE http://localhost:3000/challenge/:id
   @Delete('/:challengeId')
   async deleteChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Req() req: any,
   ) {
     await this.challengesService.deleteChallenge(challengeId, req.user.id);
@@ -77,7 +95,11 @@ export class ChallengesController {
   // POST http://localhost:3000/challenge/:id/enter
   @Post('/:challengeId/enter')
   async joinChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Req() req: any,
   ) {
     console.log(req.user);
@@ -88,7 +110,11 @@ export class ChallengesController {
   // DELETE http://localhost:3000/challenge/:id/leave
   @Delete('/:challengeId/leave')
   async leaveChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Req() req: any,
   ) {
     return await this.challengesService.leaveChallenge(challengeId, req.user);
@@ -98,7 +124,11 @@ export class ChallengesController {
   // POST http://localhost:3000/challenge/:id/invite
   @Post('/:challengeId/invite')
   async inviteChallenge(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Body() body: InviteChallengeDto,
     @Req() req: any,
   ) {
@@ -120,7 +150,11 @@ export class ChallengesController {
   // POST http://localhost:3000/challenge/:id/accept
   @Post('/:userId/accept')
   async acceptChallenge(
-    @Param('userId') userId: number,
+    @Param(
+      'userId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    userId: number,
     @Body() body: ResponseChallengeDto,
     @Req() req: any,
   ) {

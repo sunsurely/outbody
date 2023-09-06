@@ -448,6 +448,7 @@ export class ChallengesService {
         email: user.email,
         message,
         name: user.name,
+        challengeId,
       });
     return newInvitation;
   }

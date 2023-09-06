@@ -52,6 +52,7 @@ export class FollowsService {
     newMessage.email = user.email;
     newMessage.name = user.name;
     newMessage.imgUrl = user.imgUrl;
+    newMessage.message = message;
     const createItemResult = await this.followMessageRepository.save(
       newMessage,
     );

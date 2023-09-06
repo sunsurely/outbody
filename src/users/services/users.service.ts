@@ -107,7 +107,11 @@ export class UserService {
         ranking: ranking,
       };
     });
-    return { rest, followersInfo, challengeId: challenger.challengeId };
+
+    if (challenger) {
+      return { rest, followersInfo, challengeId: challenger.challengeId };
+    }
+    return { rest, followersInfo };
   }
 
   // 내 정보 수정 (재용 수정)
