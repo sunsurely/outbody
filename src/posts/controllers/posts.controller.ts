@@ -9,6 +9,8 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
 import { CreatePostRequestDto } from '../dto/create-post.request.dto';
@@ -23,7 +25,11 @@ export class PostsController {
   @Post('/:challengeId/post')
   @UseInterceptors(FileInterceptor('image'))
   async createPost(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Body() body: CreatePostRequestDto,
     @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
@@ -40,7 +46,11 @@ export class PostsController {
   // http://localhost:3000/challenge/:challengeId/post
   @Get('/:challengeId/post')
   async getAllPost(
-    @Param('challengeId') challengeId: number,
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
   ) {
@@ -50,14 +60,27 @@ export class PostsController {
   // 오운완 상세 조회
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Get('/:challengeId/post/:postId')
-  async getOnePost(@Param('postId') postId: number) {
+  async getOnePost(
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
+  ) {
     return await this.postsService.getOnePost(postId);
   }
 
   // 오운완 삭제
   // http://localhost:3000/challenge/:challengeId/post/:postId
   @Delete('/:challengeId/post/:postId')
-  async deletePost(@Param('postId') postId: number, @Req() req: any) {
+  async deletePost(
+    @Param(
+      'postId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    postId: number,
+    @Req() req: any,
+  ) {
     return await this.postsService.deletePost(postId, req.user);
   }
 

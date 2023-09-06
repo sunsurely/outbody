@@ -27,6 +27,9 @@ export class FollowMessage {
   @Column('varchar', { nullable: true })
   imgUrl: string;
 
+  @Column('varchar')
+  message: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -88,6 +88,10 @@ export class RecordsService {
     const recentRecords = await this.recordsRepository.getLatestUserRecord(
       user.id,
     );
+
+    if (!recentRecords) {
+      throw new NotFoundException('등록된 데이터가 없습니다.');
+    }
     const years = new Date(user.birthday).getFullYear();
     const sameUsers = await this.userRepository.getUsersForAverage(
       years,
