@@ -47,7 +47,7 @@ export class PostsController {
   @Get('/:challengeId/post')
   async getAllPost(
     @Param(
-      'challengeId',
+      'userId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     challengeId: number,
