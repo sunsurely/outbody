@@ -5,11 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BlackListRepository } from '../repository/blacklist.repository';
+import { UserRepository } from 'src/users/repositories/users.repository';
 import { Status } from 'src/users/userInfo';
 
 @Injectable()
 export class BlacklistsService {
-  constructor(private readonly blacklistRepository: BlackListRepository) {}
+  constructor(
+    private readonly blacklistRepository: BlackListRepository,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   //관리자 권한 블랙리스트 작성
   async createBlacklist(
@@ -60,15 +64,28 @@ export class BlacklistsService {
     if (status !== 'admin') {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }
+    const blackEmail = await this.blacklistRepository.getBlacklistByEmail(
+      email,
+    );
+    if (!blackEmail) {
+      throw new BadRequestException(
+        '해당 유저는 블랙리스트에 존재하지 않습니다.',
+      );
+    }
 
-    if (email === undefined || !email) {
-      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
-    } else if (!description) {
+    if (!description) {
       throw new BadRequestException(
         '해당 회원의 강제탈퇴 사유를 작성해주세요.',
       );
     }
+    await this.userRepository.withdrawUser(email);
+  }
 
-    await this.blacklistRepository.withdrawUser(email);
+  // 블랙리스트에서 제거 (일반회원으로 전환)
+  async removeBlacklist(status: Status, blacklistId: number) {
+    if (status !== 'admin') {
+      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
+    }
+    return await this.blacklistRepository.removeBlacklist(blacklistId);
   }
 }

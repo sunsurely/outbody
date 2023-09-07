@@ -6,6 +6,9 @@ import {
   Post,
   Req,
   Query,
+  Param,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { BlacklistsService } from '../services/blacklists.service';
 import { CreateBlacklistDto } from '../dto/create-blacklist.dto';
@@ -73,5 +76,18 @@ export class BlacklistsController {
       email,
       description,
     );
+  }
+
+  // 관리자 권한 블랙리스트 유저 취소 (일반회원으로 전환)
+  @Delete('/:blacklistId')
+  async deleteBlacklist(
+    @Req() req: any,
+    @Param(
+      'blacklistId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    blacklistId: number,
+  ) {
+    await this.blacklistService.removeBlacklist(req.user.status, blacklistId);
   }
 }

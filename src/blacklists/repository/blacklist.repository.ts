@@ -27,21 +27,13 @@ export class BlackListRepository extends Repository<BlackList> {
   }
 
   //관리자 권한 유저 이메일로 블랙리스트 조회
-
   async getBlacklistByEmail(email: string) {
     return await this.findOne({ where: { email } });
   }
 
-  // 관리자 권한 블랙리스트 유저 강제탈퇴
-  async withdrawUser(email: string): Promise<any> {
-    const userToDelete = await this.findOne({ where: { email } });
-    if (!userToDelete) {
-      throw new BadRequestException(
-        '해당 유저는 블랙리스트에 존재하지 않습니다.',
-      );
-    }
-    const userId = userToDelete.userId;
-    const deleteUser = await this.softDelete({ id: userId });
-    return deleteUser;
+  // 블랙리스트에서 제거 (일반회원으로 전환)
+  async removeBlacklist(blacklistId: number): Promise<any> {
+    const deleteBlacklist = await this.delete(blacklistId);
+    return deleteBlacklist;
   }
 }
