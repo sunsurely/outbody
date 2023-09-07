@@ -1,4 +1,8 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { BlackListRepository } from '../repository/blacklist.repository';
 import { Status } from 'src/users/userInfo';
 
@@ -40,5 +44,16 @@ export class BlacklistsService {
     }
 
     return await this.blacklistRepository.getBlacklistByEmail(email);
+  }
+
+  // 관리자 권한 유저 강제탈퇴
+  async withdrawUser(status: Status, email: string) {
+    if (status !== 'admin') {
+      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
+    } else if (email === undefined || !email) {
+      throw new BadRequestException('해당 유저가 존재하지 않습니다.');
+    }
+
+    await this.blacklistRepository.withdrawUser(email);
   }
 }

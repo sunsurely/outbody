@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
 import { BlacklistsService } from '../services/blacklists.service';
 import { CreateBlacklistDto } from '../dto/create-blacklist.dto';
 import { GetBlacklistDto } from '../dto/get.blacklist.dto';
@@ -44,5 +44,12 @@ export class BlacklistsController {
       req.user.status,
       blacklist.email,
     );
+  }
+
+  // 관리자 권한 블랙리스트 유저 강제탈퇴
+  // DELETE http:localhost:3000/blacklist/withdraw
+  @Delete('/withdraw')
+  async withdrawUser(@Req() req: any, @Body() blacklist: GetBlacklistDto) {
+    await this.blacklistService.withdrawUser(req.user.status, blacklist.email);
   }
 }

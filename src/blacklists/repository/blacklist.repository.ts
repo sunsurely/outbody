@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { BlackList } from '../../reports/entities/blacklist.entity';
 
@@ -28,5 +28,18 @@ export class BlackListRepository extends Repository<BlackList> {
 
   async getBlacklistByEmail(email: string) {
     return await this.findOne({ where: { email } });
+  }
+
+  // 관리자 권한 블랙리스트 유저 강제탈퇴
+  async withdrawUser(email: string): Promise<any> {
+    const userToDelete = await this.findOne({ where: { email } });
+    if (!userToDelete) {
+      throw new BadRequestException(
+        '해당 유저는 블랙리스트에 존재하지 않습니다.',
+      );
+    }
+    const userId = userToDelete.userId;
+    const deleteUser = await this.softDelete({ id: userId });
+    return deleteUser;
   }
 }
