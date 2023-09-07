@@ -29,6 +29,7 @@ export class FollowsRepository extends Repository<Follow> {
         'user.name as name',
         'user.email as email',
         'user.imgUrl as imgUrl',
+        'user.point as point',
       ])
       .innerJoin(
         User,

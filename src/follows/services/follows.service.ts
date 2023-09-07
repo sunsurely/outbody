@@ -104,25 +104,25 @@ export class FollowsService {
     await this.followMessageRepository.delete({ userId, followId });
   }
 
-  //친구 취소 ,  follow삭제
+  // 친구 취소, follow삭제
   async deleteFollow(userId, followId) {
     if (userId === followId) {
       throw new NotAcceptableException('수행할 수 없는 요청입니다');
     }
+
     const userTofollow = await this.followRepository.findOne({
       where: { userId, followId },
     });
-
     const followToUser = await this.followRepository.findOne({
       where: { userId: followId, followId: userId },
     });
+
     if (userTofollow) {
       const result = await this.followRepository.delete({ userId, followId });
-
       if (!result.affected) {
         throw new NotImplementedException('해당 작업을 수행할 수 없습니다.');
       }
-      return;
+      return result;
     }
 
     if (followToUser) {
@@ -133,7 +133,7 @@ export class FollowsService {
       if (!result.affected) {
         throw new NotImplementedException('해당 작업을 수행할 수 없습니다.');
       }
-      return;
+      return result;
     }
   }
 }
