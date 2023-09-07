@@ -114,7 +114,6 @@ export class UserRepository extends Repository<User> {
   //email로 유저 정보조회
   async getUserInfoByEmail(email: string) {
     const result = await this.findOne({
-      select: ['id', 'email', 'imgUrl', 'name'],
       where: { email },
     });
 
