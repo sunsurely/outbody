@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { UserRepository } from 'src/users/repositories/users.repository';
+import { UserService } from 'src/users/services/users.service';
+import { UserCreateDto } from 'src/users/dto/users.create.dto';
+import { Provider } from 'src/users/userInfo';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +18,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
 
   // 유저 확인
@@ -118,10 +122,16 @@ export class AuthService {
   async kakaoLogin(user) {
     const existUser = await this.userRepository.getUserByEmail(user.email);
     if (!existUser) {
-      // await this.userService.createUser();
+      const newKakaoUser = await this.userRepository.create({
+        name: user.nickname,
+        email: user.email,
+        gender: user.gender,
+        provider: Provider.KAKAO,
+      });
+
+      await this.userRepository.save(newKakaoUser);
     }
-    const access_token = this.jwtService.sign(user);
-    return access_token;
+    return user.email;
   }
 
   // 네이버 로그인

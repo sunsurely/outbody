@@ -28,13 +28,13 @@ export class User {
   @Column('varchar', { length: 30 })
   name: string;
 
-  @Column('date', { nullable: true })
+  @Column('date')
   birthday: Date;
 
   @Column('varchar')
   email: string;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 100, nullable: true })
   password: string;
 
   @Column({ type: 'enum', enum: Gender })
