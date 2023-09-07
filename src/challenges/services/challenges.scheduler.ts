@@ -266,9 +266,12 @@ export class ChallengeScheduler {
   // 도전 종료 시 성공 여부 확인 및 변환
   @Cron(CronExpression.EVERY_DAY_AT_11PM)
   async goalComplete() {
+    const currentDate = new Date();
+    const oneHourLater = new Date(currentDate.getTime() + 60 * 60 * 1000);
+
     const challenges = await this.challengesRepository.find({
       where: {
-        endDate: LessThanOrEqual(new Date()),
+        endDate: LessThanOrEqual(oneHourLater),
         isDistributed: false,
       },
     });

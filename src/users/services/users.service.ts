@@ -106,6 +106,7 @@ export class UserService {
         email: follower.email,
         imgUrl: follower.imgUrl,
         ranking: ranking,
+        point: follower.point,
       };
     });
 
