@@ -1,4 +1,5 @@
 import { Post } from 'src/posts/entities/post.entity';
+import { Report } from 'src/reports/entities/report.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
