@@ -116,4 +116,19 @@ export class UserController {
     const myRank = await this.userService.getUsersRank(req.user.id);
     return myRank;
   }
+
+  // 관리자 권한 전체 유저조회
+  //Get http://localhost:3000/user/allusers
+  @Get('/allusers')
+  async getAllregisters(
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    return await this.userService.getAllregisters(
+      req.user.status,
+      page,
+      pageSize,
+    );
+  }
 }

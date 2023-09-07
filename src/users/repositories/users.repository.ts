@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Gender, Status } from '../userInfo';
@@ -116,7 +116,6 @@ export class UserRepository extends Repository<User> {
   //email로 유저 정보조회
   async getUserInfoByEmail(email: string) {
     const result = await this.findOne({
-      select: ['id', 'email', 'imgUrl', 'name'],
       where: { email },
     });
 
@@ -138,5 +137,21 @@ export class UserRepository extends Repository<User> {
       .andWhere('user.gender = :gender', { gender })
       .getMany();
     return result;
+  }
+
+  // 관리자 권한 모든 유저조회
+  async getAllregisters(): Promise<User[]> {
+    return await this.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  // 관리자 권한 블랙리스트 유저 강제탈퇴
+  async withdrawUser(email: string): Promise<any> {
+    const userToDelete = await this.findOne({ where: { email } });
+
+    const userId = userToDelete.id;
+    const deleteUser = await this.softDelete({ id: userId });
+    return deleteUser;
   }
 }

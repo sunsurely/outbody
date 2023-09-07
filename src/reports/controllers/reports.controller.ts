@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   HttpStatus,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ReportsService } from '../services/reports.service';
 import { CreateReportDto } from '../dto/create-report.dto';
@@ -37,9 +38,13 @@ export class ReportsController {
   // 관리자 계정, 모든 신고기록 조회
   // GET http://localhost:3000/report
   @Get('/')
-  async getAllReports(@Req() req: any) {
+  async getAllReports(
+    @Req() req: any,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+  ) {
     const { status } = req.user.status;
-    return await this.reportsService.getAllReports(status);
+    return await this.reportsService.getAllReports(status, page, pageSize);
   }
 
   //관리자 계정, commentId에 해당하는 모든 신고기록들 조회

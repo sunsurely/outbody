@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { BlackList } from '../../reports/entities/blacklist.entity';
 
@@ -20,13 +20,20 @@ export class BlackListRepository extends Repository<BlackList> {
   }
 
   //관리자 권한 모든 블랙리스트 조회
-  async getAllBlacklist() {
-    return await this.find();
+  async getAllBlacklist(): Promise<BlackList[]> {
+    return await this.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
   //관리자 권한 유저 이메일로 블랙리스트 조회
-
   async getBlacklistByEmail(email: string) {
     return await this.findOne({ where: { email } });
+  }
+
+  // 블랙리스트에서 제거 (일반회원으로 전환)
+  async removeBlacklist(blacklistId: number): Promise<any> {
+    const deleteBlacklist = await this.delete(blacklistId);
+    return deleteBlacklist;
   }
 }

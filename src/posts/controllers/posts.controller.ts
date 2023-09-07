@@ -47,7 +47,7 @@ export class PostsController {
   @Get('/:challengeId/post')
   async getAllPost(
     @Param(
-      'userId',
+      'challengeId',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     challengeId: number,
@@ -58,8 +58,8 @@ export class PostsController {
   }
 
   // 오운완 상세 조회
-  // http://localhost:3000/challenge/:challengeId/post/:postId
-  @Get('/:challengeId/post/:postId')
+  // http://localhost:3000/challenge/:challengeId/post/:postId/detail
+  @Get('/:challengeId/post/:postId/detail')
   async getOnePost(
     @Param(
       'postId',
