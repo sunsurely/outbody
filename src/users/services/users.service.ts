@@ -20,6 +20,7 @@ import { SignoutDto } from '../dto/user.signout.dto';
 import { AwsService } from '../../aws.service';
 import { User } from '../entities/user.entity';
 import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
+import { Status } from 'src/users/userInfo';
 
 @Injectable()
 export class UserService {
@@ -216,5 +217,22 @@ export class UserService {
     const findUsers = await this.usersRepository.getAllUsersForRank();
     const myRank = findUsers.findIndex((user) => user.id === id) + 1;
     return myRank;
+  }
+
+  // 관리자 권한 모든 유저조회
+  async getAllregisters(status: Status, page: number, pageSize: number) {
+    if (status !== 'admin') {
+      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
+    }
+    const allUsers = await this.usersRepository.getAllregisters();
+    if (!allUsers || allUsers.length <= 0) {
+      throw new NotFoundException('데이터가 존재하지 않습니다.');
+    }
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(allUsers.length / pageSize);
+
+    const pageinatedUsers = allUsers.slice(startIndex, endIndex);
+    return { totalPages, pageinatedUsers };
   }
 }

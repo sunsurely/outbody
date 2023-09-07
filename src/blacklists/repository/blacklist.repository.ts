@@ -20,7 +20,7 @@ export class BlackListRepository extends Repository<BlackList> {
   }
 
   //관리자 권한 모든 블랙리스트 조회
-  async getAllBlacklist() {
+  async getAllBlacklist(): Promise<BlackList[]> {
     return await this.find();
   }
 

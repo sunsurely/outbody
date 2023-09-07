@@ -1,6 +1,7 @@
 import {
   Injectable,
   NotAcceptableException,
+  NotFoundException,
   NotImplementedException,
 } from '@nestjs/common';
 import { ReportsRepository } from '../repositories/reports.repository';
@@ -30,12 +31,20 @@ export class ReportsService {
   }
 
   //관리자 계정, 모든 신고기록 조회
-  async getAllReports(status: Status) {
+  async getAllReports(status: Status, page: number, pageSize: number) {
     if (status !== 'admin') {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }
+    const allRecords = await this.reportsRepository.getAllReports();
+    if (!allRecords || allRecords.length <= 0) {
+      throw new NotFoundException('데이터가 존재하지 않습니다.');
+    }
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const totalPages = Math.ceil(allRecords.length / pageSize);
 
-    return await this.reportsRepository.getAllReports();
+    const pageinatedRecords = allRecords.slice(startIndex, endIndex);
+    return { totalPages, pageinatedRecords };
   }
 
   //관리자 계정,  commentId에 해당하는 모든 신고기록들 조회

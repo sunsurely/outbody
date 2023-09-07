@@ -137,4 +137,9 @@ export class UserRepository extends Repository<User> {
       .getMany();
     return result;
   }
+
+  // 관리자 권한 모든 유저조회
+  async getAllregisters(): Promise<User[]> {
+    return await this.find();
+  }
 }
