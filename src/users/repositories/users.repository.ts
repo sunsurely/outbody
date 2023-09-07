@@ -140,6 +140,8 @@ export class UserRepository extends Repository<User> {
 
   // 관리자 권한 모든 유저조회
   async getAllregisters(): Promise<User[]> {
-    return await this.find();
+    return await this.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 }

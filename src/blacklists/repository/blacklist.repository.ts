@@ -21,7 +21,9 @@ export class BlackListRepository extends Repository<BlackList> {
 
   //관리자 권한 모든 블랙리스트 조회
   async getAllBlacklist(): Promise<BlackList[]> {
-    return await this.find();
+    return await this.find({
+      order: { createdAt: 'DESC' },
+    });
   }
 
   //관리자 권한 유저 이메일로 블랙리스트 조회
