@@ -110,9 +110,11 @@ export class FollowsService {
       throw new NotAcceptableException('수행할 수 없는 요청입니다');
     }
 
+    // 내가 먼저 상대방을 친구 신청했을 경우
     const userTofollow = await this.followRepository.findOne({
       where: { userId, followId },
     });
+    // 상대방이 먼저 나를 친구 신청했을 경우
     const followToUser = await this.followRepository.findOne({
       where: { userId: followId, followId: userId },
     });

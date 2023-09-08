@@ -28,7 +28,7 @@ export class ChallengeScheduler {
     private notificationRepository: Repository<Notification>,
   ) {}
 
-  //도전시작 로그 생성
+  // 도전 시작 알림 생성
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async createStartLog() {
     const challengesStarted = await this.challengesRepository.find({
@@ -177,7 +177,9 @@ export class ChallengeScheduler {
           await this.transaction(user, challenge, afterUserPoint);
         }
       }
-      const message = '도전이 종료되어 포인트가 분배되었습니다.';
+
+      const message = '회원님이 참가한 도전이 종료되어 점수가 분배되었습니다.';
+
       for (const challenger of challengers) {
         const newNotification = await this.notificationRepository.create({
           userId: challenger.userId,
@@ -248,7 +250,7 @@ export class ChallengeScheduler {
         await this.userRepository.updateUserPoint(user.id, afterPoint);
 
         const message =
-          '2주일 동안 도전에 참여하지 않아 20포인트가 차감됩니다.';
+          '2주일 동안 어떠한 도전에 참여하 않아, 점수가 20점 차감되었습니다.';
         const newNotification = await this.notificationRepository.create({
           userId: user.id,
           message,
@@ -314,7 +316,7 @@ export class ChallengeScheduler {
               { userId: challenger.userId },
               { done: true },
             );
-            const message = '도전에 성공하였습니다.';
+            const message = '도전 성공. 축하드립니다!';
             const newNotification = await this.notificationRepository.create({
               userId: challenger.userId,
               message,
@@ -328,7 +330,7 @@ export class ChallengeScheduler {
             await queryRunner.commitTransaction();
           }
 
-          const message = '도전에 실패하였습니다.';
+          const message = '도전 실패. 다음에 더 잘해봅시다!';
           const newNotification = await this.notificationRepository.create({
             userId: challenger.userId,
             message,
