@@ -25,6 +25,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       birthday: kakaoAccount.birthday,
       nickname: profileInfo.nickname,
     };
+
     return user;
   }
 }
