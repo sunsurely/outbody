@@ -36,7 +36,6 @@ export class AuthService {
     if (user && comparedPassword) {
       return user;
     }
-    return null;
   }
 
   // 로그인 (access토큰 발급)
