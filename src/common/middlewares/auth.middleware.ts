@@ -15,7 +15,6 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: any, res: any, next: Function) {
     const authHeader = req.headers.authorization;
-
     if (!authHeader) {
       throw new UnauthorizedException('로그인이 필요한 기능입니다.');
     }
