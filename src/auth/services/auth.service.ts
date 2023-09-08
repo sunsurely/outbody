@@ -28,16 +28,14 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 유저입니다');
     }
 
-    // const comparedPassword = await compare(password, user.password);
-    // if (!comparedPassword) {
-    //   throw new NotAcceptableException('비밀번호가 일치하지 않습니다.');
-    // }
+    const comparedPassword = await compare(password, user.password);
+    if (!comparedPassword) {
+      throw new NotAcceptableException('비밀번호가 일치하지 않습니다.');
+    }
 
-    // if (user && comparedPassword) {
-    //   return user;
-    // }
-    // return null;
-    return user;
+    if (user && comparedPassword) {
+      return user;
+    }
   }
 
   // 로그인 (access토큰 발급)
