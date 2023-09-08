@@ -29,10 +29,13 @@ export class UserCreateDto {
   readonly email: string;
 
   @IsString()
+  readonly birthday?: string;
+
+  @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}/)
   @Transform(({ value }) => bcrypt.hashSync(value, 10))
   readonly password: string;
 
   @IsString()
-  readonly gender: string;
+  readonly gender?: string;
 }

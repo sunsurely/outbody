@@ -421,15 +421,15 @@ export class ChallengesService {
       throw new NotFoundException('초대하려는 회원을 찾을 수 없습니다.');
     }
 
-    const isFriendCase1 = await this.followsRepository.getFollowById(
+    const isFriend = await this.followsRepository.getFollowById(
       invitedUser.id,
       user.id,
     );
-    const isFriendCase2 = await this.followsRepository.getFollowById(
+    const isFriendReverse = await this.followsRepository.getFollowById(
       user.id,
       invitedUser.id,
     );
-    if (!isFriendCase1 && !isFriendCase2) {
+    if (!isFriend && !isFriendReverse) {
       throw new NotFoundException(
         '해당 회원은 친구가 아니므로 초대할 수 없습니다.',
       );
