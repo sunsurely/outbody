@@ -223,9 +223,9 @@ export class UserService {
 
   // 관리자 권한 모든 유저조회
   async getAllregisters(status: Status, page: number, pageSize: number) {
-    if (status !== 'admin') {
-      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
-    }
+    // if (status !== 'admin') {
+    //   throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
+    // }
     const allUsers = await this.usersRepository.getAllregisters();
     if (!allUsers || allUsers.length <= 0) {
       throw new NotFoundException('데이터가 존재하지 않습니다.');

@@ -118,8 +118,8 @@ export class UserController {
   }
 
   // 관리자 권한 전체 유저조회
-  //Get http://localhost:3000/user/allusers
-  @Get('/allusers')
+  //Get http://localhost:3000/user/me/allusers
+  @Get('/me/allusers')
   async getAllregisters(
     @Req() req: any,
     @Query('page') page: number,

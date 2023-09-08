@@ -90,6 +90,7 @@ export class BlacklistsController {
   }
 
   // 관리자 권한 userId로 블랙리스트 전환
+  // POST http://localhost:3000/blacklist/:userId
   @Post('/:userId')
   async addBlacklist(
     @Req() req: any,
