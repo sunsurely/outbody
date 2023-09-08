@@ -13,6 +13,7 @@ export class AuthController {
   @Post('login')
   async login(@Req() req: any) {
     const userId = req.user;
+    const status = req.user.status;
 
     const { accessToken, ...accessOption } =
       await this.authService.getAccessToken(userId);
@@ -21,7 +22,7 @@ export class AuthController {
 
     await this.authService.setRefreshToken(refreshToken, userId);
 
-    return { userId, accessToken, refreshToken };
+    return { userId, status, accessToken, refreshToken };
   }
 
   // 로그아웃
