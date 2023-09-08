@@ -36,4 +36,10 @@ export class BlackListRepository extends Repository<BlackList> {
     const deleteBlacklist = await this.delete(blacklistId);
     return deleteBlacklist;
   }
+
+  // 블랙리스트 UserId로 추가
+  async addBlacklist(userId: number, description: string): Promise<BlackList> {
+    const newBlackList = this.create({ userId: userId, description });
+    return newBlackList;
+  }
 }

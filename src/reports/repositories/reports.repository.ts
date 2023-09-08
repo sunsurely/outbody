@@ -30,7 +30,8 @@ export class ReportsRepository extends Repository<Report> {
       report.description AS report_description,
       report.commentId AS report_commentId,
       report.createdAt AS report_createdAt,
-      comment.comment AS comment_comment
+      comment.comment AS comment_comment,
+      comment.userId AS comment_userId
     FROM
       reports AS report
     LEFT JOIN
