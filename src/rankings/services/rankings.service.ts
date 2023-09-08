@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RankingsRepository } from '../repositories/rankings.repository';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class RankingsService {
@@ -22,18 +23,24 @@ export class RankingsService {
 
   // 친구 순위 조회
   async getFollowingRank(userId: number, page: number, pageSize: number) {
-    // 사용자의 친구들(followId)을 가져오기 위한 조회
-    const followUserId = await this.rankingsRepository.followUserId(userId);
+    const followUserId: number[] = await this.rankingsRepository.followUserId(
+      userId,
+    );
+    const followerUserId: number[] =
+      await this.rankingsRepository.follwerUserId(userId);
 
     // 친구가 없다면
-    if (followUserId.length === 0) {
-      throw new NotFoundException('친구가 없어 순위 조회가 불가능합니다.');
+    if (followUserId.length === 0 && followerUserId.length === 0) {
+      throw new NotFoundException(
+        '등록된 친구가 없어서, 순위 조회가 불가능합니다.',
+      );
     }
 
+    const userIdArray: number[] = followUserId.concat(followerUserId);
+
     // followUserId 함수로 가져온 유저들 Id로 유저 조회를 해서 name과 point만 가져옴
-    const followerRanks = await this.rankingsRepository.getFollowingRank(
-      followUserId,
-    );
+    const followerRanks: User[] =
+      await this.rankingsRepository.getFollowingRank(userIdArray);
 
     const startIndex = (page - 1) * pageSize;
     const endIndex = page * pageSize;

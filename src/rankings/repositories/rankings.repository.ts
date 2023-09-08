@@ -34,8 +34,24 @@ export class RankingsRepository extends Repository<User> {
     const followUserId = followUser.flatMap((user) =>
       user.follows.map((follow) => follow.followId),
     );
-
     return followUserId;
+  }
+
+  // 사용자를 팔로우한 Id 조회
+  async follwerUserId(userId: number): Promise<number[]> {
+    const followerUser = await this.find({
+      relations: ['follows'],
+      where: {
+        follows: {
+          followId: userId,
+        },
+      },
+    });
+
+    const followerUserId = followerUser.flatMap((user) =>
+      user.follows.map((follow) => follow.userId),
+    );
+    return followerUserId;
   }
 
   // 친구 순위 조회
