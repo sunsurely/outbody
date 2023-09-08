@@ -67,6 +67,7 @@ export class FollowsController {
     userId: number,
     @Req() req: any,
   ) {
-    return await this.followsService.deleteFollow(userId, req.user.id);
+    await this.followsService.deleteFollow(userId, req.user.id);
+    return;
   }
 }

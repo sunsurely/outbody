@@ -425,7 +425,11 @@ export class ChallengesService {
       invitedUser.id,
       user.id,
     );
-    if (!isFriend) {
+    const isFriendReverse = await this.followsRepository.getFollowById(
+      user.id,
+      invitedUser.id,
+    );
+    if (!isFriend && !isFriendReverse) {
       throw new NotFoundException(
         '해당 회원은 친구가 아니므로 초대할 수 없습니다.',
       );

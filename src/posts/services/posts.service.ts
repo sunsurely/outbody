@@ -1,10 +1,8 @@
-import { ChallengesRepository } from './../../challenges/repositories/challenges.repository';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotAcceptableException,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostRequestDto } from '../dto/create-post.request.dto';
 import { PostsRepository } from '../repositories/posts.repository';
@@ -12,6 +10,7 @@ import { AwsService } from '../../aws.service';
 import { Post } from '../entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
 import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
+import { ChallengesRepository } from 'src/challenges/repositories/challenges.repository';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +18,7 @@ export class PostsService {
     private readonly awsService: AwsService,
     private readonly postsRepository: PostsRepository,
     private readonly challengersRepository: ChallengersRepository,
+    private readonly challengesRepository: ChallengesRepository,
   ) {}
 
   // 오운완 인증 게시글 생성
@@ -28,7 +28,22 @@ export class PostsService {
     userId: number,
     file: Express.Multer.File,
   ) {
+    const challenge = await this.challengesRepository.getChallenge(challengeId);
+    const endDate = new Date(challenge.endDate);
+    const twoHourBefore = endDate.getTime() - 2 * 60 * 60 * 1000;
+    if (
+      new Date() < new Date(challenge.startDate) ||
+      new Date() > new Date(twoHourBefore)
+    ) {
+      throw new BadRequestException(
+        '오운완 인증 게시글은 도전 기간 내에만 작성이 가능합니다.',
+      );
+    }
+
     const { description } = post;
+    if (!description) {
+      throw new BadRequestException('내용을 입력해주세요.');
+    }
 
     const isInThisChallenge = await this.challengersRepository.getChallenger(
       challengeId,
@@ -42,14 +57,10 @@ export class PostsService {
 
     // 오늘 게시글을 올렸는지 확인
     const existTodayPost = await this.postsRepository.existTodayPost(userId);
-
     if (existTodayPost) {
       throw new ConflictException(
         '오운완 인증 게시글은 하루에 한 번만 올릴 수 있습니다.',
       );
-    }
-    if (!description) {
-      throw new BadRequestException('내용을 입력해주세요.');
     }
 
     const imageObject = await this.awsService.uploadImage('outbody_post', file);

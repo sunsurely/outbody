@@ -8,6 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { AwsService } from 'src/aws.service';
 import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
+import { ChallengesRepository } from 'src/challenges/repositories/challenges.repository';
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import { ChallengersRepository } from 'src/challenges/repositories/challengers.r
     }),
   ],
   controllers: [PostsController],
-  providers: [PostsService, PostsRepository, AwsService, ChallengersRepository],
+  providers: [
+    PostsService,
+    PostsRepository,
+    AwsService,
+    ChallengersRepository,
+    ChallengesRepository,
+  ],
 })
 export class PostsModule {}

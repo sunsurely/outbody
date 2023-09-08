@@ -52,10 +52,11 @@ export class AuthController {
 
   // 카카오 소셜 로그인기능
   // GET http://localhost:3000/auth/kakao/redirect
-  @Get('kakao/redirect')
+  @Get('kakao/oauth')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoLoginRedirect(@Req() req: any) {
-    return await this.authService.kakaoLogin(req.user);
+  async kakaoLoginRedirect(@Req() req: any, @Res() res: Response) {
+    const email = await this.authService.kakaoLogin(req.user);
+    res.redirect(`http://127.0.0.1:5500/dist/index-0.html?email=${email}`);
   }
 
   // 네이버 소셜 로그인 페이지 로딩 기능
