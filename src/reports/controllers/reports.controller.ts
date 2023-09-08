@@ -43,7 +43,7 @@ export class ReportsController {
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
   ) {
-    const { status } = req.user.status;
+    const status = req.user.status;
     return await this.reportsService.getAllReports(status, page, pageSize);
   }
 

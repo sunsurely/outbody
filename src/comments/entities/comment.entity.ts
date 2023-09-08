@@ -44,6 +44,9 @@ export class Comment {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @OneToOne(() => Report, (report) => report.comment)
+  report: Report;
+
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
 
