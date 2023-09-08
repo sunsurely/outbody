@@ -15,12 +15,14 @@ export class UserRepository extends Repository<User> {
     email: string,
     password: string,
     gender: string,
+    birthday: string,
   ): Promise<User> {
     const newUser = this.create({
       name,
       email,
       password,
       gender: gender as Gender,
+      birthday,
     });
     return await this.save(newUser);
   }
@@ -114,7 +116,6 @@ export class UserRepository extends Repository<User> {
   //email로 유저 정보조회
   async getUserInfoByEmail(email: string) {
     const result = await this.findOne({
-      select: ['id', 'email', 'imgUrl', 'name'],
       where: { email },
     });
 

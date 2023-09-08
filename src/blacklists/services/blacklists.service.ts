@@ -56,7 +56,11 @@ export class BlacklistsService {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }
 
-    return await this.blacklistRepository.getBlacklistByEmail(email);
+    const result = await this.blacklistRepository.getBlacklistByEmail(email);
+    if (!result) {
+      throw new NotFoundException('블랙리스트 유저가 아닙니다.');
+    }
+    return result;
   }
 
   // 관리자 권한 유저 강제탈퇴
