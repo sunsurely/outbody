@@ -14,6 +14,7 @@ import { BlacklistsService } from '../services/blacklists.service';
 import { CreateBlacklistDto } from '../dto/create-blacklist.dto';
 import { GetBlacklistDto } from '../dto/get.blacklist.dto';
 import { DeleteUserDto } from '../dto/delete-user.dto';
+import { AddBlacklistDto } from '../dto/add-blacklist.dto';
 
 @Controller('blacklist')
 export class BlacklistsController {
@@ -56,7 +57,11 @@ export class BlacklistsController {
   // 관리자 권한 유저 이메일로 블랙리스트 조회
   // GET http://localhost:3000/blacklist/detail
   @Get('/detail')
-  async getBlacklistByEmail(@Req() req: any, @Query('email') email: string) {
+  async getBlacklistByEmail(
+    @Req() req: any,
+    @Body() getBlacklistDto: GetBlacklistDto,
+  ) {
+    const { email } = getBlacklistDto;
     return await this.blacklistService.getBlacklistByEmail(
       req.user.status,
       email,
@@ -86,5 +91,26 @@ export class BlacklistsController {
     blacklistId: number,
   ) {
     await this.blacklistService.removeBlacklist(req.user.status, blacklistId);
+  }
+
+  // 관리자 권한 userId로 블랙리스트 전환
+  // POST http://localhost:3000/blacklist/:userId
+  @Post('/:userId')
+  async addBlacklist(
+    @Req() req: any,
+    @Body() addBlacklistDto: AddBlacklistDto,
+    @Param(
+      'userId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    userId: number,
+  ) {
+    const { description } = addBlacklistDto;
+
+    return await this.blacklistService.addBlacklist(
+      req.user.status,
+      userId,
+      description,
+    );
   }
 }

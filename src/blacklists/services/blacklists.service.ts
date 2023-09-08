@@ -92,4 +92,16 @@ export class BlacklistsService {
     }
     return await this.blacklistRepository.removeBlacklist(blacklistId);
   }
+
+  // 관리자 권한 userId로 블랙리스트 전환
+  async addBlacklist(status: Status, userId: number, description: string) {
+    if (status !== 'admin') {
+      throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
+    }
+    const result = await this.blacklistRepository.addBlacklist(
+      userId,
+      description,
+    );
+    return result;
+  }
 }

@@ -120,6 +120,7 @@ export class AuthService {
   // 카카오 로그인
   async kakaoLogin(user) {
     const existUser = await this.userRepository.getUserByEmail(user.email);
+
     if (!existUser) {
       const newKakaoUser = await this.userRepository.create({
         name: user.nickname,
@@ -129,8 +130,14 @@ export class AuthService {
       });
 
       await this.userRepository.save(newKakaoUser);
+      const payload = { id: newKakaoUser.id };
+      const access_token = this.jwtService.sign(payload);
+      return access_token;
     }
-    return user.email;
+    const payload = { id: existUser.id };
+    const access_token = this.jwtService.sign(payload);
+
+    return access_token;
   }
 
   // 네이버 로그인

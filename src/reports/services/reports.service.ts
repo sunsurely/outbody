@@ -32,6 +32,7 @@ export class ReportsService {
 
   //관리자 계정, 모든 신고기록 조회
   async getAllReports(status: Status, page: number, pageSize: number) {
+    console.log('status', status);
     if (status !== 'admin') {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }
@@ -43,8 +44,8 @@ export class ReportsService {
     const endIndex = page * pageSize;
     const totalPages = Math.ceil(allRecords.length / pageSize);
 
-    const pageinatedRecords = allRecords.slice(startIndex, endIndex);
-    return { totalPages, pageinatedRecords };
+    const pageinatedReports = allRecords.slice(startIndex, endIndex);
+    return { totalPages, pageinatedReports };
   }
 
   //관리자 계정,  commentId에 해당하는 모든 신고기록들 조회

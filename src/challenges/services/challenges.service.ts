@@ -425,7 +425,6 @@ export class ChallengesService {
       invitedUser.id,
       user.id,
     );
-
     const isFriendReverse = await this.followsRepository.getFollowById(
       user.id,
       invitedUser.id,

@@ -35,6 +35,9 @@ export class Report {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
+  @OneToOne(() => Comment, (comment) => comment.report)
+  comment: Comment;
+
   @ManyToOne(() => User, (user) => user.reports)
   @JoinColumn({ name: 'userId' })
   user: User;
