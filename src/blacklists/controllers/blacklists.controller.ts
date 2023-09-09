@@ -57,11 +57,7 @@ export class BlacklistsController {
   // 관리자 권한 유저 이메일로 블랙리스트 조회
   // GET http://localhost:3000/blacklist/detail
   @Get('/detail')
-  async getBlacklistByEmail(
-    @Req() req: any,
-    @Body() getBlacklistDto: GetBlacklistDto,
-  ) {
-    const { email } = getBlacklistDto;
+  async getBlacklistByEmail(@Req() req: any, @Query('email') email: string) {
     return await this.blacklistService.getBlacklistByEmail(
       req.user.status,
       email,

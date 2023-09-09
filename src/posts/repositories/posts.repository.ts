@@ -100,7 +100,7 @@ export class PostsRepository extends Repository<Post> {
 
   // 모든 오운완 불러오기 (도전 비공개 제외)
   async getPublicPosts(): Promise<Post[]> {
-    return await this.createQueryBuilder('post')
+    const allPosts = await this.createQueryBuilder('post')
       .innerJoin('post.challenges', 'challenge')
       .innerJoin('post.user', 'user')
       .where('challenge.publicView = :publicView', { publicView: true })
@@ -113,8 +113,10 @@ export class PostsRepository extends Repository<Post> {
         'post.userId',
         'user.name',
         'user.point',
+        'user.imgUrl',
         'challenge.id',
       ])
       .getMany();
+    return allPosts;
   }
 }
