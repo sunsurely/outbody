@@ -5,11 +5,13 @@ import { TransformInterceptor } from './common/interceptors/responseData';
 import * as dotenv from 'dotenv';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
-
+  app.use(express.static(join(__dirname, '..', 'public', 'dist')));
   // cors
   app.enableCors({
     origin: [process.env.CORS_PORT],

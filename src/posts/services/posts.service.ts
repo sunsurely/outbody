@@ -91,7 +91,7 @@ export class PostsService {
         userImageUrl: post.user.imgUrl,
         userPoint: post.user.point,
       };
-      console.log(postObject);
+
       return postObject;
     });
     return result;

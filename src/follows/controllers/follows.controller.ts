@@ -70,4 +70,18 @@ export class FollowsController {
     await this.followsService.deleteFollow(userId, req.user.id);
     return;
   }
+
+  //친구 여부 조회
+  //GET http://localhost:3000/follow/:id/isFollowed
+  @Get('/:followerId/isFollowed')
+  async getFollow(
+    @Req() req: any,
+    @Param(
+      'followerId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    followerId: number,
+  ) {
+    return await this.followsService.getFollow(followerId, req.user.id);
+  }
 }

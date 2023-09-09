@@ -17,7 +17,10 @@ export class FollowsRepository extends Repository<Follow> {
   //친구 여부 조회
   async getFollowById(followId: number, userId: number) {
     return await this.findOne({
-      where: { followId, userId },
+      where: [
+        { followId: followId, userId: userId },
+        { followId: userId, userId: followId },
+      ],
     });
   }
 

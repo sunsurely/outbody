@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FollowMessage } from '../entities/followMessage.entity';
 import { DataSource, Repository } from 'typeorm';
 import { Follow } from '../entities/follow.entity';
+import { FollowsRepository } from '../repositories/follows.repository';
 
 @Injectable()
 export class FollowsService {
@@ -19,6 +20,7 @@ export class FollowsService {
     @InjectRepository(FollowMessage)
     private followMessageRepository: Repository<FollowMessage>,
     private dataSource: DataSource,
+    private readonly followsRepository: FollowsRepository,
   ) {}
 
   //친구요청 기능
@@ -137,5 +139,18 @@ export class FollowsService {
       }
       return result;
     }
+  }
+
+  //친구 여부 조회
+  async getFollow(followerId, userId) {
+    const follow = await this.followsRepository.getFollowById(
+      followerId,
+      userId,
+    );
+
+    if (!follow) {
+      return false;
+    }
+    return true;
   }
 }
