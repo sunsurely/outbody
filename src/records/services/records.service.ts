@@ -118,9 +118,9 @@ export class RecordsService {
       }
 
       const totalNum = avgRecords.length;
-      let totalWgt: number = 0;
-      let totalFat: number = 0;
-      let totalMus: number = 0;
+      let totalWgt = 0;
+      let totalFat = 0;
+      let totalMus = 0;
 
       for (const rec of avgRecords) {
         totalWgt += rec.weight;
@@ -138,7 +138,7 @@ export class RecordsService {
 
     const { weight, muscle, height, fat } = recentRecords;
     const stdWeight = Math.round(Math.pow(height / 100, 2) * 22); //적정체중
-    const stdMuscle = (weight * 45) / 100; //적정골격근량
+    const stdMuscle = Math.floor((weight * 45) / 100); //적정골격근량
     const wetPerHgt = weight / height;
 
     //성별과 키에 따른 적정 체지방량
