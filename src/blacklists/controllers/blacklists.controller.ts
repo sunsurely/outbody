@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { BlacklistsService } from '../services/blacklists.service';
 import { CreateBlacklistDto } from '../dto/create-blacklist.dto';
-import { GetBlacklistDto } from '../dto/get.blacklist.dto';
 import { DeleteUserDto } from '../dto/delete-user.dto';
 import { AddBlacklistDto } from '../dto/add-blacklist.dto';
 

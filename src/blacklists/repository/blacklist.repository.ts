@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { BlackList } from '../../reports/entities/blacklist.entity';
 
@@ -38,8 +38,12 @@ export class BlackListRepository extends Repository<BlackList> {
   }
 
   // 블랙리스트 UserId로 추가
-  async addBlacklist(userId: number, description: string): Promise<BlackList> {
-    const newBlackList = this.create({ userId: userId, description });
-    return newBlackList;
+  async addBlacklist(
+    email: string,
+    userId: number,
+    description: string,
+  ): Promise<BlackList> {
+    const newBlackList = this.create({ email, userId, description });
+    return await this.save(newBlackList);
   }
 }
