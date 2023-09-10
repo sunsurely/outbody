@@ -30,27 +30,38 @@ export class PostsRepository extends Repository<Post> {
     return count > 0;
   }
 
-  // 오운완 전체 조회 (재용 수정)
-  async getAllPost(
+  // 오운완 전체 조회 (개수)
+  async getAllPostsCount(challengeId: number): Promise<number> {
+    const count = await this.createQueryBuilder('post')
+      .innerJoin('post.user', 'user')
+      .where('post.challengeId = :challengeId', { challengeId })
+      .getCount();
+    return count;
+  }
+
+  // 오운완 전체 조회
+  async getAllPosts(
     challengeId: number,
     page: number,
     pageSize: number,
   ): Promise<Post[]> {
-    const allPosts = await this.find({
-      where: { challengeId },
-      select: [
-        'id',
-        'challengeId',
-        'userId',
-        'imgUrl',
-        'description',
-        'createdAt',
-      ],
-      order: { createdAt: 'DESC' },
-      relations: ['user'],
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
+    const allPosts = await this.createQueryBuilder('post')
+      .innerJoin('post.user', 'user')
+      .where('post.challengeId = :challengeId', { challengeId })
+      .select([
+        'post.id',
+        'post.imgUrl',
+        'post.description',
+        'post.createdAt',
+        'post.userId',
+        'user.name',
+        'user.point',
+        'user.imgUrl',
+      ])
+      .orderBy('post.createdAt', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getMany();
     return allPosts;
   }
 

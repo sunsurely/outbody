@@ -75,7 +75,12 @@ export class PostsService {
 
   // 오운완 전체 조회
   async getAllPost(challengeId: number, page: number, pageSize: number) {
-    const posts = await this.postsRepository.getAllPost(
+    const totalCount: number = await this.postsRepository.getAllPostsCount(
+      challengeId,
+    );
+    const totalPages: number = Math.ceil(totalCount / pageSize);
+
+    const posts: Post[] = await this.postsRepository.getAllPosts(
       challengeId,
       page,
       pageSize,
@@ -94,7 +99,7 @@ export class PostsService {
       };
       return postObject;
     });
-    return result;
+    return { totalPages, result };
   }
 
   // 오운완 상세 조회
