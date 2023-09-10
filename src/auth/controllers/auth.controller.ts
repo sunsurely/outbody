@@ -12,7 +12,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req: any) {
-    const userId = req.user;
+    const userId = req.user.id;
     const status = req.user.status;
 
     const { accessToken, ...accessOption } =
