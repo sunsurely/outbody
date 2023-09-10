@@ -26,7 +26,7 @@ export class LikesService {
     if (!post || post == undefined) {
       throw new NotFoundException('해당 오운완 게시글이 조회되지 않습니다.');
     }
-    console.log('userId', userId);
+
     const clickedUser = await this.likesRepository.getUserInfo(postId, userId);
     if (clickedUser) {
       throw new BadRequestException('이미 좋아요를 누른 게시글입니다.');

@@ -109,4 +109,13 @@ export class BlacklistsController {
       description,
     );
   }
+
+  //관리자 페이지 접근권한 확인
+  @Get('/permision')
+  async getPermission(@Req() req: any) {
+    if (req.user.status !== 'admin') {
+      return false;
+    }
+    return true;
+  }
 }
