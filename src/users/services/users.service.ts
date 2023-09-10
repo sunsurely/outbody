@@ -21,6 +21,7 @@ import { AwsService } from '../../aws.service';
 import { User } from '../entities/user.entity';
 import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 import { Status } from 'src/users/userInfo';
+import { Challenger } from 'src/challenges/entities/challenger.entity';
 
 @Injectable()
 export class UserService {
@@ -63,14 +64,28 @@ export class UserService {
     return createUserResult;
   }
 
-  //사용자 정보조회
+  // 사용자 정보조회 (재용 수정)
   async getUserById(userId: number) {
-    const getUser = await this.usersRepository.getUserById(userId);
-    if (!getUser) {
-      throw new NotFoundException('유저가 존재하지 않습니다.');
+    const user: User = await this.usersRepository.getUserById(userId);
+    if (!user) {
+      throw new NotFoundException('해당 회원은 존재하지 않습니다.');
     }
+    const allUsersRank: User[] =
+      await this.usersRepository.getAllUsersForRank();
+    const ranking =
+      allUsersRank.findIndex((rankedUser) => rankedUser.id === userId) + 1;
+    const challenger: Challenger =
+      await this.challengerRepository.getChallengerWithUserId(userId);
 
-    return getUser;
+    const result = {
+      imgUrl: user.imgUrl,
+      point: user.point,
+      ranking: ranking,
+      name: user.name,
+      description: user.description,
+      challengeId: challenger.challengeId,
+    };
+    return result;
   }
 
   // 내정보 + follow정보 조회
