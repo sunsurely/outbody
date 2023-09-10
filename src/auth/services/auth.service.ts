@@ -9,7 +9,6 @@ import { compare, hash } from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { UserRepository } from 'src/users/repositories/users.repository';
 import { UserService } from 'src/users/services/users.service';
-import { UserCreateDto } from 'src/users/dto/users.create.dto';
 import { Provider } from 'src/users/userInfo';
 
 @Injectable()
@@ -25,7 +24,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) {
-      throw new NotFoundException('존재하지 않는 유저입니다');
+      throw new NotFoundException('존재하지 않는 회원입니다');
     }
 
     if (user.status === 'admin') {

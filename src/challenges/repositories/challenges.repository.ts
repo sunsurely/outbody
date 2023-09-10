@@ -15,7 +15,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return await this.save(newChallenge);
   }
 
-  // 전체 도전 목록 조회
+  // 전체 도전 목록 조회 (개수)
   async getAllChallengesCount(): Promise<number> {
     const allChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
@@ -25,7 +25,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return allChallengesCount;
   }
 
-  // 전체 도전 목록 조회 (pagenation)
+  // 전체 도전 목록 조회
   async getAllChallenges(page: number): Promise<Challenge[]> {
     const allChallenges = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
@@ -38,7 +38,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return allChallenges;
   }
 
-  // 참여 가능한 도전 목록 조회
+  // 참여 가능한 도전 목록 조회 (개수)
   async getPossibleChallengesCount(userPoint: number): Promise<number> {
     const possibleChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.user', 'user')
@@ -51,7 +51,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return possibleChallengesCount;
   }
 
-  // 참여 가능한 도전 목록 조회 (pagenation)
+  // 참여 가능한 도전 목록 조회
   async getPossibleChallenges(
     page: number,
     userPoint: number,
@@ -70,7 +70,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return possibleChallenges;
   }
 
-  // 내 도전 목록 조회
+  // 내 도전 목록 조회 (개수)
   async getMyChallengesCount(userId: number): Promise<number> {
     const myChallengesCount = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.challenger', 'challenger')
@@ -79,7 +79,7 @@ export class ChallengesRepository extends Repository<Challenge> {
     return myChallengesCount;
   }
 
-  // 내 도전 목록 조회 (pagenation)
+  // 내 도전 목록 조회
   async getMyChallenges(page: number, userId: number): Promise<Challenge[]> {
     const myChallenges = await this.createQueryBuilder('challenge')
       .innerJoin('challenge.challenger', 'challenger')
