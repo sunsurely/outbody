@@ -98,7 +98,9 @@ export class BlacklistsService {
     if (status !== 'admin') {
       throw new NotAcceptableException('해당 기능에 대한 접근권한이 없습니다.');
     }
+    const user = await this.userRepository.getUserById(userId);
     const result = await this.blacklistRepository.addBlacklist(
+      user.email,
       userId,
       description,
     );

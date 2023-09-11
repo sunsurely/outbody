@@ -444,7 +444,7 @@ export class ChallengesService {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
 
-    const message = `${user.name}(${user.email})님이 회원님을 도전에 초대했습니다. 참가하시겠습니까?`;
+    const message = `${user.name}(${user.email})님이 회원님을 도전에 초대했습니다`;
 
     const newInvitation =
       await this.inviteChallengesRepository.createInvitation({
