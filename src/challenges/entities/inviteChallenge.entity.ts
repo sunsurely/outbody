@@ -30,6 +30,9 @@ export class InviteChallenge {
   @Column('int')
   challengeId: number;
 
+  @Column('varchar')
+  imgUrl: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
