@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InviteChallenge } from '../entities/inviteChallenge.entity';
-import { CreateInviteChallengeDto } from '../dto/create-inviteChallege.dto';
 
 @Injectable()
 export class InviteChallengesRepository extends Repository<InviteChallenge> {
