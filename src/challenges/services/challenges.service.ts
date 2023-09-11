@@ -454,6 +454,7 @@ export class ChallengesService {
         message,
         name: user.name,
         challengeId,
+        imgUrl: user.imgUrl,
       });
     return newInvitation;
   }

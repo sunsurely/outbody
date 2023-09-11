@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RecordsService } from './records.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Record } from '../entities/records.entity';
 import { User } from 'src/users/entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
+import { Gender } from '../../users/userInfo';
+import { Record } from '../entities/records.entity';
 
 describe('RecordsService', () => {
   let service: RecordsService;
@@ -44,15 +45,25 @@ describe('RecordsService', () => {
     it('should throw NotFoundException if no records found', async () => {
       const user = {
         id: 1,
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'testPassword',
         birthday: new Date(),
-        gender: '남자',
-        password: 'kkk11K2kkk',
-        provider: 'normal',
-        name: '차은우',
+        gender: Gender.MALE,
+        point: 1000,
+        isInChallenge: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        imgUrl: null,
+        description: null,
+        latestChallengeDate: null,
+        deletedAt: null,
+        refreshToken: null,
       };
+
       mockRecordsRepository.getLatestUserRecord.mockResolvedValue(null);
 
-      await expect(service.getResultFromRecord(user)).rejects.toThrow(
+      await expect(service.getResultFromRecord(user as User)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -81,7 +92,7 @@ describe('RecordsService', () => {
         recordsForAverage,
       );
 
-      const result = await service.getResultFromRecord(user);
+      const result = await service.getResultFromRecord(user as User);
       expect(result).toHaveProperty('recentRecords');
       expect(result).toHaveProperty('avgDatas');
     });
