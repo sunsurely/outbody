@@ -445,8 +445,10 @@ export class ChallengesService {
       throw new BadRequestException('이미 도전에 참가한 회원입니다.');
     }
 
-    const isSendedMessage =
-      await this.inviteChallengesRepository.getInvitations(invitedUser.id);
+    const isSendedMessage = await this.inviteChallengesRepository.getIsInvited(
+      invitedUser.id,
+      user.id,
+    );
 
     if (isSendedMessage) {
       throw new NotImplementedException('이미 초대를 보낸 회원입니다.');

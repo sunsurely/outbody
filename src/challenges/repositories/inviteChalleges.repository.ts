@@ -20,6 +20,13 @@ export class InviteChallengesRepository extends Repository<InviteChallenge> {
     return challengeInvitations;
   }
 
+  async getIsInvited(invitedId: number, userId): Promise<InviteChallenge> {
+    const result = await this.findOne({
+      where: { invitedId, userId },
+    });
+    return result;
+  }
+
   async deleteInvitation(userId: number, invitedId: number) {
     const result = await this.delete({ userId, invitedId });
     return result;
