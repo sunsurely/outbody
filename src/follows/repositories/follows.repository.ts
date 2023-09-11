@@ -45,7 +45,7 @@ export class FollowsRepository extends Repository<Follow> {
 
     return followers;
   }
-  //친구삭제
+  //친구삭제//
   async deleteFollower(userId: number, followId: number) {
     const deleted = await this.delete({ followId, userId });
     return deleted;
