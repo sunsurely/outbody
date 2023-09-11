@@ -33,7 +33,7 @@ export class CommentsRepository extends Repository<Comment> {
   ): Promise<{ comment: string; username: string }[]> {
     const allComment = await this.find({
       where: { challengeId, postId },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: 'ASC' },
       select: ['id', 'comment'],
       relations: ['user'],
     });
