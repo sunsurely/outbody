@@ -456,12 +456,12 @@ export class ChallengesService {
 
     const newInvitation =
       await this.inviteChallengesRepository.createInvitation({
-        // userId: user.id,
-        // invitedId: invitedUser.id,
-        // email: user.email,
-        // message,
-        // name: user.name,
-        // challengeId,
+        userId: user.id,
+        invitedId: invitedUser.id,
+        email: user.email,
+        message,
+        name: user.name,
+        challengeId,
         imgUrl: user.imgUrl,
       });
     return newInvitation;
