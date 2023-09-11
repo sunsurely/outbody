@@ -164,7 +164,7 @@ export class RecordsService {
       resMuscle,
       stdFat,
       stdMuscle,
-      stdWeight,
+      // stdWeight,
     };
   }
 }
