@@ -237,7 +237,7 @@ export class ChallengeScheduler {
         await this.userRepository.updateUserPoint(user.id, afterPoint);
 
         const message =
-          '2주일 동안 어떠한 도전에 참여하 않아, 점수가 20점 차감되었습니다.';
+          '2주일 동안 어떠한 도전에 참여하지 않아, 점수가 20점 차감되었습니다.';
         const newNotification = await this.notificationRepository.create({
           userId: user.id,
           message,

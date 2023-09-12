@@ -463,7 +463,7 @@ export class ChallengesService {
       throw new NotImplementedException('이미 초대를 보낸 회원입니다.');
     }
 
-    const message = `${user.name}(${user.email})님이 회원님을 도전에 초대했습니다`;
+    const message = `${user.name}(${user.email})님이 회원님을 도전에 초대했습니다.`;
 
     const newInvitation =
       await this.inviteChallengesRepository.createInvitation({
