@@ -180,8 +180,8 @@ export class ChallengesService {
         goalAttend: goal ? goal.attend : null,
         goalWeight: goal ? goal.weight : null,
         goalMuscle: goal ? goal.muscle : null,
-        goalFat: goal.fat,
-        hostName: user.name,
+        goalFat: goal ? goal.fat : null,
+        hostName: goal ? user.name : null,
         hostImageUrl: user.imgUrl,
       };
       return challengeObject;
