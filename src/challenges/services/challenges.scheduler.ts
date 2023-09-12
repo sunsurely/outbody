@@ -31,14 +31,14 @@ export class ChallengeScheduler {
   // 도전 시작 알림 생성
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async createStartLog() {
-    const challengesStarted = await this.challengesRepository.find({
+    const startedChallenges = await this.challengesRepository.find({
       where: {
         startDate: LessThanOrEqual(new Date()),
         isDistributed: false,
       },
     });
 
-    for (const challenge of challengesStarted) {
+    for (const challenge of startedChallenges) {
       const challengerCount =
         await this.challengersRepository.getChallengerCount(challenge.id);
 
