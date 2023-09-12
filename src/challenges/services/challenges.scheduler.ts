@@ -28,9 +28,9 @@ export class ChallengeScheduler {
     private notificationRepository: Repository<Notification>,
   ) {}
 
-  // 도전 시작 알림 생성
+  // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async createStartLog() {
+  async automaticDelete() {
     const challengesStarted = await this.challengesRepository.find({
       where: {
         startDate: LessThanOrEqual(new Date()),
@@ -39,13 +39,41 @@ export class ChallengeScheduler {
       },
     });
 
-    const message = '도전이 시작되었습니다.';
-
     for (const challenge of challengesStarted) {
       const challengerCount =
         await this.challengersRepository.getChallengerCount(challenge.id);
 
-      if (challengerCount > 1) {
+      if (challengerCount <= 1) {
+        const challengers = await this.challengersRepository.getChallengers(
+          challenge.id,
+        );
+
+        const host = await this.challengersRepository.getHost(challenge.id);
+
+        // isInChallenge: true => false
+        await this.userRepository.updateUserIsInChallenge(host.userId, false);
+
+        await this.challengesRepository.deleteChallenge(challenge.id);
+
+        const message =
+          '도전 시작일이 경과되었으나 참가자가 없어서, 회원님의 도전이 삭제되었습니다.';
+
+        for (const challenger of challengers) {
+          const newNotification = await this.notificationRepository.create({
+            userId: challenger.userId,
+            message,
+          });
+          await this.notificationRepository.save(newNotification);
+        }
+
+        this.logger.debug(
+          `도전 시작일이 경과되었으나 참가자가 없어서, ${challenge.id}번 도전이 삭제되었습니다.`,
+        );
+      }
+
+      const message = '도전이 시작되었습니다.';
+
+      for (const challenge of challengesStarted) {
         const challengers = await this.challengersRepository.getChallengers(
           challenge.id,
         );
@@ -59,50 +87,6 @@ export class ChallengeScheduler {
         }
         challenge.isStarted = true;
         await this.challengesRepository.save(challenge);
-      }
-    }
-  }
-
-  // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async automaticDelete() {
-    const challengesStarted = await this.challengesRepository.find({
-      where: {
-        startDate: LessThanOrEqual(new Date()),
-        isDistributed: false,
-      },
-    });
-
-    for (const challenge of challengesStarted) {
-      const challengerCount =
-        await this.challengersRepository.getChallengerCount(challenge.id);
-
-      if (challengerCount === 1) {
-        const challengers = await this.challengersRepository.getChallengers(
-          challenge.id,
-        );
-
-        const message =
-          '도전 시작일이 경과되었으나 참가자가 없어서, 회원님의 도전이 삭제되었습니다.';
-
-        for (const challenger of challengers) {
-          const newNotification = await this.notificationRepository.create({
-            userId: challenger.userId,
-            message,
-          });
-          await this.notificationRepository.save(newNotification);
-        }
-
-        const host = await this.challengersRepository.getHost(challenge.id);
-
-        // isInChallenge: true => false
-        await this.userRepository.updateUserIsInChallenge(host.userId, false);
-
-        await this.challengesRepository.deleteChallenge(challenge.id);
-
-        this.logger.debug(
-          `도전 시작일이 경과되었으나 참가자가 없어서, ${challenge.id}번 도전이 삭제되었습니다.`,
-        );
       }
     }
   }
