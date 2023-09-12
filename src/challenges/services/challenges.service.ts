@@ -16,7 +16,7 @@ import { InviteChallengeDto } from '../dto/invite-challenge.dto';
 import { ResponseChallengeDto } from '../dto/response-challenge.dto';
 import { Point, Position } from '../challengerInfo';
 import { User } from 'src/users/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InviteChallengesRepository } from '../repositories/inviteChalleges.repository';
 import { Challenge } from '../entities/challenge.entity';
 import { Notification } from '../entities/notification.entity';
@@ -34,7 +34,6 @@ export class ChallengesService {
     private readonly inviteChallengesRepository: InviteChallengesRepository,
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
-    private dataSource: DataSource,
   ) {}
 
   // 도전 생성
@@ -52,6 +51,16 @@ export class ChallengesService {
       muscle,
       fat,
     } = body;
+
+    const startDateWithoutTime = new Date(startDate);
+    startDateWithoutTime.setHours(0, 0, 0, 0);
+
+    const todayDateWithoutTime = new Date();
+    todayDateWithoutTime.setHours(0, 0, 0, 0);
+
+    if (startDateWithoutTime.getTime() < todayDateWithoutTime.getTime()) {
+      throw new BadRequestException('도전 시작일은 오늘 이전일 수 없습니다.');
+    }
 
     const user = await this.userRepository.getUserById(userId);
     if (user.isInChallenge === true) {
@@ -500,37 +509,10 @@ export class ChallengesService {
     );
   }
 
-  // 유저 도전목록수 + 도전목록조회
-  async getUserChallenges(userId: number): Promise<Challenge[]> {
-    const userChallengerIds = await this.challengersRepository.find({
-      select: ['challengeId'],
-      where: { userId },
-    });
-
-    const userChallengeIds = userChallengerIds.map(
-      (challenger) => challenger.challengeId,
-    );
-
-    const userChallenges = await this.challengesRepository
-      .createQueryBuilder('challenge')
-      .whereInIds(userChallengeIds)
-      .select([
-        'challenge.title',
-        'challenge.startDate',
-        'challenge.endDate',
-        'challenge.challengeWeek',
-        'challenge.description',
-      ])
-      .orderBy('challenge.createdAt', 'DESC')
-      .getMany();
-
-    return userChallenges;
-  }
-
   async getChallengeLogs(userId: number) {
     const logs = await this.notificationRepository.find({ where: { userId } });
     if (!logs || logs.length <= 0) {
-      throw new NotFoundException('챌린지 로그가 존재하지 않습니다.');
+      throw new NotFoundException('도전 알림이 존재하지 않습니다.');
     }
 
     return logs;
