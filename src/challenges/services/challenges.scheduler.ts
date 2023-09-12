@@ -50,7 +50,6 @@ export class ChallengeScheduler {
 
         const host = await this.challengersRepository.getHost(challenge.id);
 
-        // isInChallenge: true => false
         await this.userRepository.updateUserIsInChallenge(host.userId, false);
 
         await this.challengesRepository.deleteChallenge(challenge.id);
@@ -69,11 +68,8 @@ export class ChallengeScheduler {
         this.logger.debug(
           `도전 시작일이 경과되었으나 참가자가 없어서, ${challenge.id}번 도전이 삭제되었습니다.`,
         );
-      }
-
-      const message = '도전이 시작되었습니다.';
-
-      for (const challenge of challengesStarted) {
+      } else {
+        const message = '도전이 시작되었습니다.';
         const challengers = await this.challengersRepository.getChallengers(
           challenge.id,
         );
@@ -85,6 +81,7 @@ export class ChallengeScheduler {
           });
           await this.notificationRepository.save(newNotification);
         }
+
         challenge.isStarted = true;
         await this.challengesRepository.save(challenge);
       }
