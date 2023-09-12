@@ -32,11 +32,11 @@ export class AuthMiddleware implements NestMiddleware {
         where: { id: decodedToken.id },
       });
 
-    req.user = user;
+      req.user = user;
 
-    next();
-  }
-  catch(err) {
-    throw new UnauthorizedException('인증이 필요한 기능입니다.');
+      next();
+    } catch (err) {
+      throw new UnauthorizedException('인증이 필요한 기능입니다.');
+    }
   }
 }
