@@ -27,13 +27,22 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 회원입니다');
     }
 
-    const comparedPassword = await compare(password, user.password);
-    if (!comparedPassword) {
-      throw new NotAcceptableException('비밀번호가 일치하지 않습니다.');
+    if (
+      user.status === 'admin' &&
+      user.email === email &&
+      user.password === password
+    ) {
+      return user;
     }
 
-    if (user && comparedPassword) {
-      return user;
+    const comparedPassword = await compare(password, user.password);
+    if (user.status === 'normal') {
+      if (!comparedPassword) {
+        throw new NotAcceptableException('비밀번호가 일치하지 않습니다.');
+      }
+      if (user && comparedPassword) {
+        return user;
+      }
     }
   }
 
