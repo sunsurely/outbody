@@ -12,8 +12,4 @@ export class UserUpdateDto {
   @IsString()
   @IsOptional()
   readonly description?: string;
-
-  @IsString()
-  @IsOptional()
-  readonly name?: string;
 }

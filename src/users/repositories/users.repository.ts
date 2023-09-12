@@ -62,9 +62,8 @@ export class UserRepository extends Repository<User> {
     imgUrl: string,
     birthday: string | Date,
     description: string,
-    name: string,
   ) {
-    await this.update({ id: userId }, { imgUrl, birthday, description, name });
+    await this.update({ id: userId }, { imgUrl, birthday, description });
 
     const result = await this.findOne({ where: { id: userId } });
     return result;

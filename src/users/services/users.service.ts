@@ -134,7 +134,7 @@ export class UserService {
 
   // 내 정보 수정 (재용 수정)
   async updateUser(user: User, body: UserUpdateDto, file: Express.Multer.File) {
-    const { birthday, description, name } = body;
+    const { birthday, description } = body;
 
     const imageUrl = file
       ? (await this.awsService.uploadImage('outbody_user', file)).key
@@ -149,7 +149,6 @@ export class UserService {
       imageUrl,
       birthday || user.birthday,
       description || user.description,
-      name || user.name,
     );
     return result;
   }
