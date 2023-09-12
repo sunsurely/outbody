@@ -33,8 +33,8 @@ export class AuthController {
     // const { accessOption, refreshOption } = this.authService.logout();
     await this.authService.removeRefreshToken(req.user.id);
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    // res.clearCookie('accessToken');
+    // res.clearCookie('refreshToken');
     return res.send({
       message: 'logout success',
     });
@@ -58,7 +58,7 @@ export class AuthController {
   async kakaoLoginRedirect(@Req() req: any, @Res() res: Response) {
     const token = await this.authService.kakaoLogin(req.user);
     res.setHeader('authorization', token);
-    res.redirect(`http://127.0.0.1:5500/dist/null.html`);
+    // res.redirect(`http://127.0.0.1:5500/dist/null.html`);
   }
 
   // 네이버 소셜 로그인 페이지 로딩 기능
