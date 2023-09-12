@@ -33,7 +33,7 @@ export class FollowsService {
     });
 
     if (existFollowMessage) {
-      throw new NotAcceptableException('이미 요청 내역이 존재합니다');
+      throw new NotAcceptableException('이미 요청 내역이 존재합니다.');
     }
     const existFollow = await this.followRepository.findOne({
       where: { userId: user.id, followId },
@@ -43,10 +43,10 @@ export class FollowsService {
     });
 
     if (existFollow || existFollowUser) {
-      throw new NotAcceptableException('수행할 수 없는 요청입니다');
+      throw new NotAcceptableException('수행할 수 없는 요청입니다.');
     }
 
-    const message = `${user.name}(${user.email})님이 친구요청을 보냈습니다`;
+    const message = `${user.name}(${user.email})님이 친구 요청을 보냈습니다.`;
 
     const newMessage = new FollowMessage();
     newMessage.userId = user.id;
@@ -69,7 +69,7 @@ export class FollowsService {
     });
 
     if (!messagies || messagies.length <= 0) {
-      throw new NotFoundException('데이터가 존재하지 않습니다.');
+      throw new NotFoundException('친구 요청 목록이 존재하지 않습니다.');
     }
 
     return messagies;
@@ -82,11 +82,6 @@ export class FollowsService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        const followMessage = await queryRunner.manager.delete(FollowMessage, {
-          userId,
-          followId,
-        });
-
         const newFollow = await queryRunner.manager.create(Follow, {
           userId,
           followId,
@@ -109,7 +104,7 @@ export class FollowsService {
   // 친구 취소, follow삭제
   async deleteFollow(userId, followId) {
     if (userId === followId) {
-      throw new NotAcceptableException('수행할 수 없는 요청입니다');
+      throw new NotAcceptableException('수행할 수 없는 요청입니다.');
     }
 
     // 내가 먼저 상대방을 친구 신청했을 경우
