@@ -35,8 +35,11 @@ export class ChallengeScheduler {
       where: {
         startDate: LessThanOrEqual(new Date()),
         isDistributed: false,
+        isStarted: false,
       },
     });
+
+    const message = '도전이 시작되었습니다.';
 
     for (const challenge of challengesStarted) {
       const challengerCount =
@@ -47,8 +50,6 @@ export class ChallengeScheduler {
           challenge.id,
         );
 
-        const message = '도전이 시작되었습니다.';
-
         for (const challenger of challengers) {
           const newNotification = await this.notificationRepository.create({
             userId: challenger.userId,
@@ -56,6 +57,8 @@ export class ChallengeScheduler {
           });
           await this.notificationRepository.save(newNotification);
         }
+        challenge.isStarted = true;
+        await this.challengesRepository.save(challenge);
       }
     }
   }
