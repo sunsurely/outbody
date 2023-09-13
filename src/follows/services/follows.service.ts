@@ -46,7 +46,7 @@ export class FollowsService {
       throw new NotAcceptableException('수행할 수 없는 요청입니다.');
     }
 
-    const message = `${user.name}(${user.email})님이 친구요청을 보냈습니다.`;
+    const message = `${user.name}(${user.email})님이 친구 요청을 보냈습니다.`;
 
     const newMessage = new FollowMessage();
     newMessage.userId = user.id;
