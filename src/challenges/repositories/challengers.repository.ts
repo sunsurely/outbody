@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Challenger } from '../entities/challenger.entity';
 import { CreateChallengerDto } from '../dto/create-challengers.dto';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ChallengersRepository extends Repository<Challenger> {

@@ -62,7 +62,7 @@ export class FollowsService {
     return createItemResult;
   }
 
-  //user의 보류중인 초대목록 전체 조회
+  //user의 보류중인 친구 요청 목록 전체 조회
   async getUsersRequests(userId: number) {
     const messagies = await this.followMessageRepository.find({
       where: { followId: userId },

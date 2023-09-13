@@ -18,6 +18,7 @@ import { RecordsRepository } from 'src/records/repositories/records.repository';
 import { InviteChallenge } from './entities/inviteChallenge.entity';
 import { InviteChallengesRepository } from './repositories/inviteChalleges.repository';
 import { Notification } from './entities/notification.entity';
+import { NotificationsRepository } from './repositories/notifications.repository';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { Notification } from './entities/notification.entity';
     PostsRepository,
     RecordsRepository,
     InviteChallengesRepository,
+    NotificationsRepository,
   ],
   exports: [
     ChallengesService,
@@ -57,6 +59,7 @@ import { Notification } from './entities/notification.entity';
     PostsRepository,
     RecordsRepository,
     InviteChallengesRepository,
+    NotificationsRepository,
   ],
 })
 export class ChallengesModule {}
