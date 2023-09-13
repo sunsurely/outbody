@@ -44,7 +44,7 @@ export class LikesController {
       postId,
     );
 
-    return { postId: postId, totalLikes: likeCount };
+    return likeCount;
   }
 
   // 오운완 좋아요 취소 (상우)
