@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Between, DataSource, LessThanOrEqual, Repository } from 'typeorm';
+import { Between, DataSource, LessThanOrEqual } from 'typeorm';
 import { ChallengesRepository } from '../repositories/challenges.repository';
 import { ChallengersRepository } from '../repositories/challengers.repository';
 import { UserRepository } from 'src/users/repositories/users.repository';
@@ -10,8 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { GoalsRepository } from '../repositories/goals.repository';
 import { RecordsRepository } from 'src/records/repositories/records.repository';
 import { PostsRepository } from 'src/posts/repositories/posts.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Notification } from '../entities/notification.entity';
+import { NotificationsRepository } from '../repositories/notifications.repository';
 
 @Injectable()
 export class ChallengeScheduler {
@@ -24,69 +23,74 @@ export class ChallengeScheduler {
     private readonly goalRepository: GoalsRepository,
     private readonly recordRepository: RecordsRepository,
     private readonly postRepository: PostsRepository,
-    @InjectRepository(Notification)
-    private notificationRepository: Repository<Notification>,
+    private readonly notificationsRepository: NotificationsRepository,
   ) {}
 
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async automaticDelete() {
-    const challengesStarted = await this.challengesRepository.find({
-      where: {
-        startDate: LessThanOrEqual(new Date()),
-        isDistributed: false,
-        isStarted: false,
+    const startedChallenges: Challenge[] = await this.challengesRepository.find(
+      {
+        where: {
+          startDate: LessThanOrEqual(new Date()),
+          isDistributed: false,
+          isStarted: false,
+        },
       },
-    });
+    );
 
-    for (const challenge of challengesStarted) {
-      const challengerCount =
+    let message = '';
+
+    for (const challenge of startedChallenges) {
+      const challengerCount: number =
         await this.challengersRepository.getChallengerCount(challenge.id);
 
-      if (challengerCount <= 1) {
-        const challengers = await this.challengersRepository.getChallengers(
-          challenge.id,
-        );
+      const host: Challenger = await this.challengersRepository.getHost(
+        challenge.id,
+      );
 
-        const host = await this.challengersRepository.getHost(challenge.id);
+      await this.userRepository.updateUserIsInChallenge(host.userId, false);
+      await this.challengesRepository.deleteChallenge(challenge.id);
 
-        // isInChallenge: true => false
-        await this.userRepository.updateUserIsInChallenge(host.userId, false);
-
-        await this.challengesRepository.deleteChallenge(challenge.id);
-
-        const message =
+      if (challengerCount === 1) {
+        message =
           '도전 시작일이 경과되었으나 참가자가 없어서, 회원님의 도전이 삭제되었습니다.';
-
-        for (const challenger of challengers) {
-          const newNotification = await this.notificationRepository.create({
-            userId: challenger.userId,
-            message,
-          });
-          await this.notificationRepository.save(newNotification);
-        }
-
         this.logger.debug(
           `도전 시작일이 경과되었으나 참가자가 없어서, ${challenge.id}번 도전이 삭제되었습니다.`,
         );
-      }
+        const result = await this.notificationsRepository.createNotification({
+          userId: host.userId,
+          message,
+        });
+        if (!result) {
+          this.logger.debug(
+            `${challenge.id}번 도전 삭제 알림 생성에 실패하였습니다.`,
+          );
+        }
+      } else {
+        message = '회원님이 참가한 도전이 시작되었습니다.';
+        this.logger.debug(`${challenge.id}번 도전이 시작되었습니다.`);
 
-      const message = '도전이 시작되었습니다.';
-
-      for (const challenge of challengesStarted) {
-        const challengers = await this.challengersRepository.getChallengers(
+        await this.challengesRepository.updateChallengeIsStarted(
           challenge.id,
+          true,
         );
 
+        const challengers: Challenger[] =
+          await this.challengersRepository.getChallengers(challenge.id);
+
         for (const challenger of challengers) {
-          const newNotification = await this.notificationRepository.create({
+          const result = await this.notificationsRepository.createNotification({
             userId: challenger.userId,
             message,
           });
-          await this.notificationRepository.save(newNotification);
+
+          if (!result) {
+            this.logger.debug(
+              `${challenge.id}번 도전 시작 알림 생성에 실패하였습니다.`,
+            );
+          }
         }
-        challenge.isStarted = true;
-        await this.challengesRepository.save(challenge);
       }
     }
   }
@@ -168,11 +172,10 @@ export class ChallengeScheduler {
       const message = '회원님이 참가한 도전이 종료되어 점수가 분배되었습니다.';
 
       for (const challenger of challengers) {
-        const newNotification = await this.notificationRepository.create({
+        await this.notificationsRepository.createNotification({
           userId: challenger.userId,
           message,
         });
-        await this.notificationRepository.save(newNotification);
       }
     }
   }
@@ -238,12 +241,11 @@ export class ChallengeScheduler {
 
         const message =
           '2주일 동안 어떠한 도전에 참여하지 않아, 점수가 20점 차감되었습니다.';
-        const newNotification = await this.notificationRepository.create({
+
+        await this.notificationsRepository.createNotification({
           userId: user.id,
           message,
         });
-
-        await this.notificationRepository.save(newNotification);
 
         this.logger.debug(
           `${user.id}번 회원은 2주일 동안 어떠한 도전에도 참여하지 않아, 점수가 20점 차감되었습니다.`,
@@ -303,13 +305,13 @@ export class ChallengeScheduler {
               { userId: challenger.userId },
               { done: true },
             );
+
             const message = '도전 성공. 축하드립니다!';
-            const newNotification = await this.notificationRepository.create({
+
+            await this.notificationsRepository.createNotification({
               userId: challenger.userId,
               message,
             });
-
-            await this.notificationRepository.save(newNotification);
 
             this.logger.debug(
               `${challenge.id}번 도전의 성공 여부가 갱신되었습니다.`,
@@ -318,11 +320,11 @@ export class ChallengeScheduler {
           }
 
           const message = '도전 실패. 다음에 더 잘해봅시다!';
-          const newNotification = await this.notificationRepository.create({
+
+          await this.notificationsRepository.createNotification({
             userId: challenger.userId,
             message,
           });
-          await this.notificationRepository.save(newNotification);
         }
       } catch (error) {
         await queryRunner.rollbackTransaction();

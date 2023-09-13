@@ -9,6 +9,12 @@ export class ChallengesRepository extends Repository<Challenge> {
     super(Challenge, dataSource.createEntityManager());
   }
 
+  // 도전 시작 여부 수정
+  async updateChallengeIsStarted(challengeId: number, isStarted: boolean) {
+    const result = await this.update({ id: challengeId }, { isStarted });
+    return result;
+  }
+
   // 도전 생성
   async createChallenge(Challenge: CreateChallengeDto): Promise<Challenge> {
     const newChallenge = await this.create(Challenge);
