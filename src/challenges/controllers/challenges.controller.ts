@@ -185,3 +185,4 @@ export class ChallengesController {
     return await this.challengesService.getChallengeLogs(req.user.id);
   }
 }
+//
