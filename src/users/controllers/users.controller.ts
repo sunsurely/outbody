@@ -20,6 +20,7 @@ import { UserPasswordDto } from '../dto/password.update.dto';
 import { UserRecommendationDto } from '../dto/recommendation.dto';
 import { SignoutDto } from '../dto/user.signout.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { cache } from '../cache/user.cache';
 
 @Controller('user')
 export class UserController {
@@ -29,8 +30,22 @@ export class UserController {
   // POST http://localhost:3000/user/signup
   @Post('/signup')
   async createUser(@Body() usersDto: UserCreateDto) {
-    const createUserResult = await this.userService.createUser(usersDto);
+    const verifyNumber: number = await cache.get(usersDto.email);
+    const createUserResult = await this.userService.createUser(
+      usersDto,
+      verifyNumber,
+    );
+    cache.del(usersDto.email);
     return createUserResult;
+  }
+
+  // E-mail 인증 기능 (재용)
+  // POST http://~/user/signup/email
+  @Post('/signup/email')
+  async sendEmail(@Body() body: any) {
+    const verifyNumber: number = await this.userService.sendEmail(body);
+    await cache.set(`${body.email}`, verifyNumber);
+    return { message: '인증번호가 발송되었습니다.' };
   }
 
   // 사용자 정보 조회

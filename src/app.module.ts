@@ -59,6 +59,7 @@ export class AppModule implements NestModule {
       .apply(AuthMiddleware)
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
+        { path: 'user/signup/email', method: RequestMethod.POST },
         { path: 'user/signup', method: RequestMethod.POST },
         { path: 'auth/kakao', method: RequestMethod.GET },
         { path: 'auth/kakao/oauth', method: RequestMethod.GET },

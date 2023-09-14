@@ -6,6 +6,8 @@ import {
   MaxLength,
   IsEmail,
   Matches,
+  IsNumber,
+  IsNotEmpty,
 } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 
@@ -13,7 +15,7 @@ export class UserCreateDto {
   @Transform(({ value, obj }) => {
     if (obj.password.includes(obj.name.trim())) {
       throw new BadRequestException(
-        'password는 name과 같은 문자열을 포함할 수 없습니다.',
+        '비밀번호는 이름과 같은 문자열을 포함할 수 없습니다.',
       );
     }
     return value.trim();
@@ -27,6 +29,10 @@ export class UserCreateDto {
   @IsEmail()
   @MaxLength(60)
   readonly email: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  readonly verifyNumberInput: number;
 
   @IsString()
   readonly birthday?: string;
