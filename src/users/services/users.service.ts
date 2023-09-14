@@ -125,7 +125,7 @@ export class UserService {
     return result;
   }
 
-  // 내정보 + follow정보 조회
+  // 내정보 + 친구 정보 조회
   async getUserInfo(user: User) {
     const {
       deletedAt,
@@ -164,7 +164,11 @@ export class UserService {
     });
 
     if (challenger) {
-      return { rest, followersInfo, challengeId: challenger.challengeId };
+      return {
+        rest,
+        followersInfo,
+        challengeId: challenger.challengeId,
+      };
     }
     return { rest, followersInfo };
   }

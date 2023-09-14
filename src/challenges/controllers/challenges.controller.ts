@@ -61,6 +61,24 @@ export class ChallengesController {
     return challenge;
   }
 
+  // 현재 사용자가 도전에 참가해있는지 여부와 기타 정보 확인
+  // GET http://localhost:3000/challenge/:id/userState
+  @Get('/:challengeId/userState')
+  async checkUserChallengeState(
+    @Param(
+      'challengeId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    challengeId: number,
+    @Req() req: any,
+  ) {
+    const result = await this.challengesService.checkUserChallengeState(
+      challengeId,
+      req.user,
+    );
+    return result;
+  }
+
   // 도전자 목록 조회
   // GET http://localhost:3000/challenge/:id/challengers
   @Get('/:challengeId/challengers')

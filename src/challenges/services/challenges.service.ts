@@ -21,6 +21,7 @@ import { InviteChallengesRepository } from '../repositories/inviteChalleges.repo
 import { Challenge } from '../entities/challenge.entity';
 import { Notification } from '../entities/notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Challenger } from '../entities/challenger.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -228,6 +229,29 @@ export class ChallengesService {
       userImageUrl: user.imgUrl,
     };
     return challengeObject;
+  }
+
+  // 현재 사용자가 도전에 참가해있는지 여부와 기타 정보 확인
+  async checkUserChallengeState(challengeId: number, user: User) {
+    const challenger: Challenger =
+      await this.challengersRepository.getChallengerWithUserId(user.id);
+
+    const result = {
+      isChallenger: false,
+      isThis: false,
+      isHost: false,
+    };
+
+    if (challenger) {
+      result.isChallenger = true;
+      result.isThis = challenger.challengeId === challengeId;
+
+      if (result.isThis && challenger.type === 'host') {
+        result.isHost = true;
+      }
+    }
+
+    return result;
   }
 
   // 도전 삭제

@@ -40,7 +40,7 @@ export class UserController {
   }
 
   // E-mail 인증 기능 (재용)
-  // POST http://~/user/signup/email
+  // POST http://localhost:3000/user/signup/email
   @Post('/signup/email')
   async sendEmail(@Body() body: any) {
     const verifyNumber: number = await this.userService.sendEmail(body);
@@ -67,7 +67,6 @@ export class UserController {
   @Get('/me/profile')
   async getCurrentUser(@Req() req: any) {
     const MeAndFollowersInfo = await this.userService.getUserInfo(req.user);
-
     return MeAndFollowersInfo;
   }
 
