@@ -8,6 +8,7 @@ import {
   UnauthorizedException,
   NotAcceptableException,
   BadRequestException,
+  Body,
 } from '@nestjs/common';
 import { UserCreateDto } from '../dto/users.create.dto';
 import * as bcrypt from 'bcrypt';
@@ -22,6 +23,7 @@ import { User } from '../entities/user.entity';
 import { ChallengersRepository } from 'src/challenges/repositories/challengers.repository';
 import { Status } from 'src/users/userInfo';
 import { Challenger } from 'src/challenges/entities/challenger.entity';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UserService {
@@ -30,15 +32,14 @@ export class UserService {
     private readonly usersRepository: UserRepository,
     private readonly blacklistRepository: BlackListRepository,
     private readonly followRepository: FollowsRepository,
-    private readonly jwtService: JwtService,
     private readonly challengerRepository: ChallengersRepository,
   ) {}
 
-  //회원가입  , 블랙리스트에 있을 시 가입불가
-  async createUser(user: UserCreateDto) {
-    const { name, email, password, gender, birthday } = user;
-    const existUser = await this.usersRepository.getUserByEmail(email);
+  // 회원가입, 블랙리스트에 있을 시 가입불가
+  async createUser(user: UserCreateDto, verifyNumber: number) {
+    const { name, email, verifyNumberInput, password, gender, birthday } = user;
 
+    const existUser = await this.usersRepository.getUserByEmail(email);
     if (existUser) {
       throw new ConflictException('이미 존재하는 계정입니다.');
     }
@@ -46,11 +47,14 @@ export class UserService {
     const existBlackList = await this.blacklistRepository.getBlacklistByEmail(
       email,
     );
-
     if (existBlackList) {
       throw new NotAcceptableException(
         '영구삭제된 계정입니다. 해당 계정(e-mail)은 사용할 수 없습니다.',
       );
+    }
+
+    if (verifyNumberInput != verifyNumber) {
+      throw new BadRequestException('인증번호가 일치하지 않습니다.');
     }
 
     const createUserResult = await this.usersRepository.createUser(
@@ -62,6 +66,39 @@ export class UserService {
     );
 
     return createUserResult;
+  }
+
+  // E-mail 발송 (재용)
+  async sendEmail(body: any) {
+    const { email } = body;
+    if (!email) {
+      throw new NotFoundException('인증번호를 보낼 주소가 존재하지 않습니다.');
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      host: 'smtp.gmail.com',
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASS,
+      },
+    });
+
+    const min = 100000;
+    const max = 999999;
+    const verifyNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    transporter.sendMail({
+      from: 'OUTBODY',
+      to: email,
+      subject: '[OUTBODY] 반갑습니다! 인증번호를 보내드립니다.',
+      text: `우측의 6자리 인증번호를 '인증번호 입력란'에 입력해주세요! => ${verifyNumber}`,
+    });
+
+    return verifyNumber;
   }
 
   // 사용자 정보조회 (재용 수정)
