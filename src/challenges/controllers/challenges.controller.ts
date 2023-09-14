@@ -102,7 +102,6 @@ export class ChallengesController {
     challengeId: number,
     @Req() req: any,
   ) {
-    console.log(req.user);
     return await this.challengesService.joinChallenge(challengeId, req.user);
   }
 

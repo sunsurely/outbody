@@ -14,7 +14,7 @@ async function bootstrap() {
   app.use(express.static(join(__dirname, '..', 'public', 'dist')));
   // cors
   app.enableCors({
-    origin: [process.env.CORS_PORT],
+    origin: [process.env.CORS_PORT, process.env.END_PORT],
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true,
   });
