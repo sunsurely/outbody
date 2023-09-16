@@ -27,7 +27,7 @@ export class ChallengeScheduler {
   ) {}
 
   // 도전 시작일이 경과하는 시점에서 참가자가 단 1명일 경우, 도전 자동 삭제
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async automaticDelete() {
     const startedChallenges: Challenge[] = await this.challengesRepository.find(
       {
@@ -58,12 +58,12 @@ export class ChallengeScheduler {
         this.logger.debug(
           `도전 시작일이 경과되었으나 참가자가 없어서, ${challenge.id}번 도전이 삭제되었습니다.`,
         );
-        
+
         const result = await this.notificationsRepository.createNotification({
           userId: host.userId,
           message,
         });
-        
+
         if (!result) {
           this.logger.debug(
             `${challenge.id}번 도전 삭제 알림 생성에 실패하였습니다.`,
