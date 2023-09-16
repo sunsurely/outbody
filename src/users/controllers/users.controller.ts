@@ -82,7 +82,7 @@ export class UserController {
     return await this.userService.updateUser(req.user, body, file);
   }
 
-  // 유저 password수정
+  // 유저 password수정 (상우)
   // PUT http://localhost:3000/user/me/password
   @Patch('/me/password')
   async updatePassword(@Body() passwordDto: UserPasswordDto, @Req() req: any) {
