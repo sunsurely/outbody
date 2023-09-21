@@ -1,0 +1,91 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  S3_BUCKET_NAME: wildbody
+  # RESOURCE_PATH: ./src/main/resources/application.yaml
+  CODE_DEPLOY_APPLICATION_NAME: Code-Deploy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: OutBody-Server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+  strategy:
+      matrix:
+        node-version: [18.17.0]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: ⚙️ 환경변수를 설정합니다.
+        working-directory: ./
+        run: |
+          pwd
+          touch .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          cat .env
+
+      - name: ✨ 패키지 설치
+        working-directory: ./
+        run: yarn
+        
+      - name: ✨ 빌드 과정을 시작
+        working-directory: ./
+        run: yarn run build
+
+        # /////
+
+        # [1]
+      - name: Set yaml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          override.value: 'from deploy.yaml'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+        # [2]
+      - name: Build with Gradle
+        run: ./gradlew build
+        shell: bash
+
+        # [3]
+      - name: Make zip file
+        run: zip -r ./$GITHUB_SHA.zip .
+        shell: bash
+
+        # [4]
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ AKIA3VPXECBHUUC7TOOW }}
+          aws-secret-access-key: ${{ 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 }}
+          aws-region: ${{ ap-northeast-2 }}
+
+        # [5]
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+
+        # [6]
+      - name: Code Deploy
+        run: |
+          aws deploy create-deployment \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --application-name ${{ Code-Deploy }} \
+          --deployment-group-name ${{ OutBody-Server }} \
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
